@@ -56,7 +56,7 @@ header{background:rgba(248,245,240,.93);border-bottom:1px solid var(--brd);paddi
 .logo-text{font-size:.95rem;font-weight:700;letter-spacing:.12em;background:linear-gradient(120deg,#7A4A40,#4A4A6A,#4A6449);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .logo-sub{font-size:.5rem;color:var(--tx3);letter-spacing:.14em;display:block;margin-top:1px}
 .nav-tabs{display:none}
-.hdr-right{display:flex;align-items:center;gap:.3rem;margin-left:auto;min-width:0;overflow:hidden}
+.hdr-right{display:flex;align-items:center;gap:.3rem;margin-left:auto;min-width:0;flex-shrink:0}
 .hdr-clock{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--dusk-d);padding:.14rem .48rem;border-radius:14px;background:var(--dusk-l);border:1px solid rgba(140,140,168,.3);min-width:52px;text-align:center;white-space:nowrap;flex-shrink:0}
 .hdr-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--tx3);white-space:nowrap;flex-shrink:0}
 .sync-pill{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(168,216,200,.5);background:var(--sage-l);color:var(--sage-d);white-space:nowrap;flex-shrink:0}
@@ -195,7 +195,9 @@ main{padding-bottom:72px!important}
   .quote,.prog-wrap{display:none}
   .logo-sub{display:none}
   .hdr-date{display:none}
-  .sync-pill span{display:none}
+  .sync-pill{display:none}
+  #userBar{display:none!important}
+  .hdr-clock{display:none}
 }
 /* landscape phones: shrink header height */
 @media(max-height:420px) and (orientation:landscape){
@@ -220,11 +222,11 @@ main{padding-bottom:72px!important}
     </div>
     <div class="hdr-right">
       <div id="userBar" style="display:flex;align-items:center;gap:.3rem;flex-shrink:0"></div>
-      <div id="syncPill" class="sync-pill">○ 未登入</div>
-      <span class="hdr-date" id="hdrDate"></span>
-      <div class="hdr-clock" id="hdrClock">00:00</div>
-      <button class="icon-btn" onclick="openIcalPanel()" title="iCloud 行事曆">📅</button>
-      <button class="icon-btn" onclick="openFocus()">🔮</button>
+      <div id="syncPill" class="sync-pill" style="flex-shrink:0">○ 未登入</div>
+      <span class="hdr-date" id="hdrDate" style="flex-shrink:0"></span>
+      <div class="hdr-clock" id="hdrClock" style="flex-shrink:0">00:00</div>
+      <button class="icon-btn" onclick="openIcalPanel()" title="iCloud 行事曆" style="flex-shrink:0">📅</button>
+      <button class="icon-btn" onclick="openFocus()" style="flex-shrink:0">🔮</button>
     </div>
   </div>
 </header>
@@ -855,7 +857,7 @@ function pomoSkip(){clearInterval(pState.timer);pState.running=false;if(pState.p
 // iCloud 行事曆 (.ics) 匯入
 // ════════════════════════════════════════
 let icalEvents = [];   // 今日 iCloud 事件（唯讀）
-let icalUrl = localStorage.getItem('xm3_icalUrl') || '';
+let icalUrl = localStorage.getItem('xm3_icalUrl') || 'webcal://p109-caldav.icloud.com/published/2/MjI2NTM0OTIxNTQyMjY1M06TQGKoABl32lpgp0_FuyYZdU8KcOm1EBggKU2I8uUnVkSKKrz_udSs9JiMZZyTyDhf6PGp3cu015u01usKK9g';
 
 // 解析 iCal 日期字串 → { hh, mm } 或 null（全天）
 function parseIcalDT(val) {
