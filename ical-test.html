@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCal 診斷</title>
+<style>
+body{font-family:monospace;padding:1rem;background:#f5f0ff;color:#2a2040}
+button{padding:.5rem 1rem;border-radius:8px;border:none;background:#9090A8;color:#fff;cursor:pointer;font-size:.9rem;margin:.3rem 0}
+button:hover{opacity:.85}
+.box{background:#fff;border:1px solid #ddd;border-radius:8px;padding:.75rem;margin:.5rem 0;white-space:pre-wrap;word-break:break-all;font-size:.75rem;max-height:300px;overflow-y:auto}
+.ok{border-left:4px solid #8FA68E}.err{border-left:4px solid #C4A098}.info{border-left:4px solid #9090A8}
+h2{font-size:1rem;margin:.8rem 0 .3rem}
+</style>
+</head>
+<body>
+<h1 style="font-size:1.1rem">📅 iCloud 行事曆診斷工具</h1>
+
+<h2>Step 1 — WebCal URL</h2>
+<div id="urlBox" class="box info">載入中…</div>
+
+<h2>Step 2 — 測試 Proxy 1（corsproxy.io）</h2>
+<button onclick="testProxy1()">測試 corsproxy.io</button>
+<div id="p1" class="box">尚未測試</div>
+
+<h2>Step 3 — 測試 Proxy 2（allorigins）</h2>
+<button onclick="testProxy2()">測試 allorigins</button>
+<div id="p2" class="box">尚未測試</div>
+
+<h2>Step 4 — 解析今日事件</h2>
+<div id="events" class="box">請先完成 Step 2 或 3</div>
+
+<script>
+const WEBCAL = 'webcal://p109-caldav.icloud.com/published/2/MjI2NTM0OTIxNTQyMjY1M06TQGKoABl32lpgp0_FuyYZdU8KcOm1EBggKU2I8uUnVkSKKrz_udSs9JiMZZyTyDhf6PGp3cu015u01usKK9g';
+const HTTPS  = WEBCAL.replace(/^webcal:/i, 'https:');
+
+document.getElementById('urlBox').textContent =
+  'webcal: ' + WEBCAL + '\nhttps:  ' + HTTPS;
+
+function pad(n){return String(n).padStart(2,'0')}
+function getTW(){return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Taipei'}))}
+function dayKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+
+async function testProxy(proxyUrl, elId) {
+  const el = document.getElementById(elId);
+  el.className = 'box info';
+  el.textContent = '⏳ 請求中…\nURL: ' + proxyUrl;
+  try {
+    const r = await fetch(proxyUrl, {signal: AbortSignal.timeout(10000)});
+    const text = await r.text();
+    if (!r.ok) {
+      el.className = 'box err';
+      el.textContent = '❌ HTTP ' + r.status + '\n' + text.slice(0,300);
+      return null;
+    }
+    if (!text.includes('BEGIN:VCALENDAR')) {
+      el.className = 'box err';
+      el.textContent = '❌ 回應不是 .ics 格式\n前 500 字:\n' + text.slice(0,500);
+      return null;
+    }
+    el.className = 'box ok';
+    el.textContent = '✅ 成功！收到 ' + text.length + ' bytes\n前 200 字:\n' + text.slice(0,200);
+    parseEvents(text);
+    return text;
+  } catch(e) {
+    el.className = 'box err';
+    el.textContent = '❌ 錯誤: ' + e.message;
+    return null;
+  }
+}
+
+function testProxy1(){
+  testProxy('https://corsproxy.io/?' + encodeURIComponent(HTTPS), 'p1');
+}
+function testProxy2(){
+  testProxy('https://api.allorigins.win/raw?url=' + encodeURIComponent(HTTPS), 'p2');
+}
+
+function parseEvents(text) {
+  const el = document.getElementById('events');
+  const tk = dayKey(getTW());
+  el.textContent = '今天: ' + tk + '\n\n';
+  
+  const blocks = text.split('BEGIN:VEVENT');
+  const events = [];
+  blocks.slice(1).forEach(block => {
+    const get = (key) => {
+      const m = block.match(new RegExp(key + '[^:]*:([^\r\n]+)'));
+      return m ? m[1].trim() : '';
+    };
+    const summary = get('SUMMARY');
+    const dtstart = get('DTSTART');
+    const dtend   = get('DTEND');
+    events.push({summary, dtstart, dtend});
+  });
+
+  el.textContent += '共 ' + events.length + ' 個事件\n\n';
+  
+  // Show all events with dates
+  events.slice(0,20).forEach(ev => {
+    el.textContent += '─ ' + ev.summary + '\n  START: ' + ev.dtstart + '\n  END:   ' + ev.dtend + '\n\n';
+  });
+
+  if(events.length > 20) el.textContent += '…還有 ' + (events.length-20) + ' 個';
+  el.className = 'box ok';
+}
+</script>
+</body>
+</html>
