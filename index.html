@@ -592,7 +592,7 @@ function renderSchedules(){
   }));
   // iCloud 行程 → 轉成同格式
   const ical=icalEvents.map(ev=>({
-    id:'ical_'+ev.summary+ev.start.hh,
+    id:'ical_'+ev.summary+(ev.start.hh||''),
     name:ev.summary,
     startStr:ev.start.allDay?'全天':(ev.start.hh+':'+ev.start.mm),
     endStr:ev.end&&!ev.end.allDay?(ev.end.hh+':'+ev.end.mm):'',
@@ -860,23 +860,29 @@ let icalEvents = [];   // 今日 iCloud 事件（唯讀）
 let icalUrl = localStorage.getItem('xm3_icalUrl') || 'webcal://p109-caldav.icloud.com/published/2/MjI2NTM0OTIxNTQyMjY1M06TQGKoABl32lpgp0_FuyYZdU8KcOm1EBggKU2I8uUnVkSKKrz_udSs9JiMZZyTyDhf6PGp3cu015u01usKK9g';
 
 // 解析 iCal 日期字串 → { hh, mm } 或 null（全天）
-function parseIcalDT(val) {
+function parseIcalDT(val, tzid) {
   if (!val) return null;
-  // 有時間：20250613T140000Z 或 20250613T140000
+  // 有時間的格式：20260613T220000 或 20260613T220000Z
   const m = val.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)/);
   if (m) {
-    let d;
+    let hh = +m[4], mm = +m[5];
     if (m[7] === 'Z') {
-      // UTC → 台北時間
-      d = new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]));
+      // UTC → 台北時間 (UTC+8)
+      const utc = Date.UTC(+m[1],+m[2]-1,+m[3],hh,mm,+m[6]);
+      const tw  = new Date(utc + 8*3600*1000);
+      return {
+        dateKey: tw.getUTCFullYear()+'-'+pad(tw.getUTCMonth()+1)+'-'+pad(tw.getUTCDate()),
+        hh: pad(tw.getUTCHours()), mm: pad(tw.getUTCMinutes()), allDay: false
+      };
     } else {
-      d = new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]);
+      // TZID=Asia/Taipei 或無 TZID → 直接當台北時間讀
+      const dateKey = m[1]+'-'+pad(+m[2])+'-'+pad(+m[3]);
+      return { dateKey, hh: pad(hh), mm: pad(mm), allDay: false };
     }
-    return { date: d, hh: pad(d.getHours()), mm: pad(d.getMinutes()), allDay: false };
   }
-  // 全天：20250613
+  // 全天：20260613
   const d2 = val.match(/^(\d{4})(\d{2})(\d{2})$/);
-  if (d2) return { date: new Date(+d2[1],+d2[2]-1,+d2[3]), hh: null, mm: null, allDay: true };
+  if (d2) return { dateKey: d2[1]+'-'+pad(+d2[2])+'-'+pad(+d2[3]), hh: null, mm: null, allDay: true };
   return null;
 }
 
@@ -884,40 +890,48 @@ function parseIcs(text) {
   const events = [];
   const blocks = text.split('BEGIN:VEVENT');
   blocks.slice(1).forEach(block => {
-    const lines = block.replace(/\r/g,'').split('\n');
-    // unfold continuation lines
+    const lines = block.replace(/
+/g,'').split('
+');
+    // unfold continuation lines (RFC 5545)
     const unfolded = [];
     lines.forEach(l => {
-      if (/^[ \t]/.test(l) && unfolded.length) unfolded[unfolded.length-1] += l.slice(1);
+      if (/^[ 	]/.test(l) && unfolded.length) unfolded[unfolded.length-1] += l.slice(1);
       else unfolded.push(l);
     });
-    const get = (key) => {
-      const re = new RegExp('^' + key + '(?:;[^:]*)?:(.*)$', 'm');
-      const m = unfolded.join('\n').match(re);
+    const joined = unfolded.join('
+');
+    // 取屬性值（支援 DTSTART;TZID=...: 格式）
+    const getProp = (key) => {
+      const m = joined.match(new RegExp('^' + key + '(?:;[^:
+]*)?:([^
+
+]+)', 'm'));
       return m ? m[1].trim() : '';
     };
-    const summary = get('SUMMARY').replace(/\\,/g,',').replace(/\\n/g,' ');
-    const dtstart = get('DTSTART');
-    const dtend   = get('DTEND');
-    const rrule   = get('RRULE');
+    const getTzid = (key) => {
+      const m = joined.match(new RegExp('^' + key + ';TZID=([^:]+):', 'm'));
+      return m ? m[1].trim() : '';
+    };
+    const summary  = getProp('SUMMARY').replace(/\,/g,',').replace(/\n/g,' ').replace(/\;/g,';');
+    const dtstart  = getProp('DTSTART');
+    const dtend    = getProp('DTEND');
+    const tzid     = getTzid('DTSTART');
     if (!summary || !dtstart) return;
-    const start = parseIcalDT(dtstart);
-    const end   = parseIcalDT(dtend);
+    const start = parseIcalDT(dtstart, tzid);
+    const end   = dtend ? parseIcalDT(dtend, tzid) : null;
     if (!start) return;
-    events.push({ summary, start, end, rrule });
+    events.push({ summary, start, end });
   });
   return events;
 }
 
 function isTodayEvent(ev) {
   const tk = todayKey();
-  const sd = ev.start.date;
-  const sdKey = dayKey(sd);
-  if (sdKey === tk) return true;
-  // 跨天事件：start <= today < end
-  if (ev.end && !ev.end.allDay) {
-    const edKey = dayKey(ev.end.date);
-    if (sdKey <= tk && tk < edKey) return true;
+  if (ev.start.dateKey === tk) return true;
+  // 跨天事件：start < today <= end
+  if (ev.end) {
+    if (ev.start.dateKey <= tk && tk <= ev.end.dateKey) return true;
   }
   return false;
 }
