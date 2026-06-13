@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>個人行程管理</title>
+<title>細流・日記 — 莫蘭迪</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -888,38 +888,39 @@ function parseIcalDT(val, tzid) {
 
 function parseIcs(text) {
   const events = [];
-  const blocks = text.split('BEGIN:VEVENT');
+  // normalize line endings
+  const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const blocks = normalized.split('BEGIN:VEVENT');
   blocks.slice(1).forEach(block => {
-    const lines = block.replace(/
-/g,'').split('
-');
-    // unfold continuation lines (RFC 5545)
+    const lines = block.split('\n');
+    // unfold RFC 5545 continuation lines
     const unfolded = [];
     lines.forEach(l => {
-      if (/^[ 	]/.test(l) && unfolded.length) unfolded[unfolded.length-1] += l.slice(1);
-      else unfolded.push(l);
+      if ((l[0] === ' ' || l[0] === '\t') && unfolded.length) {
+        unfolded[unfolded.length-1] += l.slice(1);
+      } else {
+        unfolded.push(l);
+      }
     });
-    const joined = unfolded.join('
-');
-    // 取屬性值（支援 DTSTART;TZID=...: 格式）
+    const joined = unfolded.join('\n');
+    // get property value, supports DTSTART;TZID=...:value
     const getProp = (key) => {
-      const m = joined.match(new RegExp('^' + key + '(?:;[^:
-]*)?:([^
-
-]+)', 'm'));
-      return m ? m[1].trim() : '';
+      const lines2 = joined.split('\n');
+      for (const line of lines2) {
+        if (line.startsWith(key + ':') || line.startsWith(key + ';')) {
+          const idx = line.indexOf(':');
+          return idx >= 0 ? line.slice(idx + 1).trim() : '';
+        }
+      }
+      return '';
     };
-    const getTzid = (key) => {
-      const m = joined.match(new RegExp('^' + key + ';TZID=([^:]+):', 'm'));
-      return m ? m[1].trim() : '';
-    };
-    const summary  = getProp('SUMMARY').replace(/\,/g,',').replace(/\n/g,' ').replace(/\;/g,';');
-    const dtstart  = getProp('DTSTART');
-    const dtend    = getProp('DTEND');
-    const tzid     = getTzid('DTSTART');
+    const summary = getProp('SUMMARY')
+      .replace(/\\,/g, ',').replace(/\\n/g, ' ').replace(/\\;/g, ';');
+    const dtstart = getProp('DTSTART');
+    const dtend   = getProp('DTEND');
     if (!summary || !dtstart) return;
-    const start = parseIcalDT(dtstart, tzid);
-    const end   = dtend ? parseIcalDT(dtend, tzid) : null;
+    const start = parseIcalDT(dtstart);
+    const end   = dtend ? parseIcalDT(dtend) : null;
     if (!start) return;
     events.push({ summary, start, end });
   });
