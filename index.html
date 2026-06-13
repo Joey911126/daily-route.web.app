@@ -59,9 +59,7 @@ header{background:rgba(248,245,240,.93);border-bottom:1px solid var(--brd);paddi
 .hdr-right{display:flex;align-items:center;gap:.3rem;margin-left:auto;min-width:0;overflow:hidden}
 .hdr-clock{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--dusk-d);padding:.14rem .48rem;border-radius:14px;background:var(--dusk-l);border:1px solid rgba(140,140,168,.3);min-width:52px;text-align:center;white-space:nowrap;flex-shrink:0}
 .hdr-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--tx3);white-space:nowrap;flex-shrink:0}
-.sync-pill{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(168,216,200,.5);background:var(--sage-l);color:var(--sage-d);white-space:nowrap;flex-shrink:0;transition:all .2s}
-.sync-pill.syncing{border-color:rgba(140,140,168,.4);background:#EAEAF2;color:#4A4A6A}
-.sync-pill.err{border-color:rgba(196,160,152,.5);background:#F5EDEA;color:#7A4A40}
+.sync-pill{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(168,216,200,.5);background:var(--sage-l);color:var(--sage-d);white-space:nowrap;flex-shrink:0}
 /* ── bottom nav bar ── */
 .bottom-nav{
   position:fixed;bottom:0;left:0;right:0;z-index:200;
@@ -210,7 +208,6 @@ main{padding-bottom:72px!important}
   .bottom-nav .bn-btn{padding:.35rem 0 .28rem;font-size:.52rem}
   .bn-btn .bn-ico{font-size:1rem}
 }
-.ical-panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(28px);border:1.5px solid rgba(160,148,132,.25);border-radius:18px;padding:1.35rem;width:min(380px,92vw);z-index:400;box-shadow:0 16px 56px rgba(123,101,196,.2)}
 </style>
 </head>
 <body>
@@ -222,11 +219,11 @@ main{padding-bottom:72px!important}
       <div><span class="logo-text">細流・日記</span><span class="logo-sub">個人生產力系統</span></div>
     </div>
     <div class="hdr-right">
-      <div class="sync-pill" id="syncPill">☁️ <span id="syncLabel">已同步</span></div>
-      <div id="authArea"></div>
+      <div id="userBar" style="display:flex;align-items:center;gap:.3rem;flex-shrink:0"></div>
+      <div id="syncPill" class="sync-pill">○ 未登入</div>
       <span class="hdr-date" id="hdrDate"></span>
       <div class="hdr-clock" id="hdrClock">00:00</div>
-      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">🌙</button>
+      <button class="icon-btn" onclick="openIcalPanel()" title="iCloud 行事曆">📅</button>
       <button class="icon-btn" onclick="openFocus()">🔮</button>
     </div>
   </div>
@@ -278,7 +275,7 @@ main{padding-bottom:72px!important}
 
     <div class="grid">
       <div class="card col-w">
-        <div class="card-hdr"><div class="card-title">🗓 今日行程</div><div style="display:flex;gap:.3rem;align-items:center"><div id="icalStatus" style="display:none;font-size:.55rem;padding:.1rem .38rem;border-radius:10px;background:var(--sage-l);color:var(--sage-d);border:1.5px solid rgba(143,166,142,.35);white-space:nowrap"></div><button class="card-act" id="icalBtn" onclick="showIcalPanel()">☁ iCloud</button><button class="card-act" onclick="showAddSched()">＋ 新增</button></div></div>
+        <div class="card-hdr"><div class="card-title">🗓 今日行程</div><button class="card-act" onclick="showAddSched()">＋ 新增</button></div>
         <div class="card-body" id="schedList"></div>
       </div>
       <div class="card col-n">
@@ -401,125 +398,126 @@ main{padding-bottom:72px!important}
     <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
   </div>
 </div>
-<!-- iCloud 行事曆面板 -->
-<div class="ical-panel" id="icalPanel">
-  <div style="font-size:.88rem;font-weight:700;margin-bottom:.3rem;background:linear-gradient(120deg,#485A72,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">☁ 連結 iCloud 行事曆</div>
-  <div style="font-size:.62rem;color:var(--tx3);margin-bottom:.9rem;line-height:1.6">透過公開連結，每次開啟自動同步今日行程</div>
-  <div style="background:rgba(160,148,132,.08);border-radius:10px;padding:.7rem .8rem;margin-bottom:.85rem;border:1.5px solid rgba(160,148,132,.16)">
-    <div style="font-size:.58rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;margin-bottom:.45rem">如何取得連結</div>
-    <div style="display:flex;flex-direction:column;gap:.35rem">
-      <div style="display:flex;gap:.45rem;align-items:flex-start"><div style="width:15px;height:15px;border-radius:50%;background:linear-gradient(135deg,#C4A098,#9090A8);color:#fff;font-size:.48rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-weight:700">1</div><div style="font-size:.63rem;color:var(--tx2);line-height:1.55">iPhone：行事曆 App → 點行事曆旁 ⓘ → 開啟「公開行事曆」→ 共享連結</div></div>
-      <div style="display:flex;gap:.45rem;align-items:flex-start"><div style="width:15px;height:15px;border-radius:50%;background:linear-gradient(135deg,#C4A098,#9090A8);color:#fff;font-size:.48rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-weight:700">2</div><div style="font-size:.63rem;color:var(--tx2);line-height:1.55">Mac：右鍵行事曆名稱 → 共享行事曆 → 公開行事曆 → 複製連結</div></div>
-      <div style="display:flex;gap:.45rem;align-items:flex-start"><div style="width:15px;height:15px;border-radius:50%;background:linear-gradient(135deg,#C4A098,#9090A8);color:#fff;font-size:.48rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;font-weight:700">3</div><div style="font-size:.63rem;color:var(--tx2);line-height:1.55">複製 <span style="font-family:'JetBrains Mono',monospace;background:rgba(160,148,132,.15);padding:1px 4px;border-radius:4px">webcal://</span> 連結貼入下方</div></div>
-    </div>
-  </div>
-  <div style="margin-bottom:.55rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem;letter-spacing:.06em">iCloud 公開行事曆連結</label><input class="add-inp" id="icalUrl" placeholder="webcal://p01-caldav.icloud.com/…" style="width:100%;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.62rem"></div>
-  <div style="margin-bottom:.8rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem;letter-spacing:.06em">顯示名稱</label><input class="add-inp" id="icalName" placeholder="我的行事曆" style="width:100%;border-radius:8px"></div>
+<div id="icalPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(380px,92vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.5rem;background:linear-gradient(120deg,#485A72,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">📅 iCloud 行事曆</div>
+  <div style="font-size:.65rem;color:var(--tx3);margin-bottom:.85rem;line-height:1.6">在 iCloud 行事曆 → 共享行事曆 → 複製「公開行事曆」連結（webcal://...），貼到下方。</div>
+  <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">WebCal 連結</label><input class="add-inp" id="icalUrl" placeholder="webcal://p12-caldav.icloud.com/..." style="width:100%;border-radius:8px;font-size:.7rem"></div>
+  <div id="icalStatus" style="font-size:.62rem;color:var(--tx3);margin-bottom:.65rem;min-height:1rem"></div>
   <div style="display:flex;gap:.4rem">
-    <button onclick="saveIcalUrl()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#A0AABB,#9090A8,#8FA68E);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 連結並同步</button>
-    <button onclick="closeOverlays()" style="padding:.42rem .8rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+    <button onclick="saveIcalUrl()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#A0AABB,#9090A8);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存並匯入</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
   </div>
-  <div id="icalErr" style="display:none;margin-top:.5rem;font-size:.62rem;color:#7A5248;background:#F2EAE6;border-radius:8px;padding:.38rem .62rem;border:1.5px solid rgba(122,82,72,.2)"></div>
 </div>
 <div id="overlay" onclick="closeOverlays()" style="display:none;position:fixed;inset:0;z-index:390;background:rgba(40,25,65,.38);backdrop-filter:blur(6px)"></div>
 <div class="toast" id="toast"></div>
 
 <script type="module">
-// ── Firebase ──
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
-  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp }
-  from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+// ════════════════════════════════════════
+// Firebase SDK (ESM CDN)
+// ════════════════════════════════════════
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getAuth,GoogleAuthProvider,signInWithPopup,signOut,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import{getFirestore,doc,getDoc,setDoc}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-const firebaseConfig = {
-  apiKey:            "AIzaSyADa9M9-BCKebkfioxgFNOCxt7FNNyH5G8",
-  authDomain:        "daily-route-e7fe7.firebaseapp.com",
-  projectId:         "daily-route-e7fe7",
-  storageBucket:     "daily-route-e7fe7.appspot.com",
-  messagingSenderId: "458244739005",
-  appId:             "1:458244739005:web:803dc99fd048f11e7a8cd4"
+const FB_CFG={
+  apiKey:'AIzaSyADa9M9-BCKebkfioxgFNOCxt7FNNyH5G8',
+  authDomain:'daily-route-e7fe7.firebaseapp.com',
+  projectId:'daily-route-e7fe7',
+  storageBucket:'daily-route-e7fe7.appspot.com',
+  messagingSenderId:'458244739005',
+  appId:'1:458244739005:web:803dc99fd048f11e7a8cd4'
 };
-const fbApp = initializeApp(firebaseConfig);
-const auth  = getAuth(fbApp);
-const db    = getFirestore(fbApp);
+const app=initializeApp(FB_CFG);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const provider=new GoogleAuthProvider();
 
-let currentUser=null,unsubDoc=null,syncPaused=false,_cloudReady=false;
+let currentUser=null;
+let saveTimer=null;
 
-async function fbSignIn(){await signInWithPopup(auth,new GoogleAuthProvider());}
-async function fbSignOut(){if(unsubDoc){unsubDoc();unsubDoc=null;}await signOut(auth);}
-function userDocRef(){return doc(db,'users',currentUser.uid,'data','main');}
-
-function subscribeCloud(onUpdate){
-  if(unsubDoc){unsubDoc();unsubDoc=null;}
+// ── 雲端讀取 ──
+async function cloudLoad(){
   if(!currentUser)return;
-  unsubDoc=onSnapshot(userDocRef(),snap=>{
-    if(syncPaused||!snap.exists())return;
-    const d=snap.data();if(d)onUpdate(d);
-  },err=>console.error('Firestore',err));
+  try{
+    const snap=await getDoc(doc(db,'users',currentUser.uid,'data','main'));
+    if(snap.exists()){
+      const d=snap.data();
+      if(d.schedules)schedules=d.schedules;
+      if(d.todos)todos=d.todos;
+      if(d.habits)habits=d.habits;
+      if(d.habitLogs)habitLogs=d.habitLogs;
+      if(d.notes)notes=d.notes;
+      // 同步到 localStorage 備份
+      save('scheds',schedules);save('todos',todos);save('habits',habits);save('hlogs',habitLogs);save('notes',notes);
+    }
+  }catch(e){console.warn('cloudLoad error',e);}
 }
-let _saveTimer=null;
-function saveToCloud(payload){
+
+// ── 雲端儲存（debounce 1.5s）──
+function cloudSave(){
   if(!currentUser)return;
-  clearTimeout(_saveTimer);
-  _saveTimer=setTimeout(async()=>{
-    syncPaused=true;
-    try{await setDoc(userDocRef(),{...payload,updatedAt:serverTimestamp()},{merge:true});}
-    catch(e){console.error('save',e);}
-    finally{setTimeout(()=>{syncPaused=false;},600);}
-  },500);
-}
-async function fetchFromCloud(){
-  if(!currentUser)return null;
-  const snap=await getDoc(userDocRef());
-  return snap.exists()?snap.data():null;
-}
-function buildPayload(){return{schedules,todos,habits,habitLogs,notes};}
-
-// ── sync pill ──
-function setSyncPill(state,msg){
-  const pill=$('syncPill'),lbl=$('syncLabel');if(!pill)return;
-  pill.className='sync-pill'+(state==='syncing'?' syncing':state==='err'?' err':'');
-  if(lbl)lbl.textContent=msg||(state==='ok'?'已同步':state==='syncing'?'同步中…':'未登入');
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(async()=>{
+    try{
+      await setDoc(doc(db,'users',currentUser.uid,'data','main'),
+        {schedules,todos,habits,habitLogs,notes,updatedAt:Date.now()});
+      updateSyncPill('ok');
+    }catch(e){console.warn('cloudSave error',e);updateSyncPill('err');}
+  },1500);
+  updateSyncPill('syncing');
 }
 
-// ── auth UI ──
-function updateAuthUI(user){
-  const area=$('authArea');if(!area)return;
+function updateSyncPill(state){
+  const el=$('syncPill');if(!el)return;
+  if(state==='ok'){el.textContent='☁ 已同步';el.style.cssText='display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(143,180,143,.5);background:#EAF0EA;color:#4A6449;white-space:nowrap;flex-shrink:0';}
+  else if(state==='syncing'){el.textContent='↻ 同步中';el.style.cssText='display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(140,140,168,.4);background:#EAEAF2;color:#4A4A6A;white-space:nowrap;flex-shrink:0';}
+  else if(state==='err'){el.textContent='⚠ 同步失敗';el.style.cssText='display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(180,120,100,.4);background:#F2EAE6;color:#7A5248;white-space:nowrap;flex-shrink:0';}
+  else{el.textContent='○ 未登入';el.style.cssText='display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(160,148,132,.3);background:rgba(248,244,240,.8);color:#7A6E64;white-space:nowrap;flex-shrink:0';}
+}
+
+// ── Google 登入 / 登出 ──
+async function googleSignIn(){
+  try{await signInWithPopup(auth,provider);}
+  catch(e){showToast('登入失敗：'+e.message);}
+}
+async function googleSignOut(){
+  await signOut(auth);
+  showToast('已登出');
+}
+
+function renderUserBar(user){
+  const el=$('userBar');if(!el)return;
   if(user){
-    area.innerHTML=`<div style="display:flex;align-items:center;gap:.3rem;flex-shrink:0">
-      <img src="${user.photoURL||''}" alt="" style="width:22px;height:22px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(160,148,132,.3)" onerror="this.style.display='none'">
-      <button onclick="window._signOut()" style="font-size:.58rem;padding:.14rem .42rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:transparent;color:var(--tx3);cursor:pointer;font-family:inherit;white-space:nowrap">登出</button>
-    </div>`;
+    el.innerHTML=`<img src="${user.photoURL||''}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(160,148,132,.3);flex-shrink:0" onerror="this.style.display='none'">
+    <span style="font-size:.62rem;color:var(--tx2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${user.displayName||user.email}</span>
+    <button onclick="googleSignOut()" style="font-size:.58rem;padding:.18rem .45rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.8);color:var(--tx3);cursor:pointer;font-family:inherit;flex-shrink:0">登出</button>`;
   }else{
-    area.innerHTML=`<button onclick="window._signIn()" style="display:inline-flex;align-items:center;gap:.28rem;font-size:.6rem;padding:.18rem .55rem;border-radius:14px;border:1.5px solid rgba(143,166,142,.4);background:var(--sage-l);color:var(--sage-d);cursor:pointer;font-family:inherit;font-weight:600;white-space:nowrap;flex-shrink:0">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      登入
-    </button>`;
+    el.innerHTML=`<button onclick="googleSignIn()" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;padding:.28rem .7rem;border-radius:14px;border:1.5px solid rgba(140,140,168,.35);background:linear-gradient(135deg,rgba(196,160,152,.15),rgba(144,144,168,.15));color:var(--dusk-d);cursor:pointer;font-family:inherit;font-weight:600;transition:all .2s">
+      <svg width="13" height="13" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Google 登入</button>`;
   }
 }
-window._signIn=async()=>{setSyncPill('syncing','登入中…');try{await fbSignIn();}catch{setSyncPill('err','登入失敗');showToast('❌ 登入失敗');}};
-window._signOut=async()=>{await fbSignOut();_cloudReady=false;setSyncPill('err','未登入');showToast('👋 已登出');};
 
-function applyCloudData(data){
-  if(data.schedules&&Array.isArray(data.schedules))schedules=data.schedules;
-  if(data.todos&&Array.isArray(data.todos))todos=data.todos;
-  if(data.habits&&Array.isArray(data.habits))habits=data.habits;
-  if(data.habitLogs&&typeof data.habitLogs==='object')habitLogs=data.habitLogs;
-  if(data.notes&&typeof data.notes==='object')notes=data.notes;
-  save('scheds',schedules);save('todos',todos);save('habits',habits);save('hlogs',habitLogs);save('notes',notes);
-  renderAll();setSyncPill('ok');
-}
+// 監聽登入狀態
+onAuthStateChanged(auth,async user=>{
+  currentUser=user;
+  renderUserBar(user);
+  if(user){
+    updateSyncPill('syncing');
+    await cloudLoad();
+    updateSyncPill('ok');
+    renderAll();updateStats();
+  }else{
+    updateSyncPill('offline');
+  }
+});
 
-// ── persist (now also saves to cloud) ──
-function persist(){
-  save('scheds',schedules);save('todos',todos);save('habits',habits);save('hlogs',habitLogs);save('notes',notes);
-  if(_cloudReady)saveToCloud(buildPayload());
-}
+// ════════════════════════════════════════
+// 原有邏輯（保持不變，persist 改為同時存雲端）
+// ════════════════════════════════════════
 const MONTHS=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
 const WDAYS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
 const TABS=['today','habits','todos','review'];
-const TLBL={today:'🗓 今日',habits:'🌱 習慣',todos:'📋 待辦',review:'📊 回顧'};
 let curTab='today';
 const $=id=>document.getElementById(id);
 const genId=()=>Math.random().toString(36).slice(2,9);
@@ -557,6 +555,7 @@ function initData(){
   }
   if(!notes[tk]) notes[tk]='今天天氣很好，保持專注！';
 }
+function persist(){save('scheds',schedules);save('todos',todos);save('habits',habits);save('hlogs',habitLogs);save('notes',notes);cloudSave();}
 
 function buildNavTabs(){
   // update bottom nav active state
@@ -582,22 +581,41 @@ function updateClock(){
 function toMins(t){const[h,m]=t.split(':');return +h*60+ +m}
 
 function renderSchedules(){
-  const tk=todayKey(),items=schedules.filter(s=>s.date===tk).sort((a,b)=>a.start.localeCompare(b.start));
+  const tk=todayKey();
+  // 手動行程
+  const manual=schedules.filter(s=>s.date===tk).map(s=>({
+    id:s.id, name:s.name, startStr:s.start, endStr:s.end||'', note:s.note||'',
+    priority:s.priority||'normal', fromIcal:false,
+    sortKey:s.start
+  }));
+  // iCloud 行程 → 轉成同格式
+  const ical=icalEvents.map(ev=>({
+    id:'ical_'+ev.summary+ev.start.hh,
+    name:ev.summary,
+    startStr:ev.start.allDay?'全天':(ev.start.hh+':'+ev.start.mm),
+    endStr:ev.end&&!ev.end.allDay?(ev.end.hh+':'+ev.end.mm):'',
+    note:'', priority:'normal', fromIcal:true,
+    sortKey:ev.start.allDay?'00:00':(ev.start.hh+':'+ev.start.mm)
+  }));
+  const items=[...manual,...ical].sort((a,b)=>a.sortKey.localeCompare(b.sortKey));
   ($('sSch')||{}).textContent=items.length;
   const el=$('schedList');if(!el)return;
   if(!items.length){el.innerHTML=`<div class="empty">🗓<br>今天還沒有行程</div>`;return;}
   const now=getTW(),nm=now.getHours()*60+now.getMinutes();
   let ins=false,html='';
   items.forEach(s=>{
-    const sm=toMins(s.start),em=s.end?toMins(s.end):sm+60,past=em<nm,isNow=sm<=nm&&nm<=em;
-    if(!ins&&sm>nm){ins=true;html+=`<div class="now-line"><div class="now-dot"></div><div class="now-lbl">${pad(now.getHours())}:${pad(now.getMinutes())} 現在</div><div class="now-hr"></div></div>`;}
+    const sm=s.startStr==='全天'?0:toMins(s.startStr);
+    const em=s.endStr?toMins(s.endStr):sm+60;
+    const past=em<nm&&s.startStr!=='全天',isNow=sm<=nm&&nm<=em&&s.startStr!=='全天';
+    if(!ins&&sm>nm&&s.startStr!=='全天'){ins=true;html+=`<div class="now-line"><div class="now-dot"></div><div class="now-lbl">${pad(now.getHours())}:${pad(now.getMinutes())} 現在</div><div class="now-hr"></div></div>`;}
     const pct=isNow?Math.round((nm-sm)/(em-sm)*100):0;
-    const icalBadge=s.fromIcal?`<span style="font-size:.45rem;padding:1px 4px;border-radius:5px;background:#E8EBF2;color:#485A72;border:1px solid rgba(160,170,187,.3);white-space:nowrap;flex-shrink:0">☁</span>`:'';
-    html+=`<div class="tl-item${s.priority==='high'?' hi':''}${past?' past':''}">
-      <div class="tl-time">${s.start}${s.end?'<br>'+s.end:''}</div>
-      <div class="tl-icon">✦</div>
-      <div class="tl-body"><div class="tl-ev">${s.name}${isNow?`<span class="now-badge">NOW</span>`:''}${icalBadge}</div>${s.note?`<div class="tl-sub">📝 ${s.note}</div>`:''}</div>
-      <button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')">✕</button>
+    const icalBadge=s.fromIcal?`<span style="font-size:.48rem;padding:1px 5px;border-radius:6px;background:rgba(80,120,200,.12);color:#485A72;border:1px solid rgba(80,120,200,.2);flex-shrink:0">🍎 iCloud</span>`:'';
+    const delBtn=s.fromIcal?'':`<button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')">✕</button>`;
+    html+=`<div class="tl-item${s.priority==='high'?' hi':''}${past?' past':''}${s.fromIcal?' ical-item':''}">
+      <div class="tl-time">${s.startStr}${s.endStr?'<br>'+s.endStr:''}</div>
+      <div class="tl-icon">${s.fromIcal?'🍎':'✦'}</div>
+      <div class="tl-body"><div class="tl-ev">${s.name} ${icalBadge}${isNow?`<span class="now-badge">NOW</span>`:''}</div>${s.note?`<div class="tl-sub">📝 ${s.note}</div>`:''}</div>
+      ${delBtn}
       ${isNow?`<div class="tl-prog" style="width:${pct}%"></div>`:''}
     </div>`;
   });
@@ -812,9 +830,6 @@ function renderAll(){
   if(curTab==='todos'){renderTodos();renderTodoStats();}
   if(curTab==='review'){renderHeatmap();renderStreakBoard();renderWeeklyBar();renderRecentNotes();}
 }
-let darkMode=load('dark',false);
-function applyTheme(){document.body.classList.toggle('dark',darkMode);const b=$('themeBtn');if(b)b.textContent=darkMode?'☀️':'🌙';}
-function toggleTheme(){darkMode=!darkMode;save('dark',darkMode);applyTheme();}
 function openFocus(){$('focusOverlay').style.display='flex';updateClock();}
 function closeFocus(){$('focusOverlay').style.display='none';}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFocus();});
@@ -835,99 +850,167 @@ function pomoToggle(){if(pState.running){clearInterval(pState.timer);pState.runn
 function pomoReset(){clearInterval(pState.timer);pState.running=false;pState.rem=POMO_DUR[pState.phase];renderPomo();}
 function pomoSkip(){clearInterval(pState.timer);pState.running=false;if(pState.phase==='focus'){pState.count++;pState.phase=pState.count%4===0?'longBreak':'shortBreak';}else pState.phase='focus';pState.rem=POMO_DUR[pState.phase];renderPomo();}
 
-/* ══ iCloud 行事曆 ══ */
-let icalCfg=load('icalCfg',null);
 
-function showIcalPanel(){
-  if(icalCfg){
-    const go=confirm(`已連結「${icalCfg.name}」\n上次同步：${icalCfg.lastSync||'尚未'}\n\n確認 → 立即重新同步　取消 → 解除連結`);
-    if(go){syncIcal(true);}
-    else if(confirm('確定解除 iCloud 行事曆連結？')){icalCfg=null;save('icalCfg',null);updateIcalUI();showToast('☁ 已解除連結');}
-    return;
+// ════════════════════════════════════════
+// iCloud 行事曆 (.ics) 匯入
+// ════════════════════════════════════════
+let icalEvents = [];   // 今日 iCloud 事件（唯讀）
+let icalUrl = localStorage.getItem('xm3_icalUrl') || '';
+
+// 解析 iCal 日期字串 → { hh, mm } 或 null（全天）
+function parseIcalDT(val) {
+  if (!val) return null;
+  // 有時間：20250613T140000Z 或 20250613T140000
+  const m = val.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)/);
+  if (m) {
+    let d;
+    if (m[7] === 'Z') {
+      // UTC → 台北時間
+      d = new Date(Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]));
+    } else {
+      d = new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]);
+    }
+    return { date: d, hh: pad(d.getHours()), mm: pad(d.getMinutes()), allDay: false };
   }
-  $('icalPanel').style.display='block';$('overlay').style.display='block';
-  $('icalErr').style.display='none';
+  // 全天：20250613
+  const d2 = val.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (d2) return { date: new Date(+d2[1],+d2[2]-1,+d2[3]), hh: null, mm: null, allDay: true };
+  return null;
 }
-function saveIcalUrl(){
-  let url=($('icalUrl').value||'').trim();
-  const name=($('icalName').value||'').trim()||'iCloud 行事曆';
-  if(!url){$('icalErr').style.display='block';$('icalErr').textContent='⚠ 請貼入 webcal:// 連結';return;}
-  url=url.replace(/^webcal:\/\//i,'https://');
-  icalCfg={url,name,lastSync:null};save('icalCfg',icalCfg);
-  closeOverlays();syncIcal(true);
-}
-const CORS_PROXIES=[
-  u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
-  u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-];
-async function fetchIcs(url){
-  let lastErr;
-  for(const proxy of CORS_PROXIES){
-    try{const r=await fetch(proxy(url),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const t=await r.text();if(t.includes('BEGIN:VCALENDAR'))return t;}
-    catch(e){lastErr=e;}
-  }
-  throw lastErr||new Error('無法取得行事曆');
-}
-function parseIcs(txt,td){
-  const events=[],blocks=txt.split('BEGIN:VEVENT').slice(1),ymd=td.replace(/-/g,'');
-  blocks.forEach(b=>{
-    const get=k=>{const m=b.match(new RegExp(k+'[^:]*:([^\\r\\n]+)'));return m?m[1].trim():'';};
-    const ds=get('DTSTART'),de=get('DTEND');
-    if(ds.replace(/T.*/,'').replace(/[^0-9]/g,'').slice(0,8)!==ymd)return;
-    const pt=s=>{const t=s.replace(/.*T/,'').slice(0,6);return t.length>=4?`${t.slice(0,2)}:${t.slice(2,4)}`:null;};
-    const allDay=!ds.includes('T');
-    events.push({id:'ical_'+Math.random().toString(36).slice(2,8),name:get('SUMMARY')||'（無標題）',
-      start:allDay?'00:00':(pt(ds)||'00:00'),end:allDay?'23:59':(pt(de)||''),
-      note:(get('DESCRIPTION')||'').slice(0,80),priority:'normal',date:td,fromIcal:true});
+
+function parseIcs(text) {
+  const events = [];
+  const blocks = text.split('BEGIN:VEVENT');
+  blocks.slice(1).forEach(block => {
+    const lines = block.replace(/\r/g,'').split('\n');
+    // unfold continuation lines
+    const unfolded = [];
+    lines.forEach(l => {
+      if (/^[ \t]/.test(l) && unfolded.length) unfolded[unfolded.length-1] += l.slice(1);
+      else unfolded.push(l);
+    });
+    const get = (key) => {
+      const re = new RegExp('^' + key + '(?:;[^:]*)?:(.*)$', 'm');
+      const m = unfolded.join('\n').match(re);
+      return m ? m[1].trim() : '';
+    };
+    const summary = get('SUMMARY').replace(/\\,/g,',').replace(/\\n/g,' ');
+    const dtstart = get('DTSTART');
+    const dtend   = get('DTEND');
+    const rrule   = get('RRULE');
+    if (!summary || !dtstart) return;
+    const start = parseIcalDT(dtstart);
+    const end   = parseIcalDT(dtend);
+    if (!start) return;
+    events.push({ summary, start, end, rrule });
   });
   return events;
 }
-async function syncIcal(manual=false){
-  if(!icalCfg)return;
-  updateIcalUI('syncing');if(manual)showToast('☁ 同步中…');
-  try{
-    const ics=await fetchIcs(icalCfg.url),tk=todayKey(),imported=parseIcs(ics,tk);
-    schedules=schedules.filter(s=>!(s.fromIcal&&s.date===tk));
-    schedules.push(...imported);
-    icalCfg.lastSync=new Date().toLocaleTimeString('zh-TW',{timeZone:'Asia/Taipei',hour:'2-digit',minute:'2-digit'});
-    persist();save('icalCfg',icalCfg);updateIcalUI('ok');renderSchedules();updateStats();
-    if(manual)showToast(`☁ 同步完成！匯入 ${imported.length} 筆`);
-  }catch(e){updateIcalUI('err');if(manual)showToast('⚠ 同步失敗：'+e.message);}
-}
-function updateIcalUI(state){
-  const st=$('icalStatus'),btn=$('icalBtn');if(!st||!btn)return;
-  if(!icalCfg){st.style.display='none';btn.textContent='☁ iCloud';return;}
-  btn.textContent='☁ 已連結';st.style.display='';
-  if(state==='syncing'){st.textContent='同步中…';st.style.background='#EAEAF2';st.style.color='#4A4A6A';st.style.borderColor='rgba(140,140,168,.35)';}
-  else if(state==='ok'||!state){st.textContent=`☁ ${icalCfg.name}${icalCfg.lastSync?' · '+icalCfg.lastSync:''}`;st.style.background='#EAF0EA';st.style.color='#4A6449';st.style.borderColor='rgba(143,166,142,.35)';}
-  else{st.textContent='⚠ 同步失敗';st.style.background='#F2EAE6';st.style.color='#7A5248';st.style.borderColor='rgba(122,82,72,.28)';}
+
+function isTodayEvent(ev) {
+  const tk = todayKey();
+  const sd = ev.start.date;
+  const sdKey = dayKey(sd);
+  if (sdKey === tk) return true;
+  // 跨天事件：start <= today < end
+  if (ev.end && !ev.end.allDay) {
+    const edKey = dayKey(ev.end.date);
+    if (sdKey <= tk && tk < edKey) return true;
+  }
+  return false;
 }
 
-(async function boot(){
-  initData();buildNavTabs();applyTheme();updateClock();
+async function fetchIcal() {
+  if (!icalUrl) return;
+  const statusEl = $('icalStatus');
+  if (statusEl) statusEl.textContent = '⏳ 正在匯入…';
+  // webcal → https
+  const url = icalUrl.replace(/^webcal:/i, 'https:');
+  // Use a CORS proxy
+  const proxies = [
+    'https://corsproxy.io/?' + encodeURIComponent(url),
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(url)
+  ];
+  let text = null;
+  for (const proxy of proxies) {
+    try {
+      const r = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
+      if (r.ok) { text = await r.text(); break; }
+    } catch(e) { /* try next */ }
+  }
+  if (!text) {
+    if (statusEl) statusEl.textContent = '⚠ 無法取得行事曆，請確認連結是否正確';
+    showToast('⚠ iCloud 行事曆匯入失敗');
+    return;
+  }
+  if (!text.includes('BEGIN:VCALENDAR')) {
+    if (statusEl) statusEl.textContent = '⚠ 格式錯誤，請確認連結是否為 webcal/ics';
+    return;
+  }
+  const all = parseIcs(text);
+  icalEvents = all.filter(isTodayEvent);
+  if (statusEl) statusEl.textContent = `✅ 已匯入 ${all.length} 個活動，今日 ${icalEvents.length} 個`;
+  renderSchedules();
+  showToast(`📅 已匯入 ${icalEvents.length} 個今日 iCloud 行程`);
+}
+
+function openIcalPanel() {
+  const el = $('icalUrl'); if (el) el.value = icalUrl;
+  const st = $('icalStatus'); if (st) st.textContent = icalUrl ? '已設定連結，點「儲存並匯入」重新整理' : '';
+  $('icalPanel').style.display = 'block';
+  $('overlay').style.display = 'block';
+}
+
+function saveIcalUrl() {
+  const val = ($('icalUrl').value || '').trim();
+  if (val && !val.match(/^(webcal|https?):\/\//i)) {
+    $('icalStatus').textContent = '⚠ 請貼上完整的 webcal:// 連結';
+    return;
+  }
+  icalUrl = val;
+  localStorage.setItem('xm3_icalUrl', val);
+  if (!val) { icalEvents = []; renderSchedules(); closeOverlays(); return; }
+  closeOverlays();
+  fetchIcal();
+}
+
+(function boot(){
+  initData();buildNavTabs();updateClock();
   setInterval(updateClock,15000);
   setInterval(()=>{if(curTab==='today')renderSchedules();},60000);
   renderAll();renderPomo();
-  setSyncPill('err','未登入');
-  updateAuthUI(null);
-  updateIcalUI();
-  if(icalCfg)syncIcal(false);
-
-  onAuthStateChanged(auth,async user=>{
-    currentUser=user;
-    updateAuthUI(user);
-    if(user){
-      setSyncPill('syncing','載入雲端…');
-      try{
-        const cloudData=await fetchFromCloud();
-        if(cloudData){applyCloudData(cloudData);showToast(`☁️ 歡迎回來 ${user.displayName||''}！`);}
-        else{saveToCloud(buildPayload());setSyncPill('ok');showToast('☁️ 首次同步完成！');}
-        _cloudReady=true;subscribeCloud(applyCloudData);
-        if(icalCfg)syncIcal(false);
-      }catch(e){console.error(e);setSyncPill('err','同步失敗');}
-    }else{_cloudReady=false;setSyncPill('err','未登入');}
-  });
+  if(icalUrl)fetchIcal();
 })();
+
+// ── 將所有 HTML onclick 需要的函式掛到 window ──
+// 這樣即使 script 是 type="module" 也能被 inline handler 呼叫
+window.switchTab    = switchTab;
+window.openFocus    = openFocus;
+window.closeFocus   = closeFocus;
+window.pomoToggle   = pomoToggle;
+window.pomoReset    = pomoReset;
+window.pomoSkip     = pomoSkip;
+window.showAddSched = showAddSched;
+window.closeOverlays= closeOverlays;
+window.doAddSched   = doAddSched;
+window.showAddHabit = showAddHabit;
+window.doAddHabit   = doAddHabit;
+window.quickAdd     = quickAdd;
+window.saveNote     = saveNote;
+window.updateNote   = updateNote;
+window.addTodo      = addTodo;
+window.clearDone    = clearDone;
+window.renderTodos  = renderTodos;
+window.toggleTodo   = toggleTodo;
+window.delTodo      = delTodo;
+window.delSched     = delSched;
+window.delHabit     = delHabit;
+window.toggleHabit  = toggleHabit;
+window.toggleHabitT = toggleHabitT;
+window.googleSignIn  = googleSignIn;
+window.googleSignOut = googleSignOut;
+window.openIcalPanel = openIcalPanel;
+window.saveIcalUrl   = saveIcalUrl;
 </script>
 </body>
 </html>
