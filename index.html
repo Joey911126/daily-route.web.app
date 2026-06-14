@@ -508,10 +508,13 @@ function renderUserBar(user){
 }
 
 // 處理手機 redirect 登入結果
-getRedirectResult(auth).catch(e=>console.warn('redirect result error',e));
+getRedirectResult(auth).then(result=>{
+  if(result&&result.user) console.log('[auth] redirect result user:',result.user.email);
+}).catch(e=>console.warn('redirect result error',e));
 
 // 監聽登入狀態
 onAuthStateChanged(auth,async user=>{
+  console.log('[auth] state changed, user=', user ? user.email : 'null');
   currentUser=user;
   renderUserBar(user);
   if(user){
@@ -519,8 +522,6 @@ onAuthStateChanged(auth,async user=>{
     await cloudLoad();
     updateSyncPill('ok');
     renderAll();updateStats();
-    // re-apply icalEvents after renderAll (renderAll doesn't clear icalEvents,
-    // but renderSchedules inside it will re-read the current icalEvents array)
     renderSchedules();
     if(icalUrl && !icalEvents.length) fetchIcal();
   }else{
