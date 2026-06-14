@@ -3,106 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>iCal 診斷</title>
+<title>iCal 診斷 v2</title>
 <style>
-body{font-family:monospace;padding:1rem;background:#f5f0ff;color:#2a2040}
-button{padding:.5rem 1rem;border-radius:8px;border:none;background:#9090A8;color:#fff;cursor:pointer;font-size:.9rem;margin:.3rem 0}
-button:hover{opacity:.85}
-.box{background:#fff;border:1px solid #ddd;border-radius:8px;padding:.75rem;margin:.5rem 0;white-space:pre-wrap;word-break:break-all;font-size:.75rem;max-height:300px;overflow-y:auto}
+body{font-family:monospace;padding:1rem;background:#f5f0ff;color:#2a2040;font-size:13px}
+button{padding:.5rem 1rem;border-radius:8px;border:none;background:#9090A8;color:#fff;cursor:pointer;margin:.3rem 0;display:block}
+.box{background:#fff;border:1px solid #ddd;border-radius:8px;padding:.75rem;margin:.5rem 0;white-space:pre-wrap;word-break:break-all;max-height:400px;overflow-y:auto}
 .ok{border-left:4px solid #8FA68E}.err{border-left:4px solid #C4A098}.info{border-left:4px solid #9090A8}
-h2{font-size:1rem;margin:.8rem 0 .3rem}
+h2{font-size:.95rem;margin:.8rem 0 .2rem}
 </style>
 </head>
 <body>
-<h1 style="font-size:1.1rem">📅 iCloud 行事曆診斷工具</h1>
+<h1 style="font-size:1.1rem">📅 iCal 診斷 v2</h1>
+<div class="box info" id="today"></div>
 
-<h2>Step 1 — WebCal URL</h2>
-<div id="urlBox" class="box info">載入中…</div>
+<h2>Step 1 — 抓取 .ics</h2>
+<button onclick="doFetch()">抓取並分析</button>
+<div class="box" id="fetchResult">尚未執行</div>
 
-<h2>Step 2 — 測試 Proxy 1（corsproxy.io）</h2>
-<button onclick="testProxy1()">測試 corsproxy.io</button>
-<div id="p1" class="box">尚未測試</div>
+<h2>Step 2 — 原始 .ics 前 2000 字</h2>
+<div class="box" id="rawBox">-</div>
 
-<h2>Step 3 — 測試 Proxy 2（allorigins）</h2>
-<button onclick="testProxy2()">測試 allorigins</button>
-<div id="p2" class="box">尚未測試</div>
+<h2>Step 3 — 所有事件（全部列出）</h2>
+<div class="box" id="allEvents">-</div>
 
-<h2>Step 4 — 解析今日事件</h2>
-<div id="events" class="box">請先完成 Step 2 或 3</div>
+<h2>Step 4 — 今日事件</h2>
+<div class="box" id="todayEvents">-</div>
 
 <script>
 const WEBCAL = 'webcal://p109-caldav.icloud.com/published/2/MjI2NTM0OTIxNTQyMjY1M06TQGKoABl32lpgp0_FuyYZdU8KcOm1EBggKU2I8uUnVkSKKrz_udSs9JiMZZyTyDhf6PGp3cu015u01usKK9g';
-const HTTPS  = WEBCAL.replace(/^webcal:/i, 'https:');
-
-document.getElementById('urlBox').textContent =
-  'webcal: ' + WEBCAL + '\nhttps:  ' + HTTPS;
+const HTTPS = WEBCAL.replace(/^webcal:/i, 'https:');
 
 function pad(n){return String(n).padStart(2,'0')}
 function getTW(){return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Taipei'}))}
 function dayKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+const TODAY = dayKey(getTW());
+document.getElementById('today').textContent = '今天台北時間：' + TODAY + '  ' + getTW().toLocaleString('zh-TW',{timeZone:'Asia/Taipei'});
 
-async function testProxy(proxyUrl, elId) {
-  const el = document.getElementById(elId);
-  el.className = 'box info';
-  el.textContent = '⏳ 請求中…\nURL: ' + proxyUrl;
+async function doFetch() {
+  const fr = document.getElementById('fetchResult');
+  fr.className = 'box info';
+  fr.textContent = '⏳ 抓取中...';
+
+  const url = 'https://corsproxy.io/?' + encodeURIComponent(HTTPS);
+  let text;
   try {
-    const r = await fetch(proxyUrl, {signal: AbortSignal.timeout(10000)});
-    const text = await r.text();
-    if (!r.ok) {
-      el.className = 'box err';
-      el.textContent = '❌ HTTP ' + r.status + '\n' + text.slice(0,300);
-      return null;
-    }
-    if (!text.includes('BEGIN:VCALENDAR')) {
-      el.className = 'box err';
-      el.textContent = '❌ 回應不是 .ics 格式\n前 500 字:\n' + text.slice(0,500);
-      return null;
-    }
-    el.className = 'box ok';
-    el.textContent = '✅ 成功！收到 ' + text.length + ' bytes\n前 200 字:\n' + text.slice(0,200);
-    parseEvents(text);
-    return text;
+    const r = await fetch(url, {signal: AbortSignal.timeout(10000)});
+    text = await r.text();
   } catch(e) {
-    el.className = 'box err';
-    el.textContent = '❌ 錯誤: ' + e.message;
-    return null;
+    fr.className = 'box err';
+    fr.textContent = '❌ 抓取失敗: ' + e.message;
+    return;
   }
-}
 
-function testProxy1(){
-  testProxy('https://corsproxy.io/?' + encodeURIComponent(HTTPS), 'p1');
-}
-function testProxy2(){
-  testProxy('https://api.allorigins.win/raw?url=' + encodeURIComponent(HTTPS), 'p2');
-}
+  fr.className = 'box ok';
+  fr.textContent = '✅ 抓到 ' + text.length + ' bytes，含 VCALENDAR: ' + text.includes('BEGIN:VCALENDAR');
 
-function parseEvents(text) {
-  const el = document.getElementById('events');
-  const tk = dayKey(getTW());
-  el.textContent = '今天: ' + tk + '\n\n';
-  
-  const blocks = text.split('BEGIN:VEVENT');
-  const events = [];
-  blocks.slice(1).forEach(block => {
-    const get = (key) => {
-      const m = block.match(new RegExp(key + '[^:]*:([^\r\n]+)'));
-      return m ? m[1].trim() : '';
+  document.getElementById('rawBox').textContent = text.slice(0, 2000);
+
+  // Parse
+  const normalized = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const blocks = normalized.split('BEGIN:VEVENT');
+  const allEl = document.getElementById('allEvents');
+  const todEl = document.getElementById('todayEvents');
+
+  let allOut = '共 ' + (blocks.length-1) + ' 個 VEVENT\n\n';
+  let todOut = '';
+  let todCount = 0;
+
+  blocks.slice(1).forEach((block, i) => {
+    // unfold
+    const lines = block.split('\n');
+    const unfolded = [];
+    lines.forEach(l => {
+      if ((l[0]===' '||l[0]==='\t') && unfolded.length) unfolded[unfolded.length-1] += l.slice(1);
+      else unfolded.push(l);
+    });
+
+    const getProp = (key) => {
+      for (const line of unfolded) {
+        if (line.startsWith(key+':') || line.startsWith(key+';')) {
+          return line.slice(line.indexOf(':')+1).trim();
+        }
+      }
+      return '';
     };
-    const summary = get('SUMMARY');
-    const dtstart = get('DTSTART');
-    const dtend   = get('DTEND');
-    events.push({summary, dtstart, dtend});
+
+    const summary = getProp('SUMMARY').replace(/\\,/g,',').replace(/\\n/g,' ');
+    const dtstart = getProp('DTSTART');
+    const dtend   = getProp('DTEND');
+
+    // parse date
+    const parseDT = (val) => {
+      if (!val) return null;
+      // with time
+      const m = val.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)/);
+      if (m) {
+        if (m[7]==='Z') {
+          const utc = Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]);
+          const tw = new Date(utc + 8*3600*1000);
+          return { dk: tw.getUTCFullYear()+'-'+pad(tw.getUTCMonth()+1)+'-'+pad(tw.getUTCDate()), hh:pad(tw.getUTCHours()), mm:pad(tw.getUTCMinutes()) };
+        } else {
+          return { dk: m[1]+'-'+pad(+m[2])+'-'+pad(+m[3]), hh:pad(+m[4]), mm:pad(+m[5]) };
+        }
+      }
+      // all day
+      const d = val.match(/^(\d{4})(\d{2})(\d{2})$/);
+      if (d) return { dk: d[1]+'-'+pad(+d[2])+'-'+pad(+d[3]), hh:null, mm:null };
+      return null;
+    };
+
+    const start = parseDT(dtstart);
+    const end   = parseDT(dtend);
+
+    const startDk = start ? start.dk : '??';
+    const isToday = start && (start.dk === TODAY || (end && start.dk <= TODAY && TODAY <= end.dk));
+
+    allOut += `#${i+1} ${summary||'(no summary)'}\n  DTSTART raw: ${dtstart}\n  parsed dk:   ${startDk}  hh:${start?start.hh:'?'} mm:${start?start.mm:'?'}\n  isToday: ${isToday}\n\n`;
+
+    if (isToday) {
+      todCount++;
+      const timeStr = start.hh ? start.hh+':'+start.mm : '全天';
+      const endStr  = end && end.hh ? end.hh+':'+end.mm : '';
+      todOut += `✅ ${timeStr}${endStr?' → '+endStr:''} ${summary}\n`;
+    }
   });
 
-  el.textContent += '共 ' + events.length + ' 個事件\n\n';
-  
-  // Show all events with dates
-  events.slice(0,20).forEach(ev => {
-    el.textContent += '─ ' + ev.summary + '\n  START: ' + ev.dtstart + '\n  END:   ' + ev.dtend + '\n\n';
-  });
-
-  if(events.length > 20) el.textContent += '…還有 ' + (events.length-20) + ' 個';
-  el.className = 'box ok';
+  allEl.textContent = allOut;
+  todEl.textContent = todCount ? todOut : '⚠ 今天沒有找到任何事件\n\n（今天是 '+TODAY+'，請對照上方「所有事件」確認日期是否吻合）';
 }
 </script>
 </body>
