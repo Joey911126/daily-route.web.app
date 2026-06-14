@@ -277,7 +277,7 @@ main{padding-bottom:72px!important}
 
     <div class="grid">
       <div class="card col-w">
-        <div class="card-hdr"><div class="card-title">🗓 今日行程</div><button class="card-act" onclick="showAddSched()">＋ 新增</button></div>
+        <div class="card-hdr"><div class="card-title">🗓 今日行程 <span id="icalHeaderStatus" style="font-size:.5rem;color:var(--tx3);font-weight:400;letter-spacing:0"></span></div><button class="card-act" onclick="showAddSched()">＋ 新增</button></div>
         <div class="card-body" id="schedList"></div>
       </div>
       <div class="card col-n">
@@ -509,10 +509,14 @@ onAuthStateChanged(auth,async user=>{
     await cloudLoad();
     updateSyncPill('ok');
     renderAll();updateStats();
-    if(icalUrl) fetchIcal();
+    // re-apply icalEvents after renderAll (renderAll doesn't clear icalEvents,
+    // but renderSchedules inside it will re-read the current icalEvents array)
+    renderSchedules();
+    if(icalUrl && !icalEvents.length) fetchIcal();
   }else{
     updateSyncPill('offline');
-    if(icalUrl) fetchIcal();
+    renderSchedules();
+    if(icalUrl && !icalEvents.length) fetchIcal();
   }
 });
 
@@ -942,6 +946,8 @@ async function fetchIcal(){
   icalEvents=all.filter(icalIsToday);
   console.log('[ical] total='+all.length+' today='+icalEvents.length+' todayKey='+todayKey());
   if(statusEl) statusEl.textContent='✅ 已匯入 '+all.length+' 個，今日 '+icalEvents.length+' 個';
+  const hst=$('icalHeaderStatus');
+  if(hst) hst.textContent=icalEvents.length?'🍎 '+icalEvents.length+' 個已同步':'🍎 今日無事件';
   renderSchedules();
   if(icalEvents.length) showToast('📅 匯入 '+icalEvents.length+' 個今日行程');
 }
@@ -971,9 +977,9 @@ function saveIcalUrl(){
   setInterval(updateClock,15000);
   setInterval(()=>{if(curTab==='today')renderSchedules();},60000);
   renderAll();renderPomo();
-  // fetchIcal is called by onAuthStateChanged after cloud load
-  // but if no firebase auth event fires quickly, also call here
-  setTimeout(()=>{ if(icalUrl && !icalEvents.length) fetchIcal(); }, 3000);
+  // Fetch ical immediately, then again after auth settles
+  if(icalUrl) fetchIcal();
+  setTimeout(()=>{ if(icalUrl) fetchIcal(); }, 5000);
 })();
 
 // ── 將所有 HTML onclick 需要的函式掛到 window ──
