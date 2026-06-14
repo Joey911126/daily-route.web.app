@@ -858,140 +858,113 @@ function pomoSkip(){clearInterval(pState.timer);pState.running=false;if(pState.p
 // ════════════════════════════════════════
 // iCloud 行事曆 (.ics) 匯入
 // ════════════════════════════════════════
-let icalEvents = [];   // 今日 iCloud 事件（唯讀）
+let icalEvents = [];
 let icalUrl = localStorage.getItem('xm3_icalUrl') || 'webcal://p109-caldav.icloud.com/published/2/MjI2NTM0OTIxNTQyMjY1M06TQGKoABl32lpgp0_FuyYZdU8KcOm1EBggKU2I8uUnVkSKKrz_udSs9JiMZZyTyDhf6PGp3cu015u01usKK9g';
 
-// 解析 iCal 日期字串 → { hh, mm } 或 null（全天）
-function parseIcalDT(val, tzid) {
-  if (!val) return null;
-  // 有時間的格式：20260613T220000 或 20260613T220000Z
-  const m = val.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)/);
-  if (m) {
-    let hh = +m[4], mm = +m[5];
-    if (m[7] === 'Z') {
-      // UTC → 台北時間 (UTC+8)
-      const utc = Date.UTC(+m[1],+m[2]-1,+m[3],hh,mm,+m[6]);
-      const tw  = new Date(utc + 8*3600*1000);
-      return {
-        dateKey: tw.getUTCFullYear()+'-'+pad(tw.getUTCMonth()+1)+'-'+pad(tw.getUTCDate()),
-        hh: pad(tw.getUTCHours()), mm: pad(tw.getUTCMinutes()), allDay: false
-      };
-    } else {
-      // TZID=Asia/Taipei 或無 TZID → 直接當台北時間讀
-      const dateKey = m[1]+'-'+pad(+m[2])+'-'+pad(+m[3]);
-      return { dateKey, hh: pad(hh), mm: pad(mm), allDay: false };
+function _pad2(n){return String(n).padStart(2,'0')}
+
+function parseDT(val){
+  if(!val) return null;
+  const m=val.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)/);
+  if(m){
+    if(m[7]==='Z'){
+      const utc=Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]);
+      const tw=new Date(utc+8*3600*1000);
+      return{dk:tw.getUTCFullYear()+'-'+_pad2(tw.getUTCMonth()+1)+'-'+_pad2(tw.getUTCDate()),hh:_pad2(tw.getUTCHours()),mm:_pad2(tw.getUTCMinutes()),allDay:false};
+    }else{
+      return{dk:m[1]+'-'+_pad2(+m[2])+'-'+_pad2(+m[3]),hh:_pad2(+m[4]),mm:_pad2(+m[5]),allDay:false};
     }
   }
-  // 全天：20260613
-  const d2 = val.match(/^(\d{4})(\d{2})(\d{2})$/);
-  if (d2) return { dateKey: d2[1]+'-'+pad(+d2[2])+'-'+pad(+d2[3]), hh: null, mm: null, allDay: true };
+  const d=val.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if(d) return{dk:d[1]+'-'+_pad2(+d[2])+'-'+_pad2(+d[3]),hh:null,mm:null,allDay:true};
   return null;
 }
 
-function parseIcs(text) {
-  const events = [];
-  // normalize line endings
-  const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-  const blocks = normalized.split('BEGIN:VEVENT');
-  blocks.slice(1).forEach(block => {
-    const lines = block.split('\n');
-    // unfold RFC 5545 continuation lines
-    const unfolded = [];
-    lines.forEach(l => {
-      if ((l[0] === ' ' || l[0] === '\t') && unfolded.length) {
-        unfolded[unfolded.length-1] += l.slice(1);
-      } else {
-        unfolded.push(l);
-      }
+function parseIcs(text){
+  const events=[];
+  const norm=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  norm.split('BEGIN:VEVENT').slice(1).forEach(block=>{
+    const lines=block.split('\n');
+    const unf=[];
+    lines.forEach(l=>{
+      if((l[0]===' '||l[0]==='\t')&&unf.length) unf[unf.length-1]+=l.slice(1);
+      else unf.push(l);
     });
-    const joined = unfolded.join('\n');
-    // get property value, supports DTSTART;TZID=...:value
-    const getProp = (key) => {
-      const lines2 = joined.split('\n');
-      for (const line of lines2) {
-        if (line.startsWith(key + ':') || line.startsWith(key + ';')) {
-          const idx = line.indexOf(':');
-          return idx >= 0 ? line.slice(idx + 1).trim() : '';
+    const getProp=key=>{
+      for(const line of unf){
+        if(line.startsWith(key+':')||line.startsWith(key+';')){
+          return line.slice(line.indexOf(':')+1).trim();
         }
       }
       return '';
     };
-    const summary = getProp('SUMMARY')
-      .replace(/\\,/g, ',').replace(/\\n/g, ' ').replace(/\\;/g, ';');
-    const dtstart = getProp('DTSTART');
-    const dtend   = getProp('DTEND');
-    if (!summary || !dtstart) return;
-    const start = parseIcalDT(dtstart);
-    const end   = dtend ? parseIcalDT(dtend) : null;
-    if (!start) return;
-    events.push({ summary, start, end });
+    const summary=getProp('SUMMARY').replace(/\\,/g,',').replace(/\\n/g,' ');
+    const dtstart=getProp('DTSTART');
+    const dtend=getProp('DTEND');
+    if(!summary||!dtstart) return;
+    const start=parseDT(dtstart);
+    const end=dtend?parseDT(dtend):null;
+    if(!start) return;
+    events.push({summary,start,end});
   });
   return events;
 }
 
-function isTodayEvent(ev) {
-  const tk = todayKey();
-  if (ev.start.dateKey === tk) return true;
-  // 跨天事件：start < today <= end
-  if (ev.end) {
-    if (ev.start.dateKey <= tk && tk <= ev.end.dateKey) return true;
-  }
+function icalIsToday(ev){
+  const tk=todayKey();
+  if(ev.start.dk===tk) return true;
+  if(ev.end && ev.start.dk<=tk && tk<=ev.end.dk) return true;
   return false;
 }
 
-async function fetchIcal() {
-  if (!icalUrl) return;
-  const statusEl = $('icalStatus');
-  if (statusEl) statusEl.textContent = '⏳ 正在匯入…';
-  // webcal → https
-  const url = icalUrl.replace(/^webcal:/i, 'https:');
-  // Use a CORS proxy
-  const proxies = [
-    'https://corsproxy.io/?' + encodeURIComponent(url),
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(url)
+async function fetchIcal(){
+  if(!icalUrl) return;
+  const statusEl=$('icalStatus');
+  if(statusEl) statusEl.textContent='⏳ 匯入中…';
+  const url=icalUrl.replace(/^webcal:/i,'https:');
+  const proxies=[
+    'https://corsproxy.io/?'+encodeURIComponent(url),
+    'https://api.allorigins.win/raw?url='+encodeURIComponent(url)
   ];
-  let text = null;
-  for (const proxy of proxies) {
-    try {
-      const r = await fetch(proxy, { signal: AbortSignal.timeout(8000) });
-      if (r.ok) { text = await r.text(); break; }
-    } catch(e) { /* try next */ }
+  let text=null;
+  for(const proxy of proxies){
+    try{
+      const r=await fetch(proxy,{signal:AbortSignal.timeout(10000)});
+      if(r.ok){text=await r.text();break;}
+    }catch(e){console.warn('ical proxy failed',proxy,e);}
   }
-  if (!text) {
-    if (statusEl) statusEl.textContent = '⚠ 無法取得行事曆，請確認連結是否正確';
+  if(!text||!text.includes('BEGIN:VCALENDAR')){
+    if(statusEl) statusEl.textContent='⚠ 無法取得行事曆';
     showToast('⚠ iCloud 行事曆匯入失敗');
     return;
   }
-  if (!text.includes('BEGIN:VCALENDAR')) {
-    if (statusEl) statusEl.textContent = '⚠ 格式錯誤，請確認連結是否為 webcal/ics';
-    return;
-  }
-  const all = parseIcs(text);
-  icalEvents = all.filter(isTodayEvent);
-  if (statusEl) statusEl.textContent = `✅ 已匯入 ${all.length} 個活動，今日 ${icalEvents.length} 個`;
+  const all=parseIcs(text);
+  icalEvents=all.filter(icalIsToday);
+  console.log('[ical] total='+all.length+' today='+icalEvents.length+' todayKey='+todayKey());
+  if(statusEl) statusEl.textContent='✅ 已匯入 '+all.length+' 個，今日 '+icalEvents.length+' 個';
   renderSchedules();
-  showToast(`📅 已匯入 ${icalEvents.length} 個今日 iCloud 行程`);
+  if(icalEvents.length) showToast('📅 匯入 '+icalEvents.length+' 個今日行程');
 }
 
-function openIcalPanel() {
-  const el = $('icalUrl'); if (el) el.value = icalUrl;
-  const st = $('icalStatus'); if (st) st.textContent = icalUrl ? '已設定連結，點「儲存並匯入」重新整理' : '';
-  $('icalPanel').style.display = 'block';
-  $('overlay').style.display = 'block';
+function openIcalPanel(){
+  const el=$('icalUrl');if(el) el.value=icalUrl;
+  const st=$('icalStatus');if(st) st.textContent=icalUrl?'已設定連結':'';
+  $('icalPanel').style.display='block';
+  $('overlay').style.display='block';
 }
 
-function saveIcalUrl() {
-  const val = ($('icalUrl').value || '').trim();
-  if (val && !val.match(/^(webcal|https?):\/\//i)) {
-    $('icalStatus').textContent = '⚠ 請貼上完整的 webcal:// 連結';
-    return;
+function saveIcalUrl(){
+  const val=($('icalUrl').value||'').trim();
+  if(val&&!/^(webcal|https?):\/\//i.test(val)){
+    $('icalStatus').textContent='⚠ 請貼上完整的 webcal:// 連結';return;
   }
-  icalUrl = val;
-  localStorage.setItem('xm3_icalUrl', val);
-  if (!val) { icalEvents = []; renderSchedules(); closeOverlays(); return; }
+  icalUrl=val;
+  localStorage.setItem('xm3_icalUrl',val);
+  if(!val){icalEvents=[];renderSchedules();closeOverlays();return;}
   closeOverlays();
   fetchIcal();
 }
+
 
 (function boot(){
   initData();buildNavTabs();updateClock();
