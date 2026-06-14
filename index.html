@@ -509,8 +509,10 @@ onAuthStateChanged(auth,async user=>{
     await cloudLoad();
     updateSyncPill('ok');
     renderAll();updateStats();
+    if(icalUrl) fetchIcal();
   }else{
     updateSyncPill('offline');
+    if(icalUrl) fetchIcal();
   }
 });
 
@@ -996,7 +998,9 @@ function saveIcalUrl() {
   setInterval(updateClock,15000);
   setInterval(()=>{if(curTab==='today')renderSchedules();},60000);
   renderAll();renderPomo();
-  if(icalUrl)fetchIcal();
+  // fetchIcal is called by onAuthStateChanged after cloud load
+  // but if no firebase auth event fires quickly, also call here
+  setTimeout(()=>{ if(icalUrl && !icalEvents.length) fetchIcal(); }, 3000);
 })();
 
 // ── 將所有 HTML onclick 需要的函式掛到 window ──
