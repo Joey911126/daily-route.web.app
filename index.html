@@ -3,18 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>細流・日記 — 莫蘭迪</title>
+<title>細流・日記</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  /* Morandi palette */
   --sage:#8FA68E;--sage-l:#EAF0EA;--sage-d:#4A6449;
   --clay:#B89080;--clay-l:#F2EAE6;--clay-d:#7A5248;
   --dusk:#9090A8;--dusk-l:#EAEAF2;--dusk-d:#4A4A6A;
   --blush:#C4A098;--blush-l:#F5EDEA;--blush-d:#7A4A40;
   --stone:#A8A090;--stone-l:#F0EEE8;--stone-d:#5A5448;
   --mist:#A0AABB;--mist-l:#E8EBF2;--mist-d:#485A72;
-  /* aliases for existing vars */
   --mint:#8FA68E;--mint-l:#EAF0EA;--mint-d:#4A6449;
   --lav:#9090A8;--lav-l:#EAEAF2;--lav-d:#4A4A6A;
   --peach:#B89080;--peach-l:#F2EAE6;--peach-d:#7A5248;
@@ -27,27 +25,14 @@
   --r:12px;--rs:8px;--rxs:6px;
   --sh:0 2px 18px rgba(100,88,76,.09);
 }
-body{
-  font-family:'Noto Sans TC',system-ui,sans-serif;
-  background:#FAF7FF;
-  color:var(--tx);font-size:14px;min-height:100vh;overflow-x:hidden;
-}
-body::before{
-  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background:
-    /* 左側玫瑰光暈 */
-    radial-gradient(ellipse 38vw 55vh at 0%   18%, rgba(192,96,122,0.18) 0%, transparent 100%),
-    radial-gradient(ellipse 32vw 40vh at 4%   55%, rgba(192,96,122,0.15) 0%, transparent 100%),
-    radial-gradient(ellipse 40vw 48vh at 0%   90%, rgba(192,96,122,0.20) 0%, transparent 100%),
-    radial-gradient(ellipse 26vw 35vh at 18%  38%, rgba(192,96,122,0.09) 0%, transparent 100%),
-    /* 右側紫色光暈 */
-    radial-gradient(ellipse 50vw 48vh at 100% 65%, rgba(123,101,196,0.16) 0%, transparent 100%),
-    radial-gradient(ellipse 42vw 40vh at 95%   8%, rgba(123,101,196,0.15) 0%, transparent 100%),
-    radial-gradient(ellipse 35vw 30vh at 80%  95%, rgba(123,101,196,0.12) 0%, transparent 100%),
-    /* 中央金色 */
-    radial-gradient(ellipse 55vw 40vh at 50%  50%, rgba(200,150,80,0.05)  0%, transparent 100%),
-    radial-gradient(ellipse 50vw 32vh at 50%   0%, rgba(200,134,10,0.07)  0%, transparent 100%);
-}
+body{font-family:'Noto Sans TC',system-ui,sans-serif;background:#FAF7FF;color:var(--tx);font-size:14px;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:
+  radial-gradient(ellipse 38vw 55vh at 0% 18%,rgba(192,96,122,.18) 0%,transparent 100%),
+  radial-gradient(ellipse 32vw 40vh at 4% 55%,rgba(192,96,122,.15) 0%,transparent 100%),
+  radial-gradient(ellipse 40vw 48vh at 0% 90%,rgba(192,96,122,.20) 0%,transparent 100%),
+  radial-gradient(ellipse 50vw 48vh at 100% 65%,rgba(123,101,196,.16) 0%,transparent 100%),
+  radial-gradient(ellipse 42vw 40vh at 95% 8%,rgba(123,101,196,.15) 0%,transparent 100%),
+  radial-gradient(ellipse 55vw 40vh at 50% 50%,rgba(200,150,80,.05) 0%,transparent 100%);}
 .app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
 header{background:rgba(248,245,240,.93);border-bottom:1px solid var(--brd);padding:0 1rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(24px);box-shadow:0 2px 20px rgba(160,130,210,.07)}
 .hdr-inner{display:flex;align-items:center;gap:.6rem;height:54px;max-width:980px;margin:0 auto;width:100%}
@@ -55,40 +40,19 @@ header{background:rgba(248,245,240,.93);border-bottom:1px solid var(--brd);paddi
 .logo-mark{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#C4A098,#9090A8,#8FA68E);display:flex;align-items:center;justify-content:center;font-size:.9rem;box-shadow:0 0 14px rgba(140,128,112,.3)}
 .logo-text{font-size:.95rem;font-weight:700;letter-spacing:.12em;background:linear-gradient(120deg,#7A4A40,#4A4A6A,#4A6449);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .logo-sub{font-size:.5rem;color:var(--tx3);letter-spacing:.14em;display:block;margin-top:1px}
-.nav-tabs{display:none}
 .hdr-right{display:flex;align-items:center;gap:.3rem;margin-left:auto;min-width:0;flex-shrink:0}
 .hdr-clock{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--dusk-d);padding:.14rem .48rem;border-radius:14px;background:var(--dusk-l);border:1px solid rgba(140,140,168,.3);min-width:52px;text-align:center;white-space:nowrap;flex-shrink:0}
 .hdr-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--tx3);white-space:nowrap;flex-shrink:0}
 .sync-pill{display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(168,216,200,.5);background:var(--sage-l);color:var(--sage-d);white-space:nowrap;flex-shrink:0}
-/* ── bottom nav bar ── */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;z-index:200;
-  background:rgba(248,244,240,.95);
-  border-top:1px solid rgba(160,148,132,.2);
-  backdrop-filter:blur(20px);
-  display:flex;
-  padding-bottom:env(safe-area-inset-bottom,0);
-  box-shadow:0 -2px 16px rgba(160,130,210,.09);
-}
-.bn-btn{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:2px;padding:.52rem 0 .42rem;
-  font-size:.58rem;color:var(--tx3);cursor:pointer;
-  border:none;background:transparent;font-family:inherit;
-  transition:color .18s;position:relative;
-  -webkit-tap-highlight-color:transparent;
-}
-.bn-btn .bn-ico{font-size:1.22rem;line-height:1}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(248,244,240,.95);border-top:1px solid rgba(160,148,132,.2);backdrop-filter:blur(20px);display:flex;padding-bottom:env(safe-area-inset-bottom,0);box-shadow:0 -2px 16px rgba(160,130,210,.09);}
+.bn-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:.48rem 0 .38rem;font-size:.55rem;color:var(--tx3);cursor:pointer;border:none;background:transparent;font-family:inherit;transition:color .18s;position:relative;-webkit-tap-highlight-color:transparent;}
+.bn-btn .bn-ico{font-size:1.15rem;line-height:1}
 .bn-btn.active{color:var(--dusk-d)}
-.bn-btn::after{
-  content:'';position:absolute;top:0;left:22%;right:22%;height:2px;
-  border-radius:0 0 3px 3px;background:linear-gradient(90deg,#C4A098,#9090A8,#8FA68E);
-  opacity:0;transition:opacity .2s;
-}
+.bn-btn::after{content:'';position:absolute;top:0;left:22%;right:22%;height:2px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,#C4A098,#9090A8,#8FA68E);opacity:0;transition:opacity .2s;}
 .bn-btn.active::after{opacity:1}
 .icon-btn{width:28px;height:28px;border-radius:50%;font-size:.8rem;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--brd);color:var(--tx3);background:rgba(255,255,255,.6);cursor:pointer;transition:all .18s}
 .icon-btn:hover{background:rgba(255,255,255,.9);color:var(--tx);transform:scale(1.08)}
-main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem}
+main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom:76px!important}
 .banner{background:rgba(255,255,255,.96);border:1.5px solid rgba(160,148,132,.14);border-radius:16px;padding:.85rem 1.2rem;margin-bottom:.85rem;display:flex;align-items:center;gap:1rem;box-shadow:0 4px 32px rgba(160,130,210,.1);position:relative;overflow:hidden;backdrop-filter:blur(16px)}
 .banner::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(196,160,152,.09) 0%,rgba(168,160,144,.06) 40%,rgba(143,166,142,.09) 100%)}
 .banner-stripe{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C4A098,#B89080,#A8A090,#8FA68E,#A0AABB,#9090A8)}
@@ -97,7 +61,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem}
 .dt-day{font-size:2.2rem;font-weight:800;line-height:1;background:linear-gradient(135deg,#7A4A40,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .dt-wday{font-size:.62rem;color:var(--dusk-d);letter-spacing:.09em}
 .divider{width:1px;height:55px;background:linear-gradient(180deg,transparent,rgba(197,184,232,.4),transparent);flex-shrink:0}
-.stats{display:flex;gap:1.2rem;flex-wrap:wrap}
+.stats{display:flex;gap:1rem;flex-wrap:wrap}
 .stat-item{display:flex;flex-direction:column;gap:.15rem}
 .stat-label{font-family:'Cinzel',serif;font-size:.5rem;color:var(--tx3);letter-spacing:.1em}
 .stat-value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1E1430}
@@ -123,14 +87,14 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem}
 .pomo-count{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#A87898;margin-left:auto}
 .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
 .col-w{grid-column:span 2}.col-n{grid-column:span 1}
-.card{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border:1.5px solid rgba(160,148,132,.14);box-shadow:0 2px 20px rgba(160,130,210,.08);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
+.card{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border:1.5px solid rgba(160,148,132,.14);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
 .card-hdr{padding:.6rem .85rem .5rem;border-bottom:1px solid rgba(160,148,132,.15);display:flex;align-items:center;justify-content:space-between}
 .card-title{font-family:'Cinzel',serif;font-size:.62rem;color:var(--tx2);letter-spacing:.09em;text-transform:uppercase;display:flex;align-items:center;gap:.35rem}
 .card-act{font-size:.65rem;color:var(--tx3);padding:.2rem .5rem;border-radius:14px;transition:all .18s;cursor:pointer;border:1px solid transparent;font-family:inherit;background:transparent}
 .card-act:hover{background:var(--dusk-l);color:var(--dusk-d);border-color:rgba(140,140,168,.3)}
 .card-body{padding:.75rem .85rem}
 .tl-item{display:grid;grid-template-columns:52px 22px 1fr auto;gap:.45rem;align-items:flex-start;padding:.45rem .6rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.16);border-left:3px solid var(--dusk);margin-bottom:4px;background:rgba(255,255,255,.92);transition:all .2s;position:relative;overflow:hidden}
-.tl-item:hover{transform:translateX(2px);box-shadow:0 3px 16px rgba(100,88,76,.1);background:rgba(255,255,255,.96)}
+.tl-item:hover{transform:translateX(2px);box-shadow:0 3px 16px rgba(100,88,76,.1)}
 .tl-item.past{opacity:.42;border-left-color:rgba(160,148,132,.3)}
 .tl-item.hi{border-left-color:var(--clay-d)}
 .tl-time{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--dusk-d);font-weight:500;line-height:1.5;padding-top:2px}
@@ -145,7 +109,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem}
 .now-lbl{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--clay-d);white-space:nowrap}
 .tl-prog{position:absolute;bottom:0;left:0;height:2px;background:linear-gradient(90deg,#C4A098,#9090A8,#8FA68E);border-radius:0 0 0 10px}
 .del-btn{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(160,148,132,.25);background:transparent;color:var(--tx3);font-size:.55rem;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.tl-item:hover .del-btn,.todo-item:hover .del-btn,.habit-row:hover .del-btn{display:flex}
+.tl-item:hover .del-btn,.todo-item:hover .del-btn,.habit-row:hover .del-btn,.chap-row:hover .del-btn{display:flex}
 .del-btn:hover{background:var(--clay-l);border-color:rgba(122,82,72,.28);color:var(--clay-d)}
 .todo-item{display:flex;align-items:flex-start;gap:.5rem;padding:.45rem .35rem;border-bottom:1px solid rgba(160,148,132,.12);cursor:pointer;border-radius:8px;transition:all .15s}
 .todo-item:last-child{border-bottom:none}
@@ -182,35 +146,60 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem}
 .empty{text-align:center;padding:1.5rem .5rem;color:var(--tx3);font-size:.75rem;line-height:1.8}
 @keyframes spark-b{0%{transform:scale(0);opacity:1}60%{transform:scale(1.6);opacity:.8}100%{transform:scale(0);opacity:0}}
 .spark{position:fixed;pointer-events:none;z-index:9999;font-size:1rem;animation:spark-b .6s ease forwards}
-.toast{position:fixed;bottom:1.2rem;right:1.2rem;background:linear-gradient(135deg,rgba(55,45,38,.95),rgba(42,35,28,.95));color:#E8E0D8;padding:.5rem 1rem;border-radius:10px;font-size:.73rem;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:999;box-shadow:0 4px 20px rgba(80,65,52,.3);transform:translateY(8px);border:1.5px solid rgba(160,148,132,.25)}
-/* ── main gets bottom padding for the nav bar ── */
-main{padding-bottom:72px!important}
-@media(max-width:860px){
-  .grid{grid-template-columns:1fr 1fr}
-  .col-w{grid-column:span 2}.col-n{grid-column:span 2}
-}
-@media(max-width:560px){
-  .grid{grid-template-columns:1fr}
-  .col-w,.col-n{grid-column:span 1}
-  .quote,.prog-wrap{display:none}
-  .logo-sub{display:none}
-  .hdr-date{display:none}
-  .sync-pill{display:none}
-  .hdr-clock{display:none}
-  #userBar span{display:none}
-  #userBar img{width:22px!important;height:22px!important}
-}
-/* landscape phones: shrink header height */
-@media(max-height:420px) and (orientation:landscape){
-  .hdr-inner{height:44px}
-  .logo-mark{width:26px;height:26px;font-size:.8rem}
-  .logo-text{font-size:.82rem}
-  .logo-sub{display:none}
-  .hdr-date{display:none}
-  main{padding-bottom:56px!important}
-  .bottom-nav .bn-btn{padding:.35rem 0 .28rem;font-size:.52rem}
-  .bn-btn .bn-ico{font-size:1rem}
-}
+.toast{position:fixed;bottom:5rem;right:1.2rem;background:linear-gradient(135deg,rgba(55,45,38,.95),rgba(42,35,28,.95));color:#E8E0D8;padding:.5rem 1rem;border-radius:10px;font-size:.73rem;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:999;box-shadow:0 4px 20px rgba(80,65,52,.3);transform:translateY(8px);border:1.5px solid rgba(160,148,132,.25)}
+.rr-btn{font-size:.62rem;padding:.22rem .55rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(255,255,255,.7);color:var(--tx3);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.rr-btn:hover{background:var(--dusk-l);color:var(--dusk-d)}
+.rr-btn.rr-active{background:linear-gradient(135deg,rgba(196,160,152,.25),rgba(144,144,168,.2));color:var(--tx2);border-color:rgba(144,144,168,.45);font-weight:600}
+.todo-pick-item{font-size:.72rem;padding:.28rem .45rem;border-radius:6px;cursor:pointer;color:var(--tx2);transition:background .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.todo-pick-item:hover{background:rgba(144,144,168,.12)}
+.todo-pick-item.selected{background:linear-gradient(90deg,rgba(196,160,152,.2),rgba(144,144,168,.15));color:var(--tx);font-weight:600}
+/* ═══ STUDY PLAN ═══ */
+.subj-card{border:1.5px solid rgba(160,148,132,.18);border-radius:12px;background:rgba(255,255,255,.96);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .18s}
+.subj-card:hover{box-shadow:0 4px 22px rgba(160,130,210,.13)}
+.subj-header{padding:.65rem .85rem;display:flex;align-items:center;gap:.6rem;cursor:pointer;border-bottom:1.5px solid rgba(160,148,132,.1);position:relative;overflow:hidden}
+.subj-color-bar{position:absolute;top:0;left:0;right:0;height:3px}
+.subj-emoji{font-size:1.2rem;flex-shrink:0}
+.subj-info{flex:1;min-width:0}
+.subj-name{font-size:.82rem;font-weight:700;color:var(--tx)}
+.subj-meta{font-size:.58rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace}
+.subj-prog-wrap{flex:0 0 72px}
+.subj-prog-bar{height:5px;border-radius:5px;background:rgba(197,184,232,.18);overflow:hidden;margin-bottom:2px}
+.subj-prog-fill{height:100%;border-radius:5px;transition:width .5s ease}
+.subj-prog-pct{font-size:.52rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;text-align:right}
+.subj-chapters{padding:.5rem .85rem .65rem}
+.chap-row{display:flex;align-items:center;gap:.5rem;padding:.42rem .5rem;border-radius:8px;border:1.5px solid rgba(160,148,132,.13);background:rgba(250,247,255,.7);margin-bottom:4px;transition:all .16s;position:relative}
+.chap-row:hover{background:rgba(255,255,255,.95);border-color:rgba(144,144,168,.28)}
+.chap-done-check{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(160,148,132,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.5rem;transition:all .18s}
+.chap-row.chap-finished .chap-done-check{background:linear-gradient(135deg,#8FA68E,#9090A8);border-color:transparent;color:#fff}
+.chap-row.chap-finished .chap-title{text-decoration:line-through;color:var(--tx3)}
+.chap-title{font-size:.74rem;font-weight:600;color:var(--tx);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chap-pages{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--tx3);flex-shrink:0;white-space:nowrap}
+.chap-mini-bar{width:40px;height:4px;border-radius:4px;background:rgba(197,184,232,.18);overflow:hidden;flex-shrink:0}
+.chap-mini-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.chap-actions{display:flex;gap:3px;flex-shrink:0}
+.chap-btn{font-size:.54rem;padding:.16rem .36rem;border-radius:7px;border:1.5px solid rgba(160,148,132,.25);background:rgba(255,255,255,.7);color:var(--tx3);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.chap-btn:hover{background:var(--dusk-l);color:var(--dusk-d)}
+.chap-btn.sc-btn:hover{background:var(--sage-l);color:var(--sage-d)}
+.color-chip{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0}
+.color-chip.selected{border-color:var(--tx);transform:scale(1.18)}
+.study-stat-card{background:rgba(255,255,255,.95);border:1.5px solid rgba(160,148,132,.14);border-radius:12px;padding:.65rem .75rem;text-align:center;box-shadow:var(--sh)}
+.exam-badge{display:inline-flex;align-items:center;gap:3px;font-size:.54rem;padding:2px 7px;border-radius:9px;font-family:'JetBrains Mono',monospace;flex-shrink:0;cursor:pointer;transition:all .15s;white-space:nowrap}
+.exam-badge:hover{filter:brightness(.95)}
+.exam-badge.urgent{background:var(--clay-l);color:var(--clay-d);border:1.5px solid rgba(122,82,72,.3)}
+.exam-badge.normal{background:var(--dusk-l);color:var(--dusk-d);border:1.5px solid rgba(74,74,106,.25)}
+.exam-badge.none{background:rgba(160,148,132,.1);color:var(--tx3);border:1.5px dashed rgba(160,148,132,.3)}
+.review-card{display:flex;align-items:center;gap:.5rem;padding:.42rem .55rem;border-radius:9px;margin-bottom:4px;transition:all .16s}
+.review-card.due{background:rgba(184,144,128,.12);border:1.5px solid rgba(122,82,72,.28)}
+.review-card.upcoming{background:rgba(160,148,132,.07);border:1.5px solid rgba(160,148,132,.18)}
+.review-card.done{background:rgba(143,166,142,.08);border:1.5px solid rgba(143,166,142,.22);opacity:.6}
+.review-chip{font-size:.5rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono',monospace;flex-shrink:0;font-weight:700}
+.review-chip.r1{background:#F2EAE6;color:#7A5248}
+.review-chip.r3{background:#F0EEE8;color:#5A5448}
+.review-chip.r7{background:#EAEAF2;color:#4A4A6A}
+.chap-notes-preview{font-size:.58rem;color:var(--tx3);margin-top:1px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+@media(max-width:860px){.grid{grid-template-columns:1fr 1fr}.col-w{grid-column:span 2}.col-n{grid-column:span 2}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.col-w,.col-n{grid-column:span 1}.quote,.prog-wrap{display:none}.logo-sub{display:none}.hdr-date{display:none}.sync-pill{display:none}.hdr-clock{display:none}#userBar span{display:none}#userBar img{width:22px!important;height:22px!important}}
+@media(max-height:420px) and (orientation:landscape){.hdr-inner{height:44px}.logo-mark{width:26px;height:26px;font-size:.8rem}.logo-text{font-size:.82rem}.logo-sub{display:none}.hdr-date{display:none}main{padding-bottom:58px!important}.bottom-nav .bn-btn{padding:.32rem 0 .26rem;font-size:.5rem}.bn-btn .bn-ico{font-size:.95rem}}
 </style>
 </head>
 <body>
@@ -223,7 +212,7 @@ main{padding-bottom:72px!important}
     </div>
     <div class="hdr-right">
       <div id="userBar" style="display:flex;align-items:center;gap:.3rem;flex-shrink:0"></div>
-      <div id="syncPill" class="sync-pill" style="flex-shrink:0">○ 未登入</div>
+      <div id="syncPill" class="sync-pill" style="flex-shrink:0;display:none"></div>
       <span class="hdr-date" id="hdrDate" style="flex-shrink:0"></span>
       <div class="hdr-clock" id="hdrClock" style="flex-shrink:0">00:00</div>
       <button class="icon-btn" onclick="openIcalPanel()" title="iCloud 行事曆" style="flex-shrink:0">📅</button>
@@ -231,22 +220,21 @@ main{padding-bottom:72px!important}
     </div>
   </div>
 </header>
-
 <main>
-  <!-- TODAY -->
   <div id="tab-today">
     <div class="banner">
       <div class="banner-stripe"></div>
       <div class="date-block">
         <div class="dt-month" id="bMonth">JUNE</div>
-        <div class="dt-day" id="bDay">5</div>
-        <div class="dt-wday" id="bWday">星期五</div>
+        <div class="dt-day" id="bDay">16</div>
+        <div class="dt-wday" id="bWday">星期一</div>
       </div>
       <div class="divider"></div>
       <div class="stats">
-        <div class="stat-item"><div class="stat-label">待辦完成</div><div class="stat-value"><span id="sDone">0</span><span> / <span id="sTotal">0</span> 項</span></div></div>
-        <div class="stat-item"><div class="stat-label">習慣打卡</div><div class="stat-value"><span id="sHab">0</span><span> / <span id="sHabT">0</span> 個</span></div></div>
+        <div class="stat-item"><div class="stat-label">待辦完成</div><div class="stat-value"><span id="sDone">0</span><span> / <span id="sTotal">0</span></span></div></div>
+        <div class="stat-item"><div class="stat-label">習慣打卡</div><div class="stat-value"><span id="sHab">0</span><span> / <span id="sHabT">0</span></span></div></div>
         <div class="stat-item"><div class="stat-label">今日行程</div><div class="stat-value"><span id="sSch">0</span><span> 場</span></div></div>
+        <div class="stat-item"><div class="stat-label">讀書計劃</div><div class="stat-value"><span id="sStudy">0</span><span> 節</span></div></div>
       </div>
       <div class="quote">
         <div class="quote-text">凡是值得做的事，<br>都值得好好去做。</div>
@@ -258,7 +246,6 @@ main{padding-bottom:72px!important}
         <div class="prog-pct" id="progPct">0%</div>
       </div>
     </div>
-
     <div class="pomo-wrap">
       <div class="pomo-ring">
         <svg width="48" height="48" viewBox="0 0 48 48">
@@ -275,7 +262,6 @@ main{padding-bottom:72px!important}
         <div class="pomo-count" id="pomoCount">✦ ×0</div>
       </div>
     </div>
-
     <div class="grid">
       <div class="card col-w">
         <div class="card-hdr"><div class="card-title">🗓 今日行程 <span id="icalHeaderStatus" style="font-size:.5rem;color:var(--tx3);font-weight:400;letter-spacing:0"></span></div><button class="card-act" onclick="showAddSched()">＋ 新增</button></div>
@@ -301,8 +287,6 @@ main{padding-bottom:72px!important}
       </div>
     </div>
   </div>
-
-  <!-- HABITS -->
   <div id="tab-habits" style="display:none">
     <div class="grid">
       <div class="card col-w">
@@ -315,8 +299,6 @@ main{padding-bottom:72px!important}
       <div class="card col-n"><div class="card-hdr"><div class="card-title">📈 本週完成率</div></div><div class="card-body" id="habitStats"></div></div>
     </div>
   </div>
-
-  <!-- TODOS -->
   <div id="tab-todos" style="display:none">
     <div class="grid">
       <div class="card col-w">
@@ -326,7 +308,7 @@ main{padding-bottom:72px!important}
             <select id="todoFilter" style="font-size:.65rem;padding:.22rem .45rem;border:1.5px solid rgba(197,184,232,.3);border-radius:14px;background:rgba(255,255,255,.65);color:var(--tx);cursor:pointer;font-family:inherit" onchange="renderTodos()">
               <option value="all">全部</option><option value="active">未完成</option><option value="done">已完成</option><option value="high">🔴 高優先</option>
             </select>
-            <button class="card-act" style="color:var(--rose-d)" onclick="clearDone()">清除已完成</button>
+            <button class="card-act" onclick="clearDone()">清除已完成</button>
           </div>
         </div>
         <div class="card-body">
@@ -343,56 +325,97 @@ main{padding-bottom:72px!important}
       <div class="card col-n"><div class="card-hdr"><div class="card-title">⚡ 進度概覽</div></div><div class="card-body" id="todoStats"></div></div>
     </div>
   </div>
-
-  <!-- REVIEW -->
-  <div id="tab-review" style="display:none">
+  <div id="tab-study" style="display:none">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:.75rem">
+      <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">科目數</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stSubjCount">0</div></div>
+      <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">章節完成</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stChapDone">0</div></div>
+      <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">本週讀頁</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--sage-d)" id="stWeekPages">0</div></div>
+      <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">今日安排</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--clay-d)" id="stTodaySessions">0</div></div>
+    </div>
     <div class="grid">
-      <div class="card col-w"><div class="card-hdr"><div class="card-title">🗓 習慣熱力圖（近 28 天）</div></div><div class="card-body" id="heatmap"></div></div>
+      <div class="col-w" style="display:flex;flex-direction:column;gap:.65rem">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase">📖 讀書計劃</div>
+          <button class="add-btn-s" onclick="showAddSubject()" style="font-size:.64rem;padding:.22rem .62rem">＋ 新增科目</button>
+        </div>
+        <div id="studySubjectList" style="display:flex;flex-direction:column;gap:.65rem"></div>
+      </div>
+      <div class="col-n" style="display:flex;flex-direction:column;gap:.65rem">
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🔁 複習提醒</div></div>
+          <div class="card-body" id="reviewReminders"><div class="empty" style="padding:.8rem">尚無複習排程<br><span style="font-size:.65rem">完成章節後會自動產生</span></div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📅 今日讀書安排</div><button class="card-act" onclick="switchTab('today')">← 行程頁</button></div>
+          <div class="card-body" id="todayStudySessions"><div class="empty" style="padding:.8rem">尚無今日安排<br><span style="font-size:.65rem">點章節的「📅 排程」加入行程</span></div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">📊 本週讀書頁數</div></div>
+          <div class="card-body" id="studyWeeklyChart"></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><div class="card-title">🏅 各科目進度</div></div>
+          <div class="card-body" id="studyProgressAll"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="tab-review" style="display:none">
+    <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem;padding:.65rem .9rem;background:rgba(255,255,255,.95);border:1.5px solid rgba(160,148,132,.14);border-radius:12px;box-shadow:0 2px 12px rgba(160,130,210,.07)">
+      <span style="font-size:.65rem;color:var(--tx3);font-family:'Cinzel',serif;letter-spacing:.06em;white-space:nowrap">📅 回顧範圍</span>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+        <button onclick="setReviewRange(7)"  id="rr7"  class="rr-btn">近 7 天</button>
+        <button onclick="setReviewRange(28)" id="rr28" class="rr-btn rr-active">近 28 天</button>
+        <button onclick="setReviewRange(90)" id="rr90" class="rr-btn">近 3 月</button>
+        <button onclick="setReviewRange(180)"id="rr180"class="rr-btn">近 6 月</button>
+        <button onclick="setReviewRange(365)"id="rr365"class="rr-btn">近 1 年</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:.3rem;margin-left:auto;flex-wrap:wrap">
+        <input type="date" id="rrFrom" class="add-inp" style="width:118px;padding:.22rem .5rem;font-size:.65rem;border-radius:8px" onchange="setReviewCustom()">
+        <span style="font-size:.6rem;color:var(--tx3)">至</span>
+        <input type="date" id="rrTo" class="add-inp" style="width:118px;padding:.22rem .5rem;font-size:.65rem;border-radius:8px" onchange="setReviewCustom()">
+      </div>
+    </div>
+    <div class="grid">
+      <div class="card col-w"><div class="card-hdr"><div class="card-title">🗓 習慣熱力圖</div><span id="heatmapRangeLabel" style="font-size:.58rem;color:var(--tx3)"></span></div><div class="card-body" id="heatmap"></div></div>
       <div class="card col-n"><div class="card-hdr"><div class="card-title">🏆 連續紀錄</div></div><div class="card-body" id="streakBoard"></div></div>
-      <div class="card col-w"><div class="card-hdr"><div class="card-title">📊 每日完成（近 7 天）</div></div><div class="card-body" id="weeklyBar"></div></div>
+      <div class="card col-w"><div class="card-hdr"><div class="card-title">📊 每日完成趨勢</div></div><div class="card-body" id="weeklyBar"></div></div>
       <div class="card col-n"><div class="card-hdr"><div class="card-title">📝 近期筆記</div></div><div class="card-body" id="recentNotes"></div></div>
     </div>
   </div>
 </main>
 </div>
-
-<!-- Bottom navigation bar -->
-<nav class="bottom-nav" id="bottomNav">
-  <button class="bn-btn active" id="bn-today" onclick="switchTab('today')">
-    <span class="bn-ico">🗓</span>今日
-  </button>
-  <button class="bn-btn" id="bn-habits" onclick="switchTab('habits')">
-    <span class="bn-ico">🌱</span>習慣
-  </button>
-  <button class="bn-btn" id="bn-todos" onclick="switchTab('todos')">
-    <span class="bn-ico">📋</span>待辦
-  </button>
-  <button class="bn-btn" id="bn-review" onclick="switchTab('review')">
-    <span class="bn-ico">📊</span>回顧
-  </button>
+<nav class="bottom-nav">
+  <button class="bn-btn active" id="bn-today"  onclick="switchTab('today')"><span class="bn-ico">🗓</span>今日</button>
+  <button class="bn-btn"        id="bn-habits" onclick="switchTab('habits')"><span class="bn-ico">🌱</span>習慣</button>
+  <button class="bn-btn"        id="bn-todos"  onclick="switchTab('todos')"><span class="bn-ico">📋</span>待辦</button>
+  <button class="bn-btn"        id="bn-study"  onclick="switchTab('study')"><span class="bn-ico">📖</span>讀書</button>
+  <button class="bn-btn"        id="bn-review" onclick="switchTab('review')"><span class="bn-ico">📊</span>回顧</button>
 </nav>
-
-<!-- Focus overlay -->
 <div id="focusOverlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(28,22,18,.88);backdrop-filter:blur(28px);align-items:center;justify-content:center;flex-direction:column;gap:1.2rem">
   <div style="font-size:3.5rem;font-weight:800;line-height:1;background:linear-gradient(135deg,#C4A098,#9090A8,#8FA68E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="focusClock">00:00</div>
   <div style="font-size:.9rem;color:rgba(255,255,255,.38);letter-spacing:.18em;text-align:center" id="focusDate"></div>
   <button onclick="closeFocus()" style="padding:.45rem 1.3rem;border-radius:22px;border:1.5px solid rgba(160,148,132,.25);background:rgba(160,148,132,.1);color:rgba(220,210,200,.7);font-family:inherit;font-size:.75rem;cursor:pointer">退出專注模式 ✦</button>
 </div>
 
-<!-- Modals -->
-<div id="addSchedPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.96);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:340px;z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
-  <div style="font-size:.88rem;font-weight:700;margin-bottom:.85rem;background:linear-gradient(120deg,#7A4A40,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">新增行程</div>
-  <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">活動名稱</label><input class="add-inp" id="sName" placeholder="e.g. 開週會" style="width:100%;border-radius:8px" onkeydown="if(event.key==='Enter')doAddSched()"></div>
-  <div style="display:flex;gap:.4rem;margin-bottom:.6rem">
-    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">開始</label><input type="time" class="add-inp" id="sStart" value="09:00" style="width:100%;border-radius:8px"></div>
-    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">結束</label><input type="time" class="add-inp" id="sEnd" value="10:00" style="width:100%;border-radius:8px"></div>
+<!-- Add Schedule -->
+<div id="addSchedPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.2rem;width:min(380px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18);max-height:90vh;overflow-y:auto">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.7rem;background:linear-gradient(120deg,#7A4A40,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">新增行程</div>
+  <div style="margin-bottom:.55rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">從待辦事項代入</label><div id="todoPickList" style="display:flex;flex-direction:column;gap:3px;max-height:85px;overflow-y:auto;border:1.5px solid rgba(160,148,132,.2);border-radius:8px;padding:.32rem .4rem;background:rgba(255,255,255,.7)"></div></div>
+  <div style="margin-bottom:.55rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">從讀書計劃代入</label><div id="studyPickList" style="display:flex;flex-direction:column;gap:3px;max-height:85px;overflow-y:auto;border:1.5px solid rgba(160,148,132,.2);border-radius:8px;padding:.32rem .4rem;background:rgba(255,255,255,.7)"></div></div>
+  <div style="margin-bottom:.55rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">活動名稱</label><input class="add-inp" id="sName" placeholder="e.g. 開週會" style="width:100%;border-radius:8px" onkeydown="if(event.key==='Enter')doAddSched()"></div>
+  <div style="display:flex;gap:.4rem;margin-bottom:.55rem">
+    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">開始</label><input type="time" class="add-inp" id="sStart" value="09:00" style="width:100%;border-radius:8px"></div>
+    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">結束</label><input type="time" class="add-inp" id="sEnd" value="10:00" style="width:100%;border-radius:8px"></div>
   </div>
   <div style="display:flex;gap:.4rem">
     <button onclick="doAddSched()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#C4A098,#9090A8,#8FA68E);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 加入行程</button>
     <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
   </div>
 </div>
-<div id="addHabitPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.96);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:320px;z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+
+<!-- Add Habit -->
+<div id="addHabitPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.96);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(320px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
   <div style="font-size:.88rem;font-weight:700;margin-bottom:.85rem;background:linear-gradient(120deg,#4A6449,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">新增習慣</div>
   <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">習慣名稱</label><input class="add-inp" id="hName" placeholder="e.g. 早起" style="width:100%;border-radius:8px"></div>
   <div style="margin-bottom:.7rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">圖示</label><input class="add-inp" id="hEmoji" placeholder="🌅" maxlength="4" style="width:100%;border-radius:8px;text-align:center;font-size:1.1rem"></div>
@@ -401,6 +424,107 @@ main{padding-bottom:72px!important}
     <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
   </div>
 </div>
+
+<!-- Add Subject -->
+<div id="addSubjectPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(360px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.85rem;background:linear-gradient(120deg,#485A72,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">新增科目</div>
+  <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">科目名稱</label><input class="add-inp" id="sjName" placeholder="e.g. 統計學" style="width:100%;border-radius:8px"></div>
+  <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">圖示</label><input class="add-inp" id="sjEmoji" placeholder="📘" maxlength="4" style="width:100%;border-radius:8px;text-align:center;font-size:1.1rem"></div>
+  <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">考試/截止日期（選填）</label><input type="date" class="add-inp" id="sjExamDate" style="width:100%;border-radius:8px"></div>
+  <div style="margin-bottom:.8rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.35rem">顏色</label><div id="colorPalette" style="display:flex;gap:.45rem;flex-wrap:wrap"></div></div>
+  <div style="display:flex;gap:.4rem">
+    <button onclick="doAddSubject()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#A0AABB,#9090A8);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 建立科目</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- Add Chapter -->
+<div id="addChapterPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(360px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.85rem;background:linear-gradient(120deg,#4A6449,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">新增章節</div>
+  <input type="hidden" id="chapSubjId">
+  <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">章節名稱</label><input class="add-inp" id="chapName" placeholder="e.g. 第一章：機率基礎" style="width:100%;border-radius:8px"></div>
+  <div style="display:flex;gap:.4rem;margin-bottom:.6rem">
+    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">起始頁</label><input type="number" class="add-inp" id="chapPageStart" placeholder="1" min="1" style="width:100%;border-radius:8px"></div>
+    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">結束頁</label><input type="number" class="add-inp" id="chapPageEnd" placeholder="40" min="1" style="width:100%;border-radius:8px"></div>
+  </div>
+  <div style="display:flex;gap:.4rem">
+    <button onclick="doAddChapter()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#8FA68E,#A8A090);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 新增章節</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- Edit Exam Date -->
+<div id="examDatePanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(320px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.6rem;background:linear-gradient(120deg,#7A5248,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🎯 設定考試/截止日期</div>
+  <div style="font-size:.7rem;color:var(--tx2);margin-bottom:.75rem" id="examDateInfo"></div>
+  <input type="hidden" id="examDateSubjId">
+  <div style="margin-bottom:.7rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">日期</label><input type="date" class="add-inp" id="examDateVal" style="width:100%;border-radius:8px"></div>
+  <div style="display:flex;gap:.4rem">
+    <button onclick="doSetExamDate()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#B89080,#9090A8);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存</button>
+    <button onclick="doClearExamDate()" style="padding:.42rem .65rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--clay-d);font-size:.72rem;cursor:pointer;font-family:inherit">清除</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .65rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.72rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- Chapter Notes -->
+<div id="chapNotesPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(380px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.5rem;background:linear-gradient(120deg,#4A6449,#7A5248);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">📝 章節筆記</div>
+  <div style="font-size:.68rem;color:var(--tx2);margin-bottom:.7rem" id="chapNotesInfo"></div>
+  <input type="hidden" id="chapNotesChapId">
+  <textarea class="add-inp" id="chapNotesVal" placeholder="記錄重點、易錯點、考前要複習的地方…" style="width:100%;border-radius:10px;min-height:110px;padding:.55rem .7rem;resize:vertical;line-height:1.6;font-size:.75rem"></textarea>
+  <div style="display:flex;gap:.4rem;margin-top:.65rem">
+    <button onclick="doSaveChapNotes()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#8FA68E,#7A5248);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存筆記</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- Schedule Review -->
+<div id="schedReviewPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(340px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.55rem;background:linear-gradient(120deg,#4A4A6A,#7A5248);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🔁 排程複習</div>
+  <div style="font-size:.7rem;color:var(--tx2);margin-bottom:.8rem;padding:.42rem .6rem;background:rgba(144,144,168,.1);border-radius:8px;border-left:3px solid var(--dusk)" id="schedReviewInfo"></div>
+  <input type="hidden" id="schedReviewChapId">
+  <input type="hidden" id="schedReviewIdx">
+  <div style="margin-bottom:.55rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">日期</label><input type="date" class="add-inp" id="schedReviewDate" style="width:100%;border-radius:8px"></div>
+  <div style="display:flex;gap:.4rem;margin-bottom:.6rem">
+    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">開始</label><input type="time" class="add-inp" id="schedReviewStart" value="20:00" style="width:100%;border-radius:8px"></div>
+    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">結束</label><input type="time" class="add-inp" id="schedReviewEnd" value="20:30" style="width:100%;border-radius:8px"></div>
+  </div>
+  <div style="display:flex;gap:.4rem">
+    <button onclick="doScheduleReview()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#9090A8,#7A5248);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 加入行程</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- Schedule Chapter -->
+<div id="schedChapPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(360px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.55rem;background:linear-gradient(120deg,#4A6449,#485A72);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">📅 排程讀書</div>
+  <div style="font-size:.7rem;color:var(--tx2);margin-bottom:.8rem;padding:.42rem .6rem;background:rgba(143,166,142,.1);border-radius:8px;border-left:3px solid var(--sage)" id="schedChapInfo"></div>
+  <input type="hidden" id="schedChapId">
+  <div style="margin-bottom:.55rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">日期</label><input type="date" class="add-inp" id="schedChapDate" style="width:100%;border-radius:8px"></div>
+  <div style="display:flex;gap:.4rem;margin-bottom:.55rem">
+    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">開始</label><input type="time" class="add-inp" id="schedChapStart" value="09:00" style="width:100%;border-radius:8px"></div>
+    <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">結束</label><input type="time" class="add-inp" id="schedChapEnd" value="10:00" style="width:100%;border-radius:8px"></div>
+  </div>
+  <div style="margin-bottom:.7rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">目標頁數（本次）</label><input type="number" class="add-inp" id="schedChapPages" placeholder="20" min="1" style="width:100%;border-radius:8px"></div>
+  <div style="display:flex;gap:.4rem">
+    <button onclick="doScheduleChap()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#8FA68E,#9090A8);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 加入行程</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- Update Page Progress -->
+<div id="updatePagePanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(320px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.55rem;background:linear-gradient(120deg,#7A5248,#4A6449);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">更新讀書進度</div>
+  <div style="font-size:.7rem;color:var(--tx2);margin-bottom:.8rem" id="updatePageInfo"></div>
+  <input type="hidden" id="updatePageChapId">
+  <div style="margin-bottom:.7rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">目前已讀到第幾頁</label><input type="number" class="add-inp" id="updatePageVal" placeholder="15" min="0" style="width:100%;border-radius:8px"></div>
+  <div style="display:flex;gap:.4rem">
+    <button onclick="doUpdatePage()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#C4A098,#8FA68E);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 更新進度</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- iCal Panel -->
 <div id="icalPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.25rem;width:min(380px,92vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
   <div style="font-size:.88rem;font-weight:700;margin-bottom:.5rem;background:linear-gradient(120deg,#485A72,#4A4A6A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">📅 iCloud 行事曆</div>
   <div style="font-size:.65rem;color:var(--tx3);margin-bottom:.85rem;line-height:1.6">在 iCloud 行事曆 → 共享行事曆 → 複製「公開行事曆」連結（webcal://...），貼到下方。</div>
@@ -411,132 +535,22 @@ main{padding-bottom:72px!important}
     <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
   </div>
 </div>
+
 <div id="overlay" onclick="closeOverlays()" style="display:none;position:fixed;inset:0;z-index:390;background:rgba(40,25,65,.38);backdrop-filter:blur(6px)"></div>
 <div class="toast" id="toast"></div>
+<script>
+/* ════════════════════════════════════════════════════════
+   核心應用程式邏輯 — 完全同步執行，不依賴任何網路請求或外部模組。
+   即使 Firebase 雲端同步區塊（下方）載入失敗，這裡的所有功能
+   （行程／待辦／習慣／讀書計劃／番茄鐘／回顧）都能正常運作。
+   ════════════════════════════════════════════════════════ */
+(function(){
 
-<script type="module">
-// ════════════════════════════════════════
-// Firebase SDK (ESM CDN)
-// ════════════════════════════════════════
-import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,signOut,onAuthStateChanged}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import{getFirestore,doc,getDoc,setDoc}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+window.__cloud={ready:false,save:null,load:null};
 
-const FB_CFG={
-  apiKey:'AIzaSyADa9M9-BCKebkfioxgFNOCxt7FNNyH5G8',
-  authDomain:'daily-route-e7fe7.firebaseapp.com',
-  projectId:'daily-route-e7fe7',
-  storageBucket:'daily-route-e7fe7.appspot.com',
-  messagingSenderId:'458244739005',
-  appId:'1:458244739005:web:803dc99fd048f11e7a8cd4'
-};
-const app=initializeApp(FB_CFG);
-const auth=getAuth(app);
-const db=getFirestore(app);
-const provider=new GoogleAuthProvider();
-
-let currentUser=null;
-let saveTimer=null;
-
-// ── 雲端讀取 ──
-async function cloudLoad(){
-  if(!currentUser)return;
-  try{
-    const snap=await getDoc(doc(db,'users',currentUser.uid,'data','main'));
-    if(snap.exists()){
-      const d=snap.data();
-      if(d.schedules)schedules=d.schedules;
-      if(d.todos)todos=d.todos;
-      if(d.habits)habits=d.habits;
-      if(d.habitLogs)habitLogs=d.habitLogs;
-      if(d.notes)notes=d.notes;
-      // 同步到 localStorage 備份
-      save('scheds',schedules);save('todos',todos);save('habits',habits);save('hlogs',habitLogs);save('notes',notes);
-    }
-  }catch(e){console.warn('cloudLoad error',e);}
-}
-
-// ── 雲端儲存（debounce 1.5s）──
-function cloudSave(){
-  if(!currentUser)return;
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(async()=>{
-    try{
-      await setDoc(doc(db,'users',currentUser.uid,'data','main'),
-        {schedules,todos,habits,habitLogs,notes,updatedAt:Date.now()});
-      updateSyncPill('ok');
-    }catch(e){console.warn('cloudSave error',e);updateSyncPill('err');}
-  },1500);
-  updateSyncPill('syncing');
-}
-
-function updateSyncPill(state){
-  const el=$('syncPill');if(!el)return;
-  if(state==='ok'){el.textContent='☁ 已同步';el.style.cssText='display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(143,180,143,.5);background:#EAF0EA;color:#4A6449;white-space:nowrap;flex-shrink:0';}
-  else if(state==='syncing'){el.textContent='↻ 同步中';el.style.cssText='display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(140,140,168,.4);background:#EAEAF2;color:#4A4A6A;white-space:nowrap;flex-shrink:0';}
-  else if(state==='err'){el.textContent='⚠ 同步失敗';el.style.cssText='display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(180,120,100,.4);background:#F2EAE6;color:#7A5248;white-space:nowrap;flex-shrink:0';}
-  else{el.textContent='○ 未登入';el.style.cssText='display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid rgba(160,148,132,.3);background:rgba(248,244,240,.8);color:#7A6E64;white-space:nowrap;flex-shrink:0';}
-}
-
-// ── Google 登入 / 登出 ──
-async function googleSignIn(){
-  try{
-    const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if(isMobile){
-      await signInWithRedirect(auth,provider);
-    }else{
-      await signInWithPopup(auth,provider);
-    }
-  }catch(e){showToast('登入失敗：'+e.message);}
-}
-async function googleSignOut(){
-  await signOut(auth);
-  showToast('已登出');
-}
-
-function renderUserBar(user){
-  const el=$('userBar');if(!el)return;
-  if(user){
-    el.innerHTML=`<img src="${user.photoURL||''}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(160,148,132,.3);flex-shrink:0" onerror="this.style.display='none'">
-    <span style="font-size:.62rem;color:var(--tx2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${user.displayName||user.email}</span>
-    <button onclick="googleSignOut()" style="font-size:.58rem;padding:.18rem .45rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.8);color:var(--tx3);cursor:pointer;font-family:inherit;flex-shrink:0">登出</button>`;
-  }else{
-    el.innerHTML=`<button onclick="googleSignIn()" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;padding:.28rem .7rem;border-radius:14px;border:1.5px solid rgba(140,140,168,.35);background:linear-gradient(135deg,rgba(196,160,152,.15),rgba(144,144,168,.15));color:var(--dusk-d);cursor:pointer;font-family:inherit;font-weight:600;transition:all .2s">
-      <svg width="13" height="13" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Google 登入</button>`;
-  }
-}
-
-// 處理手機 redirect 登入結果
-getRedirectResult(auth).then(result=>{
-  if(result&&result.user) console.log('[auth] redirect result user:',result.user.email);
-}).catch(e=>console.warn('redirect result error',e));
-
-// 監聽登入狀態
-onAuthStateChanged(auth,async user=>{
-  console.log('[auth] state changed, user=', user ? user.email : 'null');
-  currentUser=user;
-  renderUserBar(user);
-  if(user){
-    updateSyncPill('syncing');
-    await cloudLoad();
-    updateSyncPill('ok');
-    renderAll();updateStats();
-    renderSchedules();
-    if(icalUrl && !icalEvents.length) fetchIcal();
-  }else{
-    updateSyncPill('offline');
-    renderSchedules();
-    if(icalUrl && !icalEvents.length) fetchIcal();
-  }
-});
-
-// ════════════════════════════════════════
-// 原有邏輯（保持不變，persist 改為同時存雲端）
-// ════════════════════════════════════════
 const MONTHS=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
 const WDAYS=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
-const TABS=['today','habits','todos','review'];
+const TABS=['today','habits','todos','study','review'];
 let curTab='today';
 const $=id=>document.getElementById(id);
 const genId=()=>Math.random().toString(36).slice(2,9);
@@ -546,155 +560,85 @@ function dayKey(d){return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getD
 function todayKey(){return dayKey(getTW())}
 function load(k,d){try{const v=localStorage.getItem('xm3_'+k);return v?JSON.parse(v):d}catch{return d}}
 function save(k,v){try{localStorage.setItem('xm3_'+k,JSON.stringify(v))}catch{}}
-function showToast(msg,t=2200){const el=$('toast');el.textContent=msg;el.style.opacity='1';el.style.transform='translateY(0)';setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(8px)'},t)}
-function sparkle(x,y){['✦','✧','⋆','·','✦','⋆'].forEach((e,i)=>{const el=document.createElement('span');el.className='spark';el.textContent=e;const a=(i/6)*360+Math.random()*20,r=32+Math.random()*38;el.style.left=(x+Math.cos(a*Math.PI/180)*r)+'px';el.style.top=(y+Math.sin(a*Math.PI/180)*r)+'px';document.body.appendChild(el);setTimeout(()=>el.remove(),650)})}
+function showToast(msg,t=2200){const el=$('toast');if(!el)return;el.textContent=msg;el.style.opacity='1';el.style.transform='translateY(0)';setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(8px)'},t)}
+function sparkle(x,y){['✦','✧','⋆','·','✦','⋆'].forEach((e,i)=>{const el=document.createElement('span');el.className='spark';el.textContent=e;const a=(i/6)*360+Math.random()*20,r=32+Math.random()*38;el.style.cssText=`left:${x+Math.cos(a*Math.PI/180)*r}px;top:${y+Math.sin(a*Math.PI/180)*r}px`;document.body.appendChild(el);setTimeout(()=>el.remove(),650)})}
 
 let schedules=load('scheds',[]),todos=load('todos',[]),habits=load('habits',[]),habitLogs=load('hlogs',{}),notes=load('notes',{});
+let subjects=load('subjects',[]),studyLogs=load('studyLogs',{});
+
+const SUBJ_COLORS=['#9090A8','#8FA68E','#B89080','#A0AABB','#C4A098','#A8A090','#7A8FA8','#A8908F'];
 
 function initData(){
   const tk=todayKey();
-  if(!schedules.length) schedules=[
-    {id:'s1',name:'晨會',start:'09:00',end:'09:30',note:'',priority:'normal',date:tk},
-    {id:'s2',name:'深度工作時段',start:'10:00',end:'12:00',note:'專注，不接訊息',priority:'high',date:tk},
-    {id:'s3',name:'午餐',start:'12:00',end:'13:00',note:'',priority:'normal',date:tk},
-    {id:'s4',name:'1:1 Meeting',start:'15:00',end:'16:00',note:'準備更新事項',priority:'normal',date:tk},
-    {id:'s5',name:'覆盤',start:'17:30',end:'18:00',note:'',priority:'normal',date:tk}];
-  if(!todos.length) todos=[
-    {id:'t1',text:'完成週報',priority:'high',done:false,created:tk},
-    {id:'t2',text:'回覆重要郵件',priority:'mid',done:false,created:tk},
-    {id:'t3',text:'整理桌面',priority:'low',done:true,created:tk}];
-  if(!habits.length) habits=[
-    {id:'h1',name:'早起',emoji:'🌅',freq:7,createdAt:tk},
-    {id:'h2',name:'喝水 2L',emoji:'💧',freq:7,createdAt:tk},
-    {id:'h3',name:'閱讀 30 分鐘',emoji:'📚',freq:5,createdAt:tk},
-    {id:'h4',name:'運動',emoji:'🏃',freq:3,createdAt:tk}];
-  if(!Object.keys(habitLogs).length){
-    const tw=getTW();
-    habits.forEach(h=>{habitLogs[h.id]={};for(let i=0;i<7;i++){const d=new Date(tw);d.setDate(d.getDate()-i);if(Math.random()>.35)habitLogs[h.id][dayKey(d)]=true;}});
-  }
-  if(!notes[tk]) notes[tk]='今天天氣很好，保持專注！';
-}
-function persist(){save('scheds',schedules);save('todos',todos);save('habits',habits);save('hlogs',habitLogs);save('notes',notes);cloudSave();}
-
-function buildNavTabs(){
-  // update bottom nav active state
-  TABS.forEach(t=>{
-    const b=$('bn-'+t);
-    if(b) b.classList.toggle('active', t===curTab);
-  });
-}
-function switchTab(tab){
-  curTab=tab;
-  TABS.forEach(t=>{const p=$('tab-'+t);if(p)p.style.display=t===tab?'':'none';});
-  buildNavTabs();
-  renderAll();
+  if(!schedules.length)schedules=[{id:'s1',name:'晨會',start:'09:00',end:'09:30',note:'',priority:'normal',date:tk},{id:'s2',name:'深度工作時段',start:'10:00',end:'12:00',note:'專注，不接訊息',priority:'high',date:tk},{id:'s3',name:'午餐',start:'12:00',end:'13:00',note:'',priority:'normal',date:tk},{id:'s4',name:'1:1 Meeting',start:'15:00',end:'16:00',note:'準備更新事項',priority:'normal',date:tk},{id:'s5',name:'覆盤',start:'17:30',end:'18:00',note:'',priority:'normal',date:tk}];
+  if(!todos.length)todos=[{id:'t1',text:'完成週報',priority:'high',done:false,created:tk},{id:'t2',text:'回覆重要郵件',priority:'mid',done:false,created:tk},{id:'t3',text:'整理桌面',priority:'low',done:true,created:tk}];
+  if(!habits.length)habits=[{id:'h1',name:'早起',emoji:'🌅',freq:7,createdAt:tk},{id:'h2',name:'喝水 2L',emoji:'💧',freq:7,createdAt:tk},{id:'h3',name:'閱讀 30 分鐘',emoji:'📚',freq:5,createdAt:tk},{id:'h4',name:'運動',emoji:'🏃',freq:3,createdAt:tk}];
+  if(!Object.keys(habitLogs).length){const tw=getTW();habits.forEach(h=>{habitLogs[h.id]={};for(let i=0;i<7;i++){const d=new Date(tw);d.setDate(d.getDate()-i);if(Math.random()>.35)habitLogs[h.id][dayKey(d)]=true;}});}
+  if(!notes[tk])notes[tk]='今天天氣很好，保持專注！';
+  if(!subjects.length)subjects=[
+    {id:'sj1',name:'統計學',emoji:'📊',color:'#9090A8',examDate:null,chapters:[{id:'c1',name:'第一章：機率基礎',pageStart:1,pageEnd:40,currentPage:25,notes:'',reviews:[]},{id:'c2',name:'第二章：隨機變數',pageStart:41,pageEnd:90,currentPage:41,notes:'',reviews:[]},{id:'c3',name:'第三章：抽樣分佈',pageStart:91,pageEnd:130,currentPage:91,notes:'',reviews:[]}]},
+    {id:'sj2',name:'英文',emoji:'🌏',color:'#8FA68E',examDate:null,chapters:[{id:'c4',name:'Unit 1：Daily Life',pageStart:1,pageEnd:24,currentPage:24,notes:'',reviews:[]},{id:'c5',name:'Unit 2：Work & Career',pageStart:25,pageEnd:50,currentPage:32,notes:'',reviews:[]}]},
+    {id:'sj3',name:'資料結構',emoji:'💻',color:'#A0AABB',examDate:null,chapters:[{id:'c6',name:'第一章：陣列與鏈結串列',pageStart:1,pageEnd:55,currentPage:55,notes:'',reviews:[]},{id:'c7',name:'第二章：堆疊與佇列',pageStart:56,pageEnd:90,currentPage:60,notes:'',reviews:[]},{id:'c8',name:'第三章：樹與圖',pageStart:91,pageEnd:150,currentPage:91,notes:'',reviews:[]}]}];
 }
 
-function updateClock(){
-  const now=getTW(),hh=pad(now.getHours()),mm=pad(now.getMinutes());
-  const s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
-  s('hdrClock',`${hh}:${mm}`);s('hdrDate',`${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())}`);
-  s('bMonth',MONTHS[now.getMonth()]);s('bDay',now.getDate());s('bWday',WDAYS[now.getDay()]);
-  s('focusClock',`${hh}:${mm}`);s('focusDate',`${now.getFullYear()} · ${MONTHS[now.getMonth()]} · ${WDAYS[now.getDay()]}`);
-}
+function persist(skipCloud=false){save('scheds',schedules);save('todos',todos);save('habits',habits);save('hlogs',habitLogs);save('notes',notes);save('subjects',subjects);save('studyLogs',studyLogs);if(!skipCloud&&window.__cloud&&window.__cloud.ready&&window.__cloud.save){try{window.__cloud.save({schedules,todos,habits,habitLogs,notes,subjects,studyLogs});}catch(e){console.warn('cloud save bridge failed',e);}}}
+
+function buildNavTabs(){TABS.forEach(t=>{const b=$('bn-'+t);if(b)b.classList.toggle('active',t===curTab);});}
+function switchTab(tab){curTab=tab;TABS.forEach(t=>{const p=$('tab-'+t);if(p)p.style.display=t===tab?'':'none';});buildNavTabs();renderAll();}
+
+function updateClock(){const now=getTW(),hh=pad(now.getHours()),mm=pad(now.getMinutes());const s=(id,v)=>{const e=$(id);if(e)e.textContent=v};s('hdrClock',`${hh}:${mm}`);s('hdrDate',`${now.getFullYear()}/${pad(now.getMonth()+1)}/${pad(now.getDate())}`);s('bMonth',MONTHS[now.getMonth()]);s('bDay',now.getDate());s('bWday',WDAYS[now.getDay()]);s('focusClock',`${hh}:${mm}`);s('focusDate',`${now.getFullYear()} · ${MONTHS[now.getMonth()]} · ${WDAYS[now.getDay()]}`);}
 function toMins(t){const[h,m]=t.split(':');return +h*60+ +m}
+
+function schedIcon(name){const n=name.toLowerCase();if(/複習|review/.test(n)&&/🔁|複習/.test(name))return'🔁';if(/讀書|閱讀|複習|預習|自習|study|read/.test(n))return'📖';if(/會議|meeting|討論/.test(n))return'💼';if(/午餐|lunch|吃飯/.test(n))return'🍱';if(/早餐|breakfast/.test(n))return'🥐';if(/晚餐|dinner/.test(n))return'🍽';if(/咖啡|coffee/.test(n))return'☕';if(/運動|gym|跑|健身/.test(n))return'🏃';if(/醫|診|牙/.test(n))return'🏥';if(/課|上課/.test(n))return'📚';if(/電話|call/.test(n))return'📞';if(/深度工作|工作|專注/.test(n))return'⚡';if(/覆盤|回顧/.test(n))return'🔍';if(/晨|早起/.test(n))return'🌅';return'📌';}
 
 function renderSchedules(){
   const tk=todayKey();
-  // 手動行程
-  const manual=schedules.filter(s=>s.date===tk).map(s=>({
-    id:s.id, name:s.name, startStr:s.start, endStr:s.end||'', note:s.note||'',
-    priority:s.priority||'normal', fromIcal:false,
-    sortKey:s.start
-  }));
-  // iCloud 行程 → 轉成同格式
-  const ical=icalEvents.map(ev=>({
-    id:'ical_'+ev.summary+(ev.start.hh||''),
-    name:ev.summary,
-    startStr:ev.start.allDay?'全天':(ev.start.hh+':'+ev.start.mm),
-    endStr:ev.end&&!ev.end.allDay?(ev.end.hh+':'+ev.end.mm):'',
-    note:'', priority:'normal', fromIcal:true,
-    sortKey:ev.start.allDay?'00:00':(ev.start.hh+':'+ev.start.mm)
-  }));
-  const items=[...manual,...ical].sort((a,b)=>a.sortKey.localeCompare(b.sortKey));
+  const manual=schedules.filter(s=>s.date===tk).map(s=>({id:s.id,name:s.name,startStr:s.start,endStr:s.end||'',note:s.note||'',priority:s.priority||'normal',fromIcal:false,sortKey:s.start}));
+  const icalList=icalEvents.map(ev=>({id:'ical_'+ev.summary+(ev.start.hh||''),name:ev.summary,startStr:ev.start.allDay?'全天':(ev.start.hh+':'+ev.start.mm),endStr:ev.end&&!ev.end.allDay?(ev.end.hh+':'+ev.end.mm):'',note:'',priority:'normal',fromIcal:true,sortKey:ev.start.allDay?'00:00':(ev.start.hh+':'+ev.start.mm)}));
+  const items=[...manual,...icalList].sort((a,b)=>a.sortKey.localeCompare(b.sortKey));
   ($('sSch')||{}).textContent=items.length;
   const el=$('schedList');if(!el)return;
-  if(!items.length){el.innerHTML=`<div class="empty">🗓<br>今天還沒有行程</div>`;return;}
   const now=getTW(),nm=now.getHours()*60+now.getMinutes();
-  let ins=false,html='';
-  items.forEach(s=>{
-    const sm=s.startStr==='全天'?0:toMins(s.startStr);
-    const em=s.endStr?toMins(s.endStr):sm+60;
-    const past=em<nm&&s.startStr!=='全天',isNow=sm<=nm&&nm<=em&&s.startStr!=='全天';
-    if(!ins&&sm>nm&&s.startStr!=='全天'){ins=true;html+=`<div class="now-line"><div class="now-dot"></div><div class="now-lbl">${pad(now.getHours())}:${pad(now.getMinutes())} 現在</div><div class="now-hr"></div></div>`;}
-    const pct=isNow?Math.round((nm-sm)/(em-sm)*100):0;
-    const icalBadge=s.fromIcal?`<span style="font-size:.48rem;padding:1px 5px;border-radius:6px;background:rgba(80,120,200,.12);color:#485A72;border:1px solid rgba(80,120,200,.2);flex-shrink:0">🍎 iCloud</span>`:'';
-    const delBtn=s.fromIcal?'':`<button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')">✕</button>`;
-    html+=`<div class="tl-item${s.priority==='high'?' hi':''}${past?' past':''}${s.fromIcal?' ical-item':''}">
-      <div class="tl-time">${s.startStr}${s.endStr?'<br>'+s.endStr:''}</div>
-      <div class="tl-icon">${s.fromIcal?'🍎':'✦'}</div>
-      <div class="tl-body"><div class="tl-ev">${s.name} ${icalBadge}${isNow?`<span class="now-badge">NOW</span>`:''}</div>${s.note?`<div class="tl-sub">📝 ${s.note}</div>`:''}</div>
-      ${delBtn}
-      ${isNow?`<div class="tl-prog" style="width:${pct}%"></div>`:''}
-    </div>`;
+  const SH=6,EH=23,PPM=1.6;
+  let html='';
+  items.filter(s=>s.startStr==='全天').forEach(s=>{const db=s.fromIcal?'':`<button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')">✕</button>`;html+=`<div style="display:flex;align-items:center;gap:.5rem;padding:.3rem .6rem;margin-bottom:4px;border-radius:8px;background:rgba(160,148,132,.1);border:1.5px solid rgba(160,148,132,.2)"><span style="font-size:.55rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;width:38px;flex-shrink:0">全天</span><span>${schedIcon(s.name)}</span><span style="font-size:.78rem;font-weight:600;flex:1">${s.name}</span>${db}</div>`;});
+  html+=`<div style="position:relative;padding-left:42px">`;
+  const nh=now.getHours(),nm2=now.getMinutes();
+  if(nh>=SH&&nh<EH){const np=((nh-SH)*60+nm2)*PPM;html+=`<div style="position:absolute;left:42px;right:0;top:${np}px;z-index:10;display:flex;align-items:center;gap:4px;pointer-events:none"><div style="width:7px;height:7px;border-radius:50%;background:var(--clay-d);flex-shrink:0;margin-left:-3px;box-shadow:0 0 0 3px rgba(122,82,72,.18)"></div><div style="flex:1;height:1.5px;background:linear-gradient(90deg,var(--clay-d),transparent)"></div><span style="font-family:'JetBrains Mono',monospace;font-size:.48rem;color:var(--clay-d);flex-shrink:0">${pad(nh)}:${pad(nm2)}</span></div>`;}
+  for(let h=SH;h<EH;h++){const yp=(h-SH)*60*PPM,ic=h===nh;html+=`<div style="position:absolute;left:0;top:${yp}px;width:38px;text-align:right;padding-right:6px"><span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;color:${ic?'var(--clay-d)':'var(--tx3)'};font-weight:${ic?700:400}">${pad(h)}:00</span></div><div style="position:absolute;left:42px;right:0;top:${yp}px;height:1px;background:rgba(160,148,132,${ic?'.28':'.12'})"></div><div style="position:absolute;left:42px;right:0;top:${yp+30*PPM}px;height:1px;background:rgba(160,148,132,.06)"></div>`;}
+  html+=`<div style="height:${(EH-SH)*60*PPM}px"></div>`;
+  items.filter(s=>s.startStr!=='全天').forEach(s=>{
+    const sm=toMins(s.startStr),em=s.endStr?toMins(s.endStr):sm+60;
+    if(sm/60<SH||sm/60>=EH)return;
+    const top=(sm-SH*60)*PPM,height=Math.max((em-sm)*PPM,22);
+    const past=em<nm,isNow=sm<=nm&&nm<=em,pct=isNow?Math.round((nm-sm)/(em-sm)*100):0;
+    const isStudy=/讀書|閱讀|複習|預習|自習/.test(s.name);
+    const bg=isNow?'linear-gradient(135deg,rgba(196,160,152,.22),rgba(144,144,168,.18))':isStudy?'rgba(143,166,142,.1)':s.fromIcal?'rgba(148,168,200,.13)':'rgba(255,255,255,.92)';
+    const bdr=isNow?'1.5px solid rgba(122,82,72,.4)':isStudy?'1.5px solid rgba(143,166,142,.35)':s.fromIcal?'1.5px solid rgba(148,168,200,.3)':'1.5px solid rgba(160,148,132,.22)';
+    const bl=isNow?'var(--clay-d)':s.priority==='high'?'var(--clay-d)':isStudy?'var(--sage-d)':'var(--dusk)';
+    const db=s.fromIcal?'':`<button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')" style="position:absolute;top:3px;right:3px">✕</button>`;
+    html+=`<div style="position:absolute;left:0;right:4px;top:${top}px;height:${height}px;background:${bg};border:${bdr};border-left:3px solid ${bl};border-radius:6px;padding:2px 22px 2px 6px;overflow:hidden;cursor:default;${past?'opacity:.4':''}"><div style="display:flex;align-items:center;gap:4px;line-height:1.2"><span style="font-size:.7rem;flex-shrink:0">${schedIcon(s.name)}</span><span style="font-size:.72rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}${isNow?` <span style="font-size:.48rem;padding:1px 5px;border-radius:6px;background:linear-gradient(90deg,var(--clay-d),var(--dusk-d));color:#fff;font-weight:700;vertical-align:middle">NOW</span>`:''}</span></div>${height>28&&s.endStr?`<div style="font-size:.55rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;margin-left:18px">${s.startStr}–${s.endStr}</div>`:''}${isNow?`<div style="position:absolute;bottom:0;left:0;height:2px;width:${pct}%;background:linear-gradient(90deg,var(--clay-d),var(--dusk))"></div>`:''}${db}</div>`;
   });
-  el.innerHTML=html;
-}
-function delSched(id){schedules=schedules.filter(s=>s.id!==id);persist();renderSchedules();updateStats();showToast('🗑 已刪除')}
-function showAddSched(){$('addSchedPanel').style.display='block';$('overlay').style.display='block'}
-function closeOverlays(){$('addSchedPanel').style.display='none';$('addHabitPanel').style.display='none';$('icalPanel').style.display='none';$('overlay').style.display='none'}
-function doAddSched(){
-  const name=$('sName').value.trim();if(!name){showToast('請填寫活動名稱');return;}
-  schedules.push({id:genId(),name,start:$('sStart').value,end:$('sEnd').value,note:'',priority:'normal',date:todayKey()});
-  persist();closeOverlays();$('sName').value='';renderSchedules();updateStats();showToast('🌸 行程已新增');
+  html+=`</div>`;el.innerHTML=html;
 }
 
-const PCOL={
-  high:{dot:'p-hi',label:'高',style:'background:#F2EAE6;color:#7A5248;border:1.5px solid rgba(122,82,72,.22)'},
-  mid:{dot:'p-mid',label:'中',style:'background:#F0EEE8;color:#5A5448;border:1.5px solid rgba(90,84,72,.2)'},
-  low:{dot:'p-lo',label:'低',style:'background:#EAF0EA;color:#4A6449;border:1.5px solid rgba(74,100,73,.2)'}};
+function delSched(id){schedules=schedules.filter(s=>s.id!==id);persist();renderSchedules();updateStats();if(curTab==='study'){renderTodayStudySessions();updateStudyStats();}showToast('🗑 已刪除');}
 
-function todoHTML(t,full=false){
-  const pc=PCOL[t.priority]||PCOL.mid;
-  return`<div class="todo-item${t.done?' done':''}" onclick="toggleTodo('${t.id}',event)">
-    <div class="todo-check">${t.done?'✓':''}</div>
-    <div class="p-dot ${pc.dot}"></div>
-    <div class="todo-text">${t.text}</div>
-    ${full?`<span style="font-size:.55rem;padding:2px 6px;border-radius:8px;${pc.style};flex-shrink:0">${pc.label}</span>`:''}
-    <button class="del-btn" onclick="event.stopPropagation();delTodo('${t.id}')">✕</button>
-  </div>`;}
+function showAddSched(){
+  const pick=$('todoPickList');if(pick){const p=todos.filter(t=>!t.done);pick.innerHTML=p.length?p.map(t=>`<div class="todo-pick-item" onclick="pickTodo('${t.id}')" data-id="${t.id}">📌 ${t.text}</div>`).join(''):'<div style="font-size:.65rem;color:var(--tx3);padding:.2rem .3rem">目前無未完成待辦</div>';}
+  const spick=$('studyPickList');if(spick){const ci=[];subjects.forEach(sj=>(sj.chapters||[]).filter(c=>!isChapDone(c)).forEach(c=>ci.push({sj,c})));spick.innerHTML=ci.length?ci.map(({sj,c})=>`<div class="todo-pick-item" onclick="pickStudyChap('${sj.id}','${c.id}')" data-cid="${c.id}">${sj.emoji} ${sj.name} — ${c.name}</div>`).join(''):'<div style="font-size:.65rem;color:var(--tx3);padding:.2rem .3rem">目前無待讀章節</div>';}
+  $('sName').value='';$('addSchedPanel').style.display='block';$('overlay').style.display='block';
+}
+function pickTodo(id){const t=todos.find(x=>x.id===id);if(!t)return;$('sName').value=t.text;document.querySelectorAll('#todoPickList .todo-pick-item').forEach(el=>el.classList.toggle('selected',el.dataset.id===id));document.querySelectorAll('#studyPickList .todo-pick-item').forEach(el=>el.classList.remove('selected'));}
+function pickStudyChap(sjId,cId){const sj=subjects.find(s=>s.id===sjId);const c=(sj?.chapters||[]).find(x=>x.id===cId);if(!sj||!c)return;$('sName').value=`📖 讀書：${sj.name} ${c.name}`;document.querySelectorAll('#studyPickList .todo-pick-item').forEach(el=>el.classList.toggle('selected',el.dataset.cid===cId));document.querySelectorAll('#todoPickList .todo-pick-item').forEach(el=>el.classList.remove('selected'));}
+function closeOverlays(){['addSchedPanel','addHabitPanel','addSubjectPanel','addChapterPanel','schedChapPanel','updatePagePanel','icalPanel','examDatePanel','chapNotesPanel','schedReviewPanel'].forEach(id=>{const el=$(id);if(el)el.style.display='none';});$('overlay').style.display='none';}
+function doAddSched(){const name=$('sName').value.trim();if(!name){showToast('請填寫活動名稱');return;}schedules.push({id:genId(),name,start:$('sStart').value,end:$('sEnd').value,note:'',priority:'normal',date:todayKey()});persist();closeOverlays();renderSchedules();updateStats();showToast('🌸 行程已新增');}
 
+const PCOL={high:{dot:'p-hi',label:'高',style:'background:#F2EAE6;color:#7A5248;border:1.5px solid rgba(122,82,72,.22)'},mid:{dot:'p-mid',label:'中',style:'background:#F0EEE8;color:#5A5448;border:1.5px solid rgba(90,84,72,.2)'},low:{dot:'p-lo',label:'低',style:'background:#EAF0EA;color:#4A6449;border:1.5px solid rgba(74,100,73,.2)'}};
+function todoHTML(t,full=false){const pc=PCOL[t.priority]||PCOL.mid;return`<div class="todo-item${t.done?' done':''}" onclick="toggleTodo('${t.id}',event)"><div class="todo-check">${t.done?'✓':''}</div><div class="p-dot ${pc.dot}"></div><div class="todo-text">${t.text}</div>${full?`<span style="font-size:.55rem;padding:2px 6px;border-radius:8px;${pc.style};flex-shrink:0">${pc.label}</span>`:''}<button class="del-btn" onclick="event.stopPropagation();delTodo('${t.id}')">✕</button></div>`;}
 function renderQuickTodos(){const el=$('quickTodos');if(!el)return;const a=todos.filter(t=>!t.done).slice(0,5);el.innerHTML=a.length?a.map(t=>todoHTML(t)).join(''):`<div class="empty" style="padding:.8rem">✅<br>所有待辦已完成！</div>`;}
-function renderTodos(){
-  const el=$('todoList');if(!el)return;
-  const f=($('todoFilter')||{value:'all'}).value;
-  let l=[...todos];
-  if(f==='active')l=l.filter(t=>!t.done);if(f==='done')l=l.filter(t=>t.done);if(f==='high')l=l.filter(t=>t.priority==='high');
-  l.sort((a,b)=>{const o={high:0,mid:1,low:2};if(a.done!==b.done)return a.done?1:-1;return(o[a.priority]||1)-(o[b.priority]||1);});
-  el.innerHTML=l.length?l.map(t=>todoHTML(t,true)).join(''):`<div class="empty">📋<br>沒有符合的待辦</div>`;
-}
-function renderTodoStats(){
-  const el=$('todoStats');if(!el)return;
-  const tot=todos.length,dn=todos.filter(t=>t.done).length,pct=tot?Math.round(dn/tot*100):0;
-  const bp={high:0,mid:0,low:0};todos.filter(t=>!t.done).forEach(t=>{bp[t.priority]=(bp[t.priority]||0)+1;});
-  const circ=2*Math.PI*36;
-  el.innerHTML=`<div style="text-align:center;margin-bottom:.85rem">
-    <svg width="90" height="90" viewBox="0 0 90 90">
-      <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D888A0"/><stop offset="55%" stop-color="#A87898"/><stop offset="100%" stop-color="#6858A8"/></linearGradient></defs>
-      <circle cx="45" cy="45" r="36" fill="none" stroke="rgba(197,184,232,.18)" stroke-width="7"/>
-      <circle cx="45" cy="45" r="36" fill="none" stroke="url(#sg)" stroke-width="7" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}" stroke-linecap="round" transform="rotate(-90 45 45)" style="transition:stroke-dashoffset .7s ease"/>
-    </svg>
-    <div style="font-size:1.5rem;font-weight:800;background:linear-gradient(120deg,#C4607A,#7B65C4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:-64px;line-height:1">${pct}%</div>
-    <div style="font-size:.55rem;color:var(--tx3);letter-spacing:.08em;margin-top:46px">完成率</div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:.38rem">
-    ${[['high','🌸 高優先',PCOL.high.style],['mid','🍋 中優先',PCOL.mid.style],['low','🌿 低優先',PCOL.low.style]].map(([k,l,s])=>
-    `<div style="display:flex;justify-content:space-between;align-items:center;font-size:.7rem">
-      <span>${l}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:2px 8px;border-radius:10px;${s}">${bp[k]||0} 項</span>
-    </div>`).join('')}
-  </div>
-  <div style="margin-top:.7rem;padding-top:.5rem;border-top:1px solid rgba(197,184,232,.18);font-size:.65rem;color:var(--tx3);text-align:center">共 ${tot} 項 · 已完成 ${dn} 項</div>`;}
-
+function renderTodos(){const el=$('todoList');if(!el)return;const f=($('todoFilter')||{value:'all'}).value;let l=[...todos];if(f==='active')l=l.filter(t=>!t.done);if(f==='done')l=l.filter(t=>t.done);if(f==='high')l=l.filter(t=>t.priority==='high');l.sort((a,b)=>{const o={high:0,mid:1,low:2};if(a.done!==b.done)return a.done?1:-1;return(o[a.priority]||1)-(o[b.priority]||1);});el.innerHTML=l.length?l.map(t=>todoHTML(t,true)).join(''):`<div class="empty">📋<br>沒有符合的待辦</div>`;}
+function renderTodoStats(){const el=$('todoStats');if(!el)return;const tot=todos.length,dn=todos.filter(t=>t.done).length,pct=tot?Math.round(dn/tot*100):0;const bp={high:0,mid:0,low:0};todos.filter(t=>!t.done).forEach(t=>{bp[t.priority]=(bp[t.priority]||0)+1;});const circ=2*Math.PI*36;el.innerHTML=`<div style="text-align:center;margin-bottom:.85rem"><svg width="90" height="90" viewBox="0 0 90 90"><defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D888A0"/><stop offset="55%" stop-color="#A87898"/><stop offset="100%" stop-color="#6858A8"/></linearGradient></defs><circle cx="45" cy="45" r="36" fill="none" stroke="rgba(197,184,232,.18)" stroke-width="7"/><circle cx="45" cy="45" r="36" fill="none" stroke="url(#sg)" stroke-width="7" stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}" stroke-linecap="round" transform="rotate(-90 45 45)" style="transition:stroke-dashoffset .7s ease"/></svg><div style="font-size:1.5rem;font-weight:800;background:linear-gradient(120deg,#C4607A,#7B65C4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-top:-64px;line-height:1">${pct}%</div><div style="font-size:.55rem;color:var(--tx3);letter-spacing:.08em;margin-top:46px">完成率</div></div><div style="display:flex;flex-direction:column;gap:.38rem">${[['high','🌸 高優先',PCOL.high.style],['mid','🍋 中優先',PCOL.mid.style],['low','🌿 低優先',PCOL.low.style]].map(([k,l,s])=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:.7rem"><span>${l}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:2px 8px;border-radius:10px;${s}">${bp[k]||0} 項</span></div>`).join('')}</div><div style="margin-top:.7rem;padding-top:.5rem;border-top:1px solid rgba(197,184,232,.18);font-size:.65rem;color:var(--tx3);text-align:center">共 ${tot} 項 · 已完成 ${dn} 項</div>`;}
 function addTodo(){const text=$('todoInp').value.trim();if(!text)return;todos.unshift({id:genId(),text,priority:$('todoPri').value,done:false,created:todayKey()});persist();$('todoInp').value='';renderTodos();renderQuickTodos();renderTodoStats();updateStats();showToast('🌸 已新增待辦');}
 function quickAdd(){const text=$('quickInp').value.trim();if(!text)return;todos.unshift({id:genId(),text,priority:'mid',done:false,created:todayKey()});persist();$('quickInp').value='';renderQuickTodos();updateStats();showToast('✅ 已加入待辦');}
 function toggleTodo(id,evt){const t=todos.find(x=>x.id===id);if(!t)return;t.done=!t.done;persist();if(t.done&&evt){sparkle(evt.clientX,evt.clientY);showToast('🎉 完成！繼續加油！');}renderTodos();renderQuickTodos();renderTodoStats();updateStats();}
@@ -702,326 +646,384 @@ function delTodo(id){todos=todos.filter(t=>t.id!==id);persist();renderTodos();re
 function clearDone(){todos=todos.filter(t=>!t.done);persist();renderTodos();renderQuickTodos();renderTodoStats();updateStats();showToast('🧹 已清除完成項目');}
 
 function calcStreak(hid){const logs=habitLogs[hid]||{},today=getTW();let s=0,d=new Date(today);if(!logs[dayKey(d)])d.setDate(d.getDate()-1);while(logs[dayKey(d)]&&s<=365){s++;d.setDate(d.getDate()-1);}return s;}
-
 const HABIT_COLORS=['linear-gradient(135deg,#C4A098,#9090A8)','linear-gradient(135deg,#8FA68E,#A0AABB)','linear-gradient(135deg,#B89080,#A8A090)','linear-gradient(135deg,#A0AABB,#8FA68E)'];
-
-function renderHabits(){
-  const el=$('habitList');if(!el)return;
-  const tk=todayKey(),today=getTW();
-  const last7=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);last7.push(dayKey(d));}
-  if(!habits.length){el.innerHTML=`<div class="empty">🌱<br>尚未建立習慣</div>`;renderHabitStats();return;}
-  el.innerHTML=habits.map((h,hi)=>{
-    const logs=habitLogs[h.id]||{},streak=calcStreak(h.id);
-    const d7=last7.filter(dk=>!!logs[dk]).length,p7=Math.round(d7/7*100);
-    const col=HABIT_COLORS[hi%HABIT_COLORS.length];
-    const dots=last7.map(dk=>{
-      const done=!!logs[dk],isT=dk===tk,fut=new Date(dk+'T00:00:00')>today;
-      return`<div class="hdot${done?' done':''}${isT&&!done?' today':''}${!done&&!fut&&dk<tk?' missed':''}" onclick="event.stopPropagation();toggleHabit('${h.id}','${dk}',event)">${done?'✓':''}</div>`;
-    }).join('');
-    return`<div class="habit-row">
-      <div class="habit-icon">${h.emoji}</div>
-      <div style="flex:1;min-width:0">
-        <div class="habit-name">${h.name}</div>
-        <div style="height:4px;border-radius:4px;background:rgba(197,184,232,.18);margin-top:3px;overflow:hidden"><div style="height:100%;width:${p7}%;background:${col};border-radius:4px;transition:width .5s ease"></div></div>
-      </div>
-      <div class="habit-streak">🔥 ${streak}</div>
-      <div class="habit-dots">${dots}</div>
-      <button class="del-btn" onclick="delHabit('${h.id}')">✕</button>
-    </div>`;
-  }).join('');
-  renderHabitStats();
-}
-function renderHabitStats(){
-  const el=$('habitStats');if(!el)return;
-  if(!habits.length){el.innerHTML='<div class="empty">尚無習慣資料</div>';return;}
-  const today=getTW();
-  el.innerHTML=habits.map((h,hi)=>{
-    const logs=habitLogs[h.id]||{};let d7=0;
-    for(let i=0;i<7;i++){const d=new Date(today);d.setDate(d.getDate()-i);if(logs[dayKey(d)])d7++;}
-    const pct=Math.round(d7/7*100),s=calcStreak(h.id);
-    const col=HABIT_COLORS[hi%HABIT_COLORS.length];
-    return`<div style="margin-bottom:.8rem">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.2rem">
-        <div style="font-size:.75rem;font-weight:600">${h.emoji} ${h.name}</div>
-        <div style="font-size:.6rem;color:var(--peach-d);font-family:'JetBrains Mono',monospace">🔥${s} · ${pct}%</div>
-      </div>
-      <div style="height:5px;border-radius:5px;background:rgba(197,184,232,.15);overflow:hidden"><div style="height:100%;width:${pct}%;background:${col};border-radius:5px;transition:width .5s ease"></div></div>
-      <div style="font-size:.55rem;color:var(--tx3);margin-top:.15rem;font-family:'JetBrains Mono',monospace">本週 ${d7}/7 天</div>
-    </div>`;
-  }).join('');}
-
-function renderTodayHabits(){
-  const tk=todayKey(),el=$('todayHabits');if(!el)return;
-  if(!habits.length){el.innerHTML=`<div class="empty" style="padding:.8rem">🌱<br>點上方「習慣管理」建立習慣</div>`;return;}
-  el.innerHTML=habits.map((h,hi)=>{
-    const done=!!(habitLogs[h.id]||{})[tk];
-    const col=HABIT_COLORS[hi%HABIT_COLORS.length];
-    return`<div class="habit-row" onclick="toggleHabitT('${h.id}',event)" style="cursor:pointer">
-      <div class="habit-icon">${h.emoji}</div>
-      <div style="flex:1"><div class="habit-name"${done?' style="text-decoration:line-through;color:var(--tx3)"':''}>${h.name}</div></div>
-      <div style="width:26px;height:26px;border-radius:50%;border:1.5px solid ${done?'transparent':'rgba(197,184,232,.4)'};background:${done?col:'transparent'};display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .2s;flex-shrink:0;color:var(--lav-d)">${done?'✓':''}</div>
-    </div>`;
-  }).join('');}
-
+function renderHabits(){const el=$('habitList');if(!el)return;const tk=todayKey(),today=getTW();const last7=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);last7.push(dayKey(d));}if(!habits.length){el.innerHTML=`<div class="empty">🌱<br>尚未建立習慣</div>`;renderHabitStats();return;}el.innerHTML=habits.map((h,hi)=>{const logs=habitLogs[h.id]||{},streak=calcStreak(h.id);const d7=last7.filter(dk=>!!logs[dk]).length,p7=Math.round(d7/7*100);const col=HABIT_COLORS[hi%HABIT_COLORS.length];const dots=last7.map(dk=>{const done=!!logs[dk],isT=dk===tk,fut=new Date(dk+'T00:00:00')>today;return`<div class="hdot${done?' done':''}${isT&&!done?' today':''}${!done&&!fut&&dk<tk?' missed':''}" onclick="event.stopPropagation();toggleHabit('${h.id}','${dk}',event)">${done?'✓':''}</div>`;}).join('');return`<div class="habit-row"><div class="habit-icon">${h.emoji}</div><div style="flex:1;min-width:0"><div class="habit-name">${h.name}</div><div style="height:4px;border-radius:4px;background:rgba(197,184,232,.18);margin-top:3px;overflow:hidden"><div style="height:100%;width:${p7}%;background:${col};border-radius:4px;transition:width .5s ease"></div></div></div><div class="habit-streak">🔥 ${streak}</div><div class="habit-dots">${dots}</div><button class="del-btn" onclick="delHabit('${h.id}')">✕</button></div>`;}).join('');renderHabitStats();}
+function renderHabitStats(){const el=$('habitStats');if(!el)return;if(!habits.length){el.innerHTML='<div class="empty">尚無習慣資料</div>';return;}const today=getTW();el.innerHTML=habits.map((h,hi)=>{const logs=habitLogs[h.id]||{};let d7=0;for(let i=0;i<7;i++){const d=new Date(today);d.setDate(d.getDate()-i);if(logs[dayKey(d)])d7++;}const pct=Math.round(d7/7*100),s=calcStreak(h.id);const col=HABIT_COLORS[hi%HABIT_COLORS.length];return`<div style="margin-bottom:.8rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.2rem"><div style="font-size:.75rem;font-weight:600">${h.emoji} ${h.name}</div><div style="font-size:.6rem;color:var(--peach-d);font-family:'JetBrains Mono',monospace">🔥${s} · ${pct}%</div></div><div style="height:5px;border-radius:5px;background:rgba(197,184,232,.15);overflow:hidden"><div style="height:100%;width:${pct}%;background:${col};border-radius:5px;transition:width .5s ease"></div></div><div style="font-size:.55rem;color:var(--tx3);margin-top:.15rem;font-family:'JetBrains Mono',monospace">本週 ${d7}/7 天</div></div>`;}).join('');}
+function renderTodayHabits(){const tk=todayKey(),el=$('todayHabits');if(!el)return;if(!habits.length){el.innerHTML=`<div class="empty" style="padding:.8rem">🌱<br>點上方「習慣管理」建立習慣</div>`;return;}el.innerHTML=habits.map((h,hi)=>{const done=!!(habitLogs[h.id]||{})[tk];const col=HABIT_COLORS[hi%HABIT_COLORS.length];return`<div class="habit-row" onclick="toggleHabitT('${h.id}',event)" style="cursor:pointer"><div class="habit-icon">${h.emoji}</div><div style="flex:1"><div class="habit-name"${done?' style="text-decoration:line-through;color:var(--tx3)"':''}>${h.name}</div></div><div style="width:26px;height:26px;border-radius:50%;border:1.5px solid ${done?'transparent':'rgba(197,184,232,.4)'};background:${done?col:'transparent'};display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .2s;flex-shrink:0">${done?'✓':''}</div></div>`;}).join('');}
 function toggleHabit(hid,dk,evt){if(!habitLogs[hid])habitLogs[hid]={};habitLogs[hid][dk]=!habitLogs[hid][dk];persist();if(habitLogs[hid][dk]&&evt)sparkle(evt.clientX,evt.clientY);renderHabits();renderTodayHabits();updateStats();}
 function toggleHabitT(hid,evt){toggleHabit(hid,todayKey(),evt);}
 function delHabit(id){habits=habits.filter(h=>h.id!==id);persist();renderHabits();renderTodayHabits();updateStats();showToast('🗑 已刪除習慣');}
 function showAddHabit(){$('addHabitPanel').style.display='block';$('overlay').style.display='block';}
-function doAddHabit(){
-  const name=$('hName').value.trim();if(!name){showToast('請填寫習慣名稱');return;}
-  habits.push({id:genId(),name,emoji:$('hEmoji').value.trim()||'✦',freq:7,createdAt:todayKey()});
-  persist();closeOverlays();$('hName').value='';$('hEmoji').value='';renderHabits();renderTodayHabits();updateStats();showToast('🌱 習慣已建立！');
-}
-
+function doAddHabit(){const name=$('hName').value.trim();if(!name){showToast('請填寫習慣名稱');return;}habits.push({id:genId(),name,emoji:$('hEmoji').value.trim()||'✦',freq:7,createdAt:todayKey()});persist();closeOverlays();$('hName').value='';$('hEmoji').value='';renderHabits();renderTodayHabits();updateStats();showToast('🌱 習慣已建立！');}
 function updateNote(){const e=$('noteCnt');if(e)e.textContent=($('noteArea').value||'').length+' 字';}
 function saveNote(){notes[todayKey()]=$('noteArea').value;persist();showToast('📝 筆記已儲存');}
 function loadNote(){const e=$('noteArea');if(e){e.value=notes[todayKey()]||'';updateNote();}}
 
-function updateStats(){
-  const tk=todayKey(),dn=todos.filter(t=>t.done).length,tot=todos.length;
-  const dh=habits.filter(h=>(habitLogs[h.id]||{})[tk]).length;
-  ($('sDone')||{}).textContent=dn;($('sTotal')||{}).textContent=tot;
-  ($('sHab')||{}).textContent=dh;($('sHabT')||{}).textContent=habits.length;
-  ($('sSch')||{}).textContent=schedules.filter(s=>s.date===tk).length;
-  const ti=tot+habits.length,di=dn+dh,p=ti?Math.round(di/ti*100):0;
-  const pf=$('progFill');if(pf)pf.style.width=p+'%';
-  const pp=$('progPct');if(pp)pp.textContent=p+'%';
+/* ═══════════ STUDY PLAN ═══════════ */
+function isChapDone(c){return c.currentPage>=c.pageEnd;}
+function chapTotal(c){return Math.max(c.pageEnd-c.pageStart+1,1);}
+function chapRead(c){return Math.max(c.currentPage-c.pageStart,0);}
+function chapPct(c){return Math.min(100,Math.round(chapRead(c)/chapTotal(c)*100));}
+function findChap(id){for(const sj of subjects){const c=(sj.chapters||[]).find(x=>x.id===id);if(c){if(c.notes===undefined)c.notes='';if(!c.reviews)c.reviews=[];return{sj,c};}}return null;}
+function getTodayStudySessions(){const tk=todayKey();return schedules.filter(s=>s.date===tk&&/讀書|閱讀|複習|預習|自習/.test(s.name));}
+
+function renderStudy(){
+  const el=$('studySubjectList');if(!el)return;
+  if(!subjects.length){el.innerHTML=`<div class="empty" style="padding:2.5rem 1rem">📖<br>尚未建立科目<br><span style="font-size:.65rem">點右上「＋ 新增科目」開始</span></div>`;updateStudyStats();renderTodayStudySessions();renderStudyWeekly();renderStudyProgressAll();renderReviewReminders();return;}
+  el.innerHTML=subjects.map(sj=>{
+    const chaps=sj.chapters||[];
+    const total=chaps.length,done=chaps.filter(isChapDone).length;
+    const tp=chaps.reduce((s,c)=>s+chapTotal(c),0),rp=chaps.reduce((s,c)=>s+chapRead(c),0);
+    const pct=tp?Math.round(rp/tp*100):0;
+    const examInfo=examBadge(sj);
+    const chapHtml=chaps.map(c=>{
+      if(c.notes===undefined)c.notes='';
+      if(!c.reviews)c.reviews=[];
+      const p=chapPct(c),fin=isChapDone(c);
+      const notesPreview=c.notes&&c.notes.trim()?`<div class="chap-notes-preview">📝 ${escapeHtml(c.notes.trim()).slice(0,40)}${c.notes.trim().length>40?'…':''}</div>`:'';
+      return`<div class="chap-row${fin?' chap-finished':''}">
+        <div class="chap-done-check" onclick="toggleChapDone('${c.id}',event)">${fin?'✓':''}</div>
+        <div style="flex:1;min-width:0">
+          <div class="chap-title">${c.name}</div>
+          <div class="chap-pages">p.${c.pageStart}–${c.pageEnd}（${chapTotal(c)}頁）${c.currentPage>c.pageStart?` · 讀至 p.${c.currentPage}`:' · 未開始'}</div>
+          ${notesPreview}
+        </div>
+        <div class="chap-mini-bar"><div class="chap-mini-fill" style="width:${p}%;background:${sj.color}"></div></div>
+        <span style="font-size:.5rem;font-family:'JetBrains Mono',monospace;color:var(--tx3);flex-shrink:0;width:24px;text-align:right">${p}%</span>
+        <div class="chap-actions">
+          <button class="chap-btn" onclick="openUpdatePage('${c.id}')">進度</button>
+          <button class="chap-btn" onclick="openChapNotes('${c.id}')">📝</button>
+          <button class="chap-btn sc-btn" onclick="openSchedChap('${c.id}')">📅 排程</button>
+          <button class="del-btn" onclick="delChapter('${sj.id}','${c.id}')">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+    return`<div class="subj-card">
+      <div class="subj-header">
+        <div class="subj-color-bar" style="background:${sj.color}"></div>
+        <div class="subj-emoji">${sj.emoji}</div>
+        <div class="subj-info"><div class="subj-name">${sj.name}</div><div class="subj-meta">${done}/${total} 章完成 · ${rp}/${tp} 頁讀完</div></div>
+        <div class="exam-badge ${examInfo.cls}" onclick="openExamDate('${sj.id}')" title="點擊設定考試日期">${examInfo.label}</div>
+        <div class="subj-prog-wrap"><div class="subj-prog-bar"><div class="subj-prog-fill" style="width:${pct}%;background:${sj.color}"></div></div><div class="subj-prog-pct">${pct}%</div></div>
+        <div style="display:flex;gap:3px;margin-left:.45rem">
+          <button class="chap-btn" onclick="openAddChapter('${sj.id}')">＋章節</button>
+          <button class="del-btn" style="display:flex" onclick="delSubject('${sj.id}')">✕</button>
+        </div>
+      </div>
+      <div class="subj-chapters">${chapHtml||`<div style="font-size:.7rem;color:var(--tx3);padding:.3rem 0">尚無章節，點「＋章節」新增</div>`}</div>
+      ${examInfo.suggestion?`<div style="padding:0 .85rem .65rem;font-size:.6rem;color:var(--tx3);font-family:'JetBrains Mono',monospace">${examInfo.suggestion}</div>`:''}
+    </div>`;
+  }).join('');
+  updateStudyStats();renderTodayStudySessions();renderStudyWeekly();renderStudyProgressAll();renderReviewReminders();
+}
+function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function examBadge(sj){
+  if(!sj.examDate)return{cls:'none',label:'🎯 設定考期',suggestion:''};
+  const today=getTW();const ed=new Date(sj.examDate+'T00:00:00');
+  const days=Math.ceil((ed-new Date(today.getFullYear(),today.getMonth(),today.getDate()))/86400000);
+  const chaps=sj.chapters||[];
+  const remainingPages=chaps.reduce((s,c)=>s+Math.max(c.pageEnd-c.currentPage,0),0);
+  if(days<0)return{cls:'urgent',label:`🎯 已過期`,suggestion:remainingPages>0?`還有 ${remainingPages} 頁未讀完`:''};
+  if(days===0)return{cls:'urgent',label:`🎯 今天！`,suggestion:remainingPages>0?`還有 ${remainingPages} 頁未讀完`:'✅ 已讀完，加油！'};
+  const cls=days<=3?'urgent':'normal';
+  const perDay=days>0&&remainingPages>0?Math.ceil(remainingPages/days):0;
+  const suggestion=remainingPages>0?`📐 剩 ${remainingPages} 頁 ÷ ${days} 天 ≈ 每天讀 ${perDay} 頁`:'✅ 已讀完，加油！';
+  return{cls,label:`🎯 倒數 ${days} 天`,suggestion};
 }
 
-const HEAT_COLS=['rgba(160,148,132,.14)','rgba(196,160,152,.32)','rgba(144,144,168,.38)','rgba(143,166,142,.48)','#8090A0'];
+function updateStudyStats(){
+  const allC=subjects.flatMap(sj=>sj.chapters||[]);
+  const done=allC.filter(isChapDone).length;
+  const today=getTW();let wp=0;
+  for(let i=0;i<7;i++){const d=new Date(today);d.setDate(d.getDate()-i);const dk=dayKey(d);if(studyLogs[dk])wp+=Object.values(studyLogs[dk]).reduce((s,v)=>s+v,0);}
+  const ts=getTodayStudySessions().length;
+  const s=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+  s('stSubjCount',subjects.length);s('stChapDone',done);s('stWeekPages',wp);s('stTodaySessions',ts);s('sStudy',ts);
+}
 
-function renderHeatmap(){
-  const el=$('heatmap');if(!el)return;
-  const today=getTW(),days=[];
-  for(let i=27;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);days.push(d);}
-  const cells=days.map(d=>{
-    const dk=dayKey(d),tot=habits.length;if(!tot)return{dk,level:0,done:0,tot:0};
-    const dn=habits.filter(h=>(habitLogs[h.id]||{})[dk]).length,p=dn/tot;
-    return{dk,level:p===0?0:p<.25?1:p<.5?2:p<.75?3:4,done:dn,tot};
+function renderTodayStudySessions(){
+  const el=$('todayStudySessions');if(!el)return;
+  const ss=getTodayStudySessions();
+  if(!ss.length){el.innerHTML=`<div class="empty" style="padding:.8rem">尚無今日安排<br><span style="font-size:.65rem">點章節的「📅 排程」加入行程</span></div>`;return;}
+  el.innerHTML=ss.map(s=>`<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .5rem;border-radius:8px;border:1.5px solid rgba(143,166,142,.2);background:rgba(143,166,142,.07);margin-bottom:4px"><span style="font-size:.8rem">📖</span><div style="flex:1;min-width:0"><div style="font-size:.74rem;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div><div style="font-size:.57rem;color:var(--tx3);font-family:'JetBrains Mono',monospace">${s.start}–${s.end}</div></div><button class="del-btn" style="display:flex" onclick="delSched('${s.id}')">✕</button></div>`).join('');}
+
+function renderStudyWeekly(){
+  const el=$('studyWeeklyChart');if(!el)return;
+  const today=getTW(),dn=['日','一','二','三','四','五','六'],days=[];
+  for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);const dk=dayKey(d);const pg=studyLogs[dk]?Object.values(studyLogs[dk]).reduce((s,v)=>s+v,0):0;days.push({dk,label:dn[d.getDay()],pages:pg,isT:dk===todayKey()});}
+  const mx=Math.max(...days.map(d=>d.pages),1);
+  const cols=['#C4A098','#B89080','#A8A090','#8FA68E','#A0AABB','#9090A8','#B0A8C0'];
+  el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:6px;height:70px;padding:0 0 .35rem">${days.map((d,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end"><div style="font-size:.46rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'}">${d.pages||''}</div><div style="width:100%;border-radius:5px 5px 0 0;min-height:3px;background:${cols[i]};opacity:${d.isT?1:.62};height:${Math.max(d.pages/mx*52,d.pages>0?4:2)}px;transition:height .5s ease"></div><div style="font-family:'JetBrains Mono',monospace;font-size:.48rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'};font-weight:${d.isT?700:400}">${d.label}</div></div>`).join('')}</div><div style="font-size:.56rem;color:var(--tx3);text-align:center;margin-top:.15rem">本週每日讀書頁數</div>`;}
+
+function renderStudyProgressAll(){
+  const el=$('studyProgressAll');if(!el)return;
+  if(!subjects.length){el.innerHTML='<div class="empty">尚無科目</div>';return;}
+  el.innerHTML=subjects.map(sj=>{const chaps=sj.chapters||[];const tp=chaps.reduce((s,c)=>s+chapTotal(c),0),rp=chaps.reduce((s,c)=>s+chapRead(c),0);const pct=tp?Math.round(rp/tp*100):0;return`<div style="margin-bottom:.72rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.22rem"><div style="font-size:.75rem;font-weight:600">${sj.emoji} ${sj.name}</div><div style="font-size:.56rem;color:var(--tx3);font-family:'JetBrains Mono',monospace">${rp}/${tp}頁 · ${pct}%</div></div><div style="height:6px;border-radius:6px;background:rgba(197,184,232,.15);overflow:hidden"><div style="height:100%;width:${pct}%;background:${sj.color};border-radius:6px;transition:width .5s ease"></div></div></div>`;}).join('');}
+
+/* Subject CRUD */
+let selColor=SUBJ_COLORS[0];
+function showAddSubject(){
+  selColor=SUBJ_COLORS[0];
+  const pal=$('colorPalette');
+  if(pal)pal.innerHTML=SUBJ_COLORS.map((c,i)=>`<div class="color-chip${i===0?' selected':''}" style="background:${c}" onclick="selectColor('${c}',this)"></div>`).join('');
+  $('sjName').value='';$('sjEmoji').value='';$('sjExamDate').value='';
+  $('addSubjectPanel').style.display='block';$('overlay').style.display='block';
+}
+function selectColor(c,el){selColor=c;document.querySelectorAll('.color-chip').forEach(e=>e.classList.remove('selected'));el.classList.add('selected');}
+function doAddSubject(){const name=$('sjName').value.trim();if(!name){showToast('請填寫科目名稱');return;}const ed=$('sjExamDate').value||null;subjects.push({id:genId(),name,emoji:$('sjEmoji').value.trim()||'📖',color:selColor,examDate:ed,chapters:[]});persist();closeOverlays();renderStudy();showToast('📖 科目已建立！');}
+function delSubject(id){if(!confirm('確定刪除此科目及所有章節？'))return;subjects=subjects.filter(s=>s.id!==id);persist();renderStudy();showToast('🗑 已刪除科目');}
+
+/* Exam date */
+function openExamDate(sjId){const sj=subjects.find(s=>s.id===sjId);if(!sj)return;$('examDateSubjId').value=sjId;$('examDateVal').value=sj.examDate||'';$('examDateInfo').textContent=`${sj.emoji} ${sj.name}`;$('examDatePanel').style.display='block';$('overlay').style.display='block';}
+function doSetExamDate(){const sjId=$('examDateSubjId').value;const sj=subjects.find(s=>s.id===sjId);if(!sj)return;const v=$('examDateVal').value;if(!v){showToast('請選擇日期');return;}sj.examDate=v;persist();closeOverlays();renderStudy();showToast('🎯 考試日期已設定');}
+function doClearExamDate(){const sjId=$('examDateSubjId').value;const sj=subjects.find(s=>s.id===sjId);if(!sj)return;sj.examDate=null;persist();closeOverlays();renderStudy();showToast('已清除考試日期');}
+
+/* Chapter CRUD */
+function openAddChapter(sjId){$('chapSubjId').value=sjId;$('chapName').value='';$('chapPageStart').value='';$('chapPageEnd').value='';$('addChapterPanel').style.display='block';$('overlay').style.display='block';}
+function doAddChapter(){const sjId=$('chapSubjId').value;const sj=subjects.find(s=>s.id===sjId);if(!sj)return;const name=$('chapName').value.trim();if(!name){showToast('請填寫章節名稱');return;}const ps=parseInt($('chapPageStart').value)||1,pe=parseInt($('chapPageEnd').value)||ps+30;if(pe<ps){showToast('結束頁需大於起始頁');return;}if(!sj.chapters)sj.chapters=[];sj.chapters.push({id:genId(),name,pageStart:ps,pageEnd:pe,currentPage:ps,notes:'',reviews:[]});persist();closeOverlays();renderStudy();showToast('✦ 章節已新增！');}
+function delChapter(sjId,chapId){const sj=subjects.find(s=>s.id===sjId);if(!sj)return;sj.chapters=(sj.chapters||[]).filter(c=>c.id!==chapId);persist();renderStudy();showToast('🗑 已刪除章節');}
+function toggleChapDone(chapId,evt){const res=findChap(chapId);if(!res)return;const{c}=res;const wasDone=isChapDone(c);if(wasDone){c.currentPage=c.pageStart;c.reviews=[];}else{logStudyPages(chapId,chapTotal(c)-chapRead(c));c.currentPage=c.pageEnd;c.reviews=genReviewSchedule();}persist();if(!wasDone&&evt)sparkle(evt.clientX,evt.clientY);renderStudy();showToast(!wasDone?'🎉 章節完成！已安排複習提醒':'↩ 已重置章節');}
+function genReviewSchedule(){const today=getTW();return[1,3,7].map(interval=>{const d=new Date(today);d.setDate(d.getDate()+interval);return{date:dayKey(d),interval,done:false};});}
+
+/* Progress update */
+function openUpdatePage(chapId){const res=findChap(chapId);if(!res)return;const{sj,c}=res;$('updatePageChapId').value=chapId;$('updatePageVal').value=c.currentPage;$('updatePageInfo').textContent=`${sj.emoji} ${sj.name} — ${c.name}（p.${c.pageStart}–${c.pageEnd}）`;$('updatePagePanel').style.display='block';$('overlay').style.display='block';}
+function doUpdatePage(){const chapId=$('updatePageChapId').value;const res=findChap(chapId);if(!res)return;const{c}=res;const np=parseInt($('updatePageVal').value)||c.currentPage;if(np<c.pageStart||np>c.pageEnd){showToast(`頁數需在 ${c.pageStart}–${c.pageEnd} 之間`);return;}const delta=Math.max(np-c.currentPage,0);if(delta>0)logStudyPages(chapId,delta);c.currentPage=np;persist();closeOverlays();renderStudy();showToast(isChapDone(c)?'🎉 章節完成！太棒了！':`📖 進度已更新至 p.${np}`);}
+function logStudyPages(chapId,pages){const dk=todayKey();if(!studyLogs[dk])studyLogs[dk]={};studyLogs[dk][chapId]=(studyLogs[dk][chapId]||0)+pages;}
+
+/* Chapter notes */
+function openChapNotes(chapId){const res=findChap(chapId);if(!res)return;const{sj,c}=res;$('chapNotesChapId').value=chapId;$('chapNotesVal').value=c.notes||'';$('chapNotesInfo').textContent=`${sj.emoji} ${sj.name} — ${c.name}`;$('chapNotesPanel').style.display='block';$('overlay').style.display='block';}
+function doSaveChapNotes(){const chapId=$('chapNotesChapId').value;const res=findChap(chapId);if(!res)return;const{c}=res;c.notes=$('chapNotesVal').value;persist();closeOverlays();renderStudy();showToast('📝 筆記已儲存');}
+
+/* Spaced-repetition review reminders */
+function getAllReviews(){
+  const items=[];
+  subjects.forEach(sj=>(sj.chapters||[]).forEach(c=>{if(!c.reviews)c.reviews=[];(c.reviews||[]).forEach((r,idx)=>{items.push({sj,c,r,idx});});}));
+  return items;
+}
+function renderReviewReminders(){
+  const el=$('reviewReminders');if(!el)return;
+  const tk=todayKey();
+  const all=getAllReviews().filter(x=>!x.r.done);
+  all.sort((a,b)=>a.r.date.localeCompare(b.r.date));
+  const upcoming=all.filter(x=>{
+    const d=new Date(x.r.date+'T00:00:00'),t=new Date(tk+'T00:00:00');
+    const diff=Math.ceil((d-t)/86400000);
+    return diff<=3;
   });
-  el.innerHTML=`<div style="display:flex;gap:3px;margin-bottom:3px">${days.map(d=>{const wd=d.getDay();return`<div style="font-family:'JetBrains Mono',monospace;font-size:.44rem;color:var(--tx3);width:16px;text-align:center">${wd===1?'一':wd===3?'三':wd===5?'五':''}</div>`;}).join('')}</div>
-  <div style="display:flex;gap:3px">${cells.map(c=>`<div style="width:16px;height:16px;border-radius:4px;background:${HEAT_COLS[c.level]};transition:all .2s;cursor:pointer" title="${c.dk} · ${c.done}/${c.tot}"></div>`).join('')}</div>
-  <div style="display:flex;align-items:center;gap:.4rem;margin-top:.55rem;font-size:.58rem;color:var(--tx3)"><span>少</span>${HEAT_COLS.map(c=>`<div style="width:11px;height:11px;border-radius:3px;background:${c}"></div>`).join('')}<span>多</span></div>`;}
+  if(!upcoming.length){el.innerHTML=`<div class="empty" style="padding:.8rem">尚無待複習項目<br><span style="font-size:.65rem">完成章節後會自動產生 1/3/7 天複習提醒</span></div>`;return;}
+  el.innerHTML=upcoming.slice(0,8).map(({sj,c,r,idx})=>{
+    const isOverdue=r.date<tk,isToday=r.date===tk;
+    const cls=isOverdue||isToday?'due':'upcoming';
+    const chipCls=r.interval===1?'r1':r.interval===3?'r3':'r7';
+    const dateLabel=isToday?'今天':isOverdue?`已過期（${r.date}）`:r.date;
+    return`<div class="review-card ${cls}">
+      <span class="review-chip ${chipCls}">${r.interval}天</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.72rem;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sj.emoji} ${c.name}</div>
+        <div style="font-size:.56rem;color:var(--tx3);font-family:'JetBrains Mono',monospace">${dateLabel}</div>
+      </div>
+      <button class="chap-btn sc-btn" onclick="openScheduleReview('${c.id}',${idx})">📅</button>
+      <div class="chap-done-check" onclick="toggleReviewDone('${c.id}',${idx},event)" title="標記已複習">✓</div>
+    </div>`;
+  }).join('');
+}
+function toggleReviewDone(chapId,idx,evt){const res=findChap(chapId);if(!res)return;const{c}=res;if(!c.reviews||!c.reviews[idx])return;c.reviews[idx].done=!c.reviews[idx].done;persist();if(c.reviews[idx].done&&evt)sparkle(evt.clientX,evt.clientY);renderReviewReminders();showToast(c.reviews[idx].done?'✅ 已標記複習完成':'↩ 已取消標記');}
+function openScheduleReview(chapId,idx){const res=findChap(chapId);if(!res)return;const{sj,c}=res;const r=(c.reviews||[])[idx];if(!r)return;$('schedReviewChapId').value=chapId;$('schedReviewIdx').value=idx;$('schedReviewInfo').textContent=`🔁 ${sj.emoji} ${sj.name} — ${c.name}（第 ${r.interval} 天複習）`;$('schedReviewDate').value=r.date;$('schedReviewStart').value='20:00';$('schedReviewEnd').value='20:30';$('schedReviewPanel').style.display='block';$('overlay').style.display='block';}
+function doScheduleReview(){const chapId=$('schedReviewChapId').value;const idx=parseInt($('schedReviewIdx').value);const res=findChap(chapId);if(!res)return;const{sj,c}=res;const date=$('schedReviewDate').value;if(!date){showToast('請選擇日期');return;}const name=`🔁 複習：${sj.name} ${c.name}`;schedules.push({id:genId(),name,start:$('schedReviewStart').value,end:$('schedReviewEnd').value,note:`第 ${(c.reviews||[])[idx]?.interval||''} 天複習提醒`,priority:'normal',date});persist();closeOverlays();if(date===todayKey()){renderSchedules();renderTodayStudySessions();}showToast('📅 複習已加入行程！');}
 
-function renderStreakBoard(){
-  const el=$('streakBoard');if(!el)return;
-  if(!habits.length){el.innerHTML=`<div class="empty">尚無習慣資料</div>`;return;}
-  const sorted=habits.map(h=>({...h,streak:calcStreak(h.id)})).sort((a,b)=>b.streak-a.streak);
-  el.innerHTML=sorted.map((h,i)=>`<div style="display:flex;align-items:center;gap:.55rem;padding:.5rem .35rem;border-bottom:1px solid rgba(197,184,232,.15)">
-    <div style="font-size:.75rem;width:18px;text-align:center">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div>
-    <div style="font-size:.9rem">${h.emoji}</div>
-    <div style="flex:1;font-size:.75rem;font-weight:600">${h.name}</div>
-    <div style="font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--peach-d)">🔥 ${h.streak}</div>
-  </div>`).join('');}
+/* Schedule chapter */
+function openSchedChap(chapId){const res=findChap(chapId);if(!res)return;const{sj,c}=res;$('schedChapId').value=chapId;$('schedChapInfo').textContent=`${sj.emoji} ${sj.name} — ${c.name}（p.${c.pageStart}–${c.pageEnd}，目前 p.${c.currentPage}）`;$('schedChapPages').value=Math.min(30,Math.max(c.pageEnd-c.currentPage,10));$('schedChapDate').value=dayKey(getTW());$('schedChapStart').value='09:00';$('schedChapEnd').value='10:00';$('schedChapPanel').style.display='block';$('overlay').style.display='block';}
+function doScheduleChap(){const chapId=$('schedChapId').value;const res=findChap(chapId);if(!res)return;const{sj,c}=res;const date=$('schedChapDate').value;if(!date){showToast('請選擇日期');return;}const pages=parseInt($('schedChapPages').value)||20;const name=`📖 讀書：${sj.name} ${c.name}（${pages}頁）`;schedules.push({id:genId(),name,start:$('schedChapStart').value,end:$('schedChapEnd').value,note:`目標 p.${c.currentPage}–${Math.min(c.currentPage+pages,c.pageEnd)}`,priority:'normal',date});persist();closeOverlays();if(date===todayKey()){renderSchedules();renderTodayStudySessions();updateStudyStats();}showToast('📅 已加入行程！');}
 
-function renderWeeklyBar(){
-  const el=$('weeklyBar');if(!el)return;
-  const today=getTW(),tk=todayKey(),dnames=['一','二','三','四','五','六','日'],days=[];
-  for(let i=6;i>=0;i--){
-    const d=new Date(today);d.setDate(d.getDate()-i);const dk=dayKey(d),wd=d.getDay();
-    const hd=habits.filter(h=>(habitLogs[h.id]||{})[dk]).length;
-    const td2=todos.filter(t=>t.done&&t.created===dk).length;
-    days.push({total:hd+td2,label:dnames[wd===0?6:wd-1],isT:dk===tk});
-  }
-  const mx=Math.max(...days.map(d=>d.total),1);
-  const barCols=['#C4A098','#B89080','#A8A090','#8FA68E','#A0AABB','#9090A8','#B0A8C0'];
-  el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:5px;height:80px;padding:0 0 .4rem">
-    ${days.map((d,i)=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end">
-      <div style="font-size:.5rem;color:${d.isT?'var(--rose-d)':'var(--tx3)'}">${d.total||''}</div>
-      <div style="width:100%;border-radius:6px 6px 0 0;min-height:3px;background:${barCols[i]};opacity:${d.isT?'1':'.65'};height:${Math.max(d.total/mx*62,d.total>0?5:2)}px;transition:height .5s ease;box-shadow:${d.isT?'0 0 8px rgba(196,96,122,.28)':'none'}"></div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;color:${d.isT?'var(--rose-d)':'var(--tx3)'};font-weight:${d.isT?'700':'400'}">${d.label}</div>
-    </div>`).join('')}
-  </div>
-  <div style="font-size:.58rem;color:var(--tx3);text-align:center;margin-top:.2rem;letter-spacing:.06em">習慣打卡 + 完成待辦（近 7 天）</div>`;}
+/* Global stats */
+function updateStats(){const tk=todayKey(),dn=todos.filter(t=>t.done).length,tot=todos.length;const dh=habits.filter(h=>(habitLogs[h.id]||{})[tk]).length;const ts=getTodayStudySessions().length;($('sDone')||{}).textContent=dn;($('sTotal')||{}).textContent=tot;($('sHab')||{}).textContent=dh;($('sHabT')||{}).textContent=habits.length;($('sSch')||{}).textContent=schedules.filter(s=>s.date===tk).length;($('sStudy')||{}).textContent=ts;const ti=tot+habits.length,di=dn+dh,p=ti?Math.round(di/ti*100):0;const pf=$('progFill');if(pf)pf.style.width=p+'%';const pp=$('progPct');if(pp)pp.textContent=p+'%';}
 
-function renderRecentNotes(){
-  const el=$('recentNotes');if(!el)return;
-  const entries=Object.entries(notes).filter(([,v])=>v&&v.trim()).sort(([a],[b])=>b.localeCompare(a)).slice(0,5);
-  if(!entries.length){el.innerHTML=`<div class="empty">尚無筆記</div>`;return;}
-  el.innerHTML=entries.map(([dk,text])=>`<div style="padding:.65rem .7rem;border-radius:10px;border:1.5px solid rgba(197,184,232,.2);margin-bottom:.45rem;background:rgba(255,255,255,.5)">
-    <div style="font-size:.55rem;color:var(--tx3);letter-spacing:.09em;margin-bottom:.3rem">${dk}</div>
-    <div style="font-size:.75rem;color:var(--tx2);line-height:1.7;white-space:pre-wrap">${text.slice(0,180)}${text.length>180?'…':''}</div>
-  </div>`).join('');}
+/* Review */
+const HCOLS=['rgba(160,148,132,.14)','rgba(196,160,152,.32)','rgba(144,144,168,.38)','rgba(143,166,142,.48)','#8090A0'];
+let reviewDays=28,reviewFrom=null,reviewTo=null;
+function setReviewRange(d){reviewDays=d;reviewFrom=reviewTo=null;['7','28','90','180','365'].forEach(x=>{const b=$('rr'+x);if(b)b.classList.toggle('rr-active',+x===d);});const fi=$('rrFrom'),ti=$('rrTo');if(fi)fi.value='';if(ti)ti.value='';renderHeatmap();renderWeeklyBar();}
+function setReviewCustom(){const fi=$('rrFrom'),ti=$('rrTo');if(!fi||!ti||!fi.value||!ti.value)return;reviewFrom=fi.value;reviewTo=ti.value;['7','28','90','180','365'].forEach(x=>{const b=$('rr'+x);if(b)b.classList.remove('rr-active');});renderHeatmap();renderWeeklyBar();}
+function getReviewDays(){if(reviewFrom&&reviewTo){const a=new Date(reviewFrom),b=new Date(reviewTo);const days=[];let cur=new Date(a);while(cur<=b){days.push(new Date(cur));cur.setDate(cur.getDate()+1);}return days;}const today=getTW(),days=[];for(let i=reviewDays-1;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);days.push(d);}return days;}
+function renderHeatmap(){const el=$('heatmap');if(!el)return;const days=getReviewDays();const lbl=$('heatmapRangeLabel');if(lbl)lbl.textContent=days.length+'天';const cells=days.map(d=>{const dk=dayKey(d),tot=habits.length;if(!tot)return{dk,level:0,done:0,tot:0};const dn=habits.filter(h=>(habitLogs[h.id]||{})[dk]).length,p=dn/tot;return{dk,level:p===0?0:p<.25?1:p<.5?2:p<.75?3:4,done:dn,tot};});const COLS=Math.min(days.length,52);const rows=[];for(let i=0;i<cells.length;i+=COLS)rows.push(cells.slice(i,i+COLS));el.innerHTML=rows.map(row=>`<div style="display:flex;gap:2px;margin-bottom:2px">${row.map(c=>`<div style="width:14px;height:14px;border-radius:3px;background:${HCOLS[c.level]};cursor:pointer;flex-shrink:0" title="${c.dk} · ${c.done}/${c.tot}"></div>`).join('')}</div>`).join('')+`<div style="display:flex;align-items:center;gap:.4rem;margin-top:.55rem;font-size:.58rem;color:var(--tx3)"><span>少</span>${HCOLS.map(c=>`<div style="width:11px;height:11px;border-radius:3px;background:${c}"></div>`).join('')}<span>多</span></div>`;}
+function renderStreakBoard(){const el=$('streakBoard');if(!el)return;if(!habits.length){el.innerHTML=`<div class="empty">尚無習慣資料</div>`;return;}const sorted=habits.map(h=>({...h,streak:calcStreak(h.id)})).sort((a,b)=>b.streak-a.streak);el.innerHTML=sorted.map((h,i)=>`<div style="display:flex;align-items:center;gap:.55rem;padding:.5rem .35rem;border-bottom:1px solid rgba(197,184,232,.15)"><div style="font-size:.75rem;width:18px;text-align:center">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div><div style="font-size:.9rem">${h.emoji}</div><div style="flex:1;font-size:.75rem;font-weight:600">${h.name}</div><div style="font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--peach-d)">🔥 ${h.streak}</div></div>`).join('');}
+function renderWeeklyBar(){const el=$('weeklyBar');if(!el)return;const tk=todayKey(),dn=['日','一','二','三','四','五','六'];const allDays=getReviewDays();if(allDays.length>60){const weeks=[];let wk=[];allDays.forEach((d,i)=>{wk.push(d);if(d.getDay()===6||i===allDays.length-1){weeks.push(wk);wk=[];}});const wData=weeks.map(wk=>{const total=wk.reduce((s,d)=>{const dk=dayKey(d);return s+habits.filter(h=>(habitLogs[h.id]||{})[dk]).length+todos.filter(t=>t.done&&t.created===dk).length;},0);return{total,isNow:wk.some(d=>dayKey(d)===tk),label:pad(wk[0].getMonth()+1)+'/'+pad(wk[0].getDate())};});const mx=Math.max(...wData.map(d=>d.total),1);el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:3px;height:80px;padding:0 0 .4rem;overflow-x:auto">${wData.map((d,i)=>{const col=['#C4A098','#B89080','#A8A090','#8FA68E','#A0AABB','#9090A8','#B0A8C0'][i%7];return`<div style="flex:0 0 auto;min-width:28px;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end"><div style="font-size:.45rem;color:${d.isNow?'var(--clay-d)':'var(--tx3)'}">${d.total||''}</div><div style="width:22px;border-radius:4px 4px 0 0;min-height:3px;background:${col};opacity:${d.isNow?1:.65};height:${Math.max(d.total/mx*62,d.total>0?4:2)}px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:.44rem;color:${d.isNow?'var(--clay-d)':'var(--tx3)'};font-weight:${d.isNow?700:400}">${d.label}</div></div>`;}).join('')}</div><div style="font-size:.58rem;color:var(--tx3);text-align:center;margin-top:.2rem">習慣 + 待辦（每週匯總）</div>`;return;}
+const days=allDays.map(d=>{const dk=dayKey(d);return{total:habits.filter(h=>(habitLogs[h.id]||{})[dk]).length+todos.filter(t=>t.done&&t.created===dk).length,label:dn[d.getDay()],isT:dk===tk};});const mx=Math.max(...days.map(d=>d.total),1);const bc=['#C4A098','#B89080','#A8A090','#8FA68E','#A0AABB','#9090A8','#B0A8C0'];el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:${days.length>14?2:5}px;height:80px;padding:0 0 .4rem;overflow-x:auto">${days.map((d,i)=>`<div style="flex:${days.length>14?'0 0 auto':'1'};${days.length>14?'min-width:12px;':''}display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end"><div style="font-size:.45rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'}">${d.total||''}</div><div style="width:${days.length>14?10:100}%;border-radius:${days.length>14?3:6}px 3px 0 0;min-height:3px;background:${bc[i%7]};opacity:${d.isT?1:.65};height:${Math.max(d.total/mx*62,d.total>0?5:2)}px;transition:height .5s ease"></div>${days.length<=21?`<div style="font-family:'JetBrains Mono',monospace;font-size:.45rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'};font-weight:${d.isT?700:400}">${d.label}</div>`:''}</div>`).join('')}</div><div style="font-size:.58rem;color:var(--tx3);text-align:center;margin-top:.2rem">習慣打卡 + 完成待辦</div>`;}
+function renderRecentNotes(){const el=$('recentNotes');if(!el)return;const entries=Object.entries(notes).filter(([,v])=>v&&v.trim()).sort(([a],[b])=>b.localeCompare(a)).slice(0,5);if(!entries.length){el.innerHTML=`<div class="empty">尚無筆記</div>`;return;}el.innerHTML=entries.map(([dk,text])=>`<div style="padding:.65rem .7rem;border-radius:10px;border:1.5px solid rgba(197,184,232,.2);margin-bottom:.45rem;background:rgba(255,255,255,.5)"><div style="font-size:.55rem;color:var(--tx3);margin-bottom:.3rem">${dk}</div><div style="font-size:.75rem;color:var(--tx2);line-height:1.7;white-space:pre-wrap">${text.slice(0,180)}${text.length>180?'…':''}</div></div>`).join('');}
 
 function renderAll(){
   if(curTab==='today'){renderSchedules();renderQuickTodos();renderTodayHabits();loadNote();updateStats();}
   if(curTab==='habits')renderHabits();
   if(curTab==='todos'){renderTodos();renderTodoStats();}
+  if(curTab==='study')renderStudy();
   if(curTab==='review'){renderHeatmap();renderStreakBoard();renderWeeklyBar();renderRecentNotes();}
 }
 function openFocus(){$('focusOverlay').style.display='flex';updateClock();}
 function closeFocus(){$('focusOverlay').style.display='none';}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeFocus();});
 
-const POMO_DUR={focus:25*60,shortBreak:5*60,longBreak:15*60};
-let pState={phase:'focus',rem:25*60,running:false,count:0,timer:null};
-function renderPomo(){
-  const m=Math.floor(pState.rem/60),s=pState.rem%60;
-  ($('pomoDisp')||{}).textContent=`${pad(m)}:${pad(s)}`;
-  ($('pomoPhase')||{}).textContent=pState.phase==='focus'?'FOCUS':pState.phase==='shortBreak'?'BREAK':'LONG BREAK';
-  ($('pomoCount')||{}).textContent=`✦ ×${pState.count}`;
-  const sb=$('pomoStartBtn');if(sb){sb.textContent=pState.running?'暫停':'開始';sb.classList.toggle('primary',!pState.running);}
-  const circ=125.7,c=$('pomoCircle');
-  if(c)c.setAttribute('stroke-dashoffset',circ*(1-pState.rem/POMO_DUR[pState.phase]));
+/* Pomodoro */
+const POMO={focus:25*60,shortBreak:5*60,longBreak:15*60};
+let pS={phase:'focus',rem:25*60,running:false,count:0,timer:null};
+function renderPomo(){const m=Math.floor(pS.rem/60),s=pS.rem%60;($('pomoDisp')||{}).textContent=`${pad(m)}:${pad(s)}`;($('pomoPhase')||{}).textContent=pS.phase==='focus'?'FOCUS':pS.phase==='shortBreak'?'BREAK':'LONG BREAK';($('pomoCount')||{}).textContent=`✦ ×${pS.count}`;const sb=$('pomoStartBtn');if(sb){sb.textContent=pS.running?'暫停':'開始';sb.classList.toggle('primary',!pS.running);}const c=$('pomoCircle');if(c)c.setAttribute('stroke-dashoffset',125.7*(1-pS.rem/POMO[pS.phase]));}
+function pomoTick(){if(!pS.running)return;pS.rem--;if(pS.rem<=0){clearInterval(pS.timer);pS.running=false;if(pS.phase==='focus'){pS.count++;pS.phase=pS.count%4===0?'longBreak':'shortBreak';pS.rem=POMO[pS.phase];showToast('✦ 專注結束！休息一下');}else{pS.phase='focus';pS.rem=POMO.focus;showToast('🌸 休息結束，準備專注！');}}renderPomo();}
+function pomoToggle(){if(pS.running){clearInterval(pS.timer);pS.running=false;}else{pS.running=true;pS.timer=setInterval(pomoTick,1000);}renderPomo();}
+function pomoReset(){clearInterval(pS.timer);pS.running=false;pS.rem=POMO[pS.phase];renderPomo();}
+function pomoSkip(){clearInterval(pS.timer);pS.running=false;if(pS.phase==='focus'){pS.count++;pS.phase=pS.count%4===0?'longBreak':'shortBreak';}else pS.phase='focus';pS.rem=POMO[pS.phase];renderPomo();}
+
+/* iCal */
+let icalEvents=[],icalUrl=localStorage.getItem('xm3_icalUrl')||'';
+function p2(n){return String(n).padStart(2,'0')}
+function parseDT(v){if(!v)return null;const m=v.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)/);if(m){if(m[7]==='Z'){const u=Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]);const tw=new Date(u+8*3600*1000);return{dk:tw.getUTCFullYear()+'-'+p2(tw.getUTCMonth()+1)+'-'+p2(tw.getUTCDate()),hh:p2(tw.getUTCHours()),mm:p2(tw.getUTCMinutes()),allDay:false};}return{dk:m[1]+'-'+p2(+m[2])+'-'+p2(+m[3]),hh:p2(+m[4]),mm:p2(+m[5]),allDay:false};}const d=v.match(/^(\d{4})(\d{2})(\d{2})$/);if(d)return{dk:d[1]+'-'+p2(+d[2])+'-'+p2(+d[3]),hh:null,mm:null,allDay:true};return null;}
+function parseIcs(text){const evs=[];const norm=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');norm.split('BEGIN:VEVENT').slice(1).forEach(block=>{const lines=block.split('\n');const unf=[];lines.forEach(l=>{if((l[0]===' '||l[0]==='\t')&&unf.length)unf[unf.length-1]+=l.slice(1);else unf.push(l);});const gp=k=>{for(const line of unf){if(line.startsWith(k+':')||line.startsWith(k+';'))return line.slice(line.indexOf(':')+1).trim();}return'';};const summary=gp('SUMMARY').replace(/\\,/g,',').replace(/\\n/g,' ');const dtstart=gp('DTSTART');if(!summary||!dtstart)return;const start=parseDT(dtstart);const end=gp('DTEND')?parseDT(gp('DTEND')):null;if(!start)return;evs.push({summary,start,end});});return evs;}
+function icalIsToday(ev){const tk=todayKey();if(ev.start.dk===tk)return true;if(ev.end&&ev.start.dk<=tk&&tk<=ev.end.dk)return true;return false;}
+async function fetchIcal(){if(!icalUrl)return;const st=$('icalStatus');if(st)st.textContent='⏳ 匯入中…';const url=icalUrl.replace(/^webcal:/i,'https:');const proxies=['https://corsproxy.io/?'+encodeURIComponent(url),'https://api.allorigins.win/raw?url='+encodeURIComponent(url)];let text=null;for(const p of proxies){try{const r=await fetch(p,{signal:AbortSignal.timeout(10000)});if(r.ok){text=await r.text();break;}}catch(e){console.warn('ical proxy fail',p,e);}}if(!text||!text.includes('BEGIN:VCALENDAR')){if(st)st.textContent='⚠ 無法取得行事曆';return;}const all=parseIcs(text);icalEvents=all.filter(icalIsToday);if(st)st.textContent='✅ 共 '+all.length+' 個，今日 '+icalEvents.length+' 個';const hst=$('icalHeaderStatus');if(hst)hst.textContent=icalEvents.length?'🍎 '+icalEvents.length+' 個已同步':'';renderSchedules();}
+function openIcalPanel(){const el=$('icalUrl');if(el)el.value=icalUrl;const st=$('icalStatus');if(st)st.textContent=icalUrl?'已設定連結':'';$('icalPanel').style.display='block';$('overlay').style.display='block';}
+function saveIcalUrl(){const val=($('icalUrl').value||'').trim();if(val&&!/^(webcal|https?):\/\//i.test(val)){$('icalStatus').textContent='⚠ 請貼上完整的 webcal:// 連結';return;}icalUrl=val;localStorage.setItem('xm3_icalUrl',val);if(!val){icalEvents=[];renderSchedules();closeOverlays();return;}closeOverlays();fetchIcal();}
+
+/* ── Cloud sync UI helpers (delegate to window.__cloud bridge, populated
+     asynchronously by the optional Firebase block below) ── */
+function googleSignIn(){if(window.__fbSignIn){window.__fbSignIn();}else{showToast('⚠ 雲端同步尚未就緒，請稍候或以本機模式繼續使用');}}
+function googleSignOut(){if(window.__fbSignOut){window.__fbSignOut();}}
+function renderUserBar(u){
+  const el=$('userBar');if(!el)return;
+  if(!window.__cloud.ready){el.innerHTML=`<span style="font-size:.58rem;color:var(--tx3);padding:.18rem .5rem;border-radius:10px;border:1.5px dashed rgba(160,148,132,.3);white-space:nowrap">📴 本機模式</span>`;return;}
+  el.innerHTML=u?`<img src="${u.photoURL||''}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(160,148,132,.3);flex-shrink:0" onerror="this.style.display='none'"><span style="font-size:.62rem;color:var(--tx2);max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.displayName||u.email}</span><button onclick="googleSignOut()" style="font-size:.58rem;padding:.18rem .45rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.8);color:var(--tx3);cursor:pointer;font-family:inherit;flex-shrink:0">登出</button>`:`<button onclick="googleSignIn()" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;padding:.28rem .7rem;border-radius:14px;border:1.5px solid rgba(140,140,168,.35);background:linear-gradient(135deg,rgba(196,160,152,.15),rgba(144,144,168,.15));color:var(--dusk-d);cursor:pointer;font-family:inherit;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Google 登入</button>`;
 }
-function pomoTick(){if(!pState.running)return;pState.rem--;if(pState.rem<=0){clearInterval(pState.timer);pState.running=false;if(pState.phase==='focus'){pState.count++;pState.phase=pState.count%4===0?'longBreak':'shortBreak';pState.rem=POMO_DUR[pState.phase];showToast('✦ 專注結束！休息一下');}else{pState.phase='focus';pState.rem=POMO_DUR.focus;showToast('🌸 休息結束，準備專注！');}}renderPomo();}
-function pomoToggle(){if(pState.running){clearInterval(pState.timer);pState.running=false;}else{pState.running=true;pState.timer=setInterval(pomoTick,1000);}renderPomo();}
-function pomoReset(){clearInterval(pState.timer);pState.running=false;pState.rem=POMO_DUR[pState.phase];renderPomo();}
-function pomoSkip(){clearInterval(pState.timer);pState.running=false;if(pState.phase==='focus'){pState.count++;pState.phase=pState.count%4===0?'longBreak':'shortBreak';}else pState.phase='focus';pState.rem=POMO_DUR[pState.phase];renderPomo();}
+window.__renderUserBar=renderUserBar;
+window.__applyCloudData=function(d){
+  if(d.schedules)schedules=d.schedules;
+  if(d.todos)todos=d.todos;
+  if(d.habits)habits=d.habits;
+  if(d.habitLogs)habitLogs=d.habitLogs;
+  if(d.notes)notes=d.notes;
+  if(d.subjects)subjects=d.subjects;
+  if(d.studyLogs)studyLogs=d.studyLogs;
+  persist(true);
+  renderAll();updateStats();renderSchedules();
+};
+window.__getCurrentData=function(){return{schedules,todos,habits,habitLogs,notes,subjects,studyLogs};};
 
+/* ── Boot ── */
+initData();buildNavTabs();updateClock();
+setInterval(updateClock,15000);
+setInterval(()=>{if(curTab==='today')renderSchedules();},60000);
+renderAll();renderPomo();
+if(icalUrl)fetchIcal();
+setTimeout(()=>{if(icalUrl)fetchIcal();},5000);
+renderUserBar(null);
 
-// ════════════════════════════════════════
-// iCloud 行事曆 (.ics) 匯入
-// ════════════════════════════════════════
-let icalEvents = [];
-let icalUrl = localStorage.getItem('xm3_icalUrl') || 'webcal://p109-caldav.icloud.com/published/2/MjI2NTM0OTIxNTQyMjY1M06TQGKoABl32lpgp0_FuyYZdU8KcOm1EBggKU2I8uUnVkSKKrz_udSs9JiMZZyTyDhf6PGp3cu015u01usKK9g';
+window.switchTab=switchTab;window.openFocus=openFocus;window.closeFocus=closeFocus;
+window.pomoToggle=pomoToggle;window.pomoReset=pomoReset;window.pomoSkip=pomoSkip;
+window.showAddSched=showAddSched;window.closeOverlays=closeOverlays;window.doAddSched=doAddSched;
+window.showAddHabit=showAddHabit;window.doAddHabit=doAddHabit;
+window.quickAdd=quickAdd;window.saveNote=saveNote;window.updateNote=updateNote;
+window.addTodo=addTodo;window.clearDone=clearDone;window.renderTodos=renderTodos;
+window.toggleTodo=toggleTodo;window.delTodo=delTodo;window.delSched=delSched;window.delHabit=delHabit;
+window.toggleHabit=toggleHabit;window.toggleHabitT=toggleHabitT;
+window.googleSignIn=googleSignIn;window.googleSignOut=googleSignOut;
+window.openIcalPanel=openIcalPanel;window.saveIcalUrl=saveIcalUrl;
+window.setReviewRange=setReviewRange;window.setReviewCustom=setReviewCustom;
+window.pickTodo=pickTodo;window.pickStudyChap=pickStudyChap;
+window.showAddSubject=showAddSubject;window.doAddSubject=doAddSubject;window.delSubject=delSubject;
+window.selectColor=selectColor;
+window.openAddChapter=openAddChapter;window.doAddChapter=doAddChapter;window.delChapter=delChapter;
+window.toggleChapDone=toggleChapDone;
+window.openUpdatePage=openUpdatePage;window.doUpdatePage=doUpdatePage;
+window.openSchedChap=openSchedChap;window.doScheduleChap=doScheduleChap;
+window.openExamDate=openExamDate;window.doSetExamDate=doSetExamDate;window.doClearExamDate=doClearExamDate;
+window.openChapNotes=openChapNotes;window.doSaveChapNotes=doSaveChapNotes;
+window.toggleReviewDone=toggleReviewDone;window.openScheduleReview=openScheduleReview;window.doScheduleReview=doScheduleReview;
+window.renderAll=renderAll;window.updateStats=updateStats;window.renderSchedules=renderSchedules;
 
-function _pad2(n){return String(n).padStart(2,'0')}
+})();
+</script>
 
-function parseDT(val){
-  if(!val) return null;
-  const m=val.match(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z?)/);
-  if(m){
-    if(m[7]==='Z'){
-      const utc=Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+m[6]);
-      const tw=new Date(utc+8*3600*1000);
-      return{dk:tw.getUTCFullYear()+'-'+_pad2(tw.getUTCMonth()+1)+'-'+_pad2(tw.getUTCDate()),hh:_pad2(tw.getUTCHours()),mm:_pad2(tw.getUTCMinutes()),allDay:false};
-    }else{
-      return{dk:m[1]+'-'+_pad2(+m[2])+'-'+_pad2(+m[3]),hh:_pad2(+m[4]),mm:_pad2(+m[5]),allDay:false};
-    }
-  }
-  const d=val.match(/^(\d{4})(\d{2})(\d{2})$/);
-  if(d) return{dk:d[1]+'-'+_pad2(+d[2])+'-'+_pad2(+d[3]),hh:null,mm:null,allDay:true};
-  return null;
-}
-
-function parseIcs(text){
-  const events=[];
-  const norm=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  norm.split('BEGIN:VEVENT').slice(1).forEach(block=>{
-    const lines=block.split('\n');
-    const unf=[];
-    lines.forEach(l=>{
-      if((l[0]===' '||l[0]==='\t')&&unf.length) unf[unf.length-1]+=l.slice(1);
-      else unf.push(l);
-    });
-    const getProp=key=>{
-      for(const line of unf){
-        if(line.startsWith(key+':')||line.startsWith(key+';')){
-          return line.slice(line.indexOf(':')+1).trim();
-        }
-      }
-      return '';
-    };
-    const summary=getProp('SUMMARY').replace(/\\,/g,',').replace(/\\n/g,' ');
-    const dtstart=getProp('DTSTART');
-    const dtend=getProp('DTEND');
-    if(!summary||!dtstart) return;
-    const start=parseDT(dtstart);
-    const end=dtend?parseDT(dtend):null;
-    if(!start) return;
-    events.push({summary,start,end});
-  });
-  return events;
-}
-
-function icalIsToday(ev){
-  const tk=todayKey();
-  if(ev.start.dk===tk) return true;
-  if(ev.end && ev.start.dk<=tk && tk<=ev.end.dk) return true;
-  return false;
-}
-
-async function fetchIcal(){
-  if(!icalUrl) return;
-  const statusEl=$('icalStatus');
-  if(statusEl) statusEl.textContent='⏳ 匯入中…';
-  const url=icalUrl.replace(/^webcal:/i,'https:');
-  const proxies=[
-    'https://corsproxy.io/?'+encodeURIComponent(url),
-    'https://api.allorigins.win/raw?url='+encodeURIComponent(url)
-  ];
-  let text=null;
-  for(const proxy of proxies){
-    try{
-      const r=await fetch(proxy,{signal:AbortSignal.timeout(10000)});
-      if(r.ok){text=await r.text();break;}
-    }catch(e){console.warn('ical proxy failed',proxy,e);}
-  }
-  if(!text||!text.includes('BEGIN:VCALENDAR')){
-    if(statusEl) statusEl.textContent='⚠ 無法取得行事曆';
-    showToast('⚠ iCloud 行事曆匯入失敗');
+<script>
+/* ════════════════════════════════════════════════════════
+   選配雲端同步區塊（Firebase）— 完全獨立，與上方核心邏輯
+   透過 window.__cloud / window.__applyCloudData 等橋接溝通。
+   此區塊載入失敗或執行錯誤都不會影響上方核心應用程式。
+   ════════════════════════════════════════════════════════ */
+(async function(){
+  let mods;
+  try{
+    mods=await Promise.all([
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js'),
+      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
+    ]);
+  }catch(e){
+    console.warn('Firebase SDK 載入失敗，將以本機模式運作（不影響其他功能）',e);
     return;
   }
-  const all=parseIcs(text);
-  icalEvents=all.filter(icalIsToday);
-  console.log('[ical] total='+all.length+' today='+icalEvents.length+' todayKey='+todayKey());
-  if(statusEl) statusEl.textContent='✅ 已匯入 '+all.length+' 個，今日 '+icalEvents.length+' 個';
-  const hst=$('icalHeaderStatus');
-  if(hst) hst.textContent=icalEvents.length?'🍎 '+icalEvents.length+' 個已同步':'🍎 今日無事件';
-  renderSchedules();
-  if(icalEvents.length) showToast('📅 匯入 '+icalEvents.length+' 個今日行程');
-}
+  try{
+    const[appMod,authMod,fsMod]=mods;
+    const{initializeApp}=appMod;
+    const{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,signOut,onAuthStateChanged}=authMod;
+    const{getFirestore,doc,getDoc,setDoc}=fsMod;
 
-function openIcalPanel(){
-  const el=$('icalUrl');if(el) el.value=icalUrl;
-  const st=$('icalStatus');if(st) st.textContent=icalUrl?'已設定連結':'';
-  $('icalPanel').style.display='block';
-  $('overlay').style.display='block';
-}
+    const FB={apiKey:'AIzaSyADa9M9-BCKebkfioxgFNOCxt7FNNyH5G8',authDomain:'daily-route-e7fe7.firebaseapp.com',projectId:'daily-route-e7fe7',storageBucket:'daily-route-e7fe7.appspot.com',messagingSenderId:'458244739005',appId:'1:458244739005:web:803dc99fd048f11e7a8cd4'};
+    const fbApp=initializeApp(FB);
+    const auth=getAuth(fbApp);
+    const db=getFirestore(fbApp);
+    const provider=new GoogleAuthProvider();
 
-function saveIcalUrl(){
-  const val=($('icalUrl').value||'').trim();
-  if(val&&!/^(webcal|https?):\/\//i.test(val)){
-    $('icalStatus').textContent='⚠ 請貼上完整的 webcal:// 連結';return;
+    let currentUser=null,saveTimer=null;
+
+    function syncPillState(s){
+      const el=document.getElementById('syncPill');if(!el)return;
+      const cfg={ok:['☁ 已同步','#EAF0EA','#4A6449','rgba(143,180,143,.5)'],syncing:['↻ 同步中','#EAEAF2','#4A4A6A','rgba(140,140,168,.4)'],err:['⚠ 同步失敗','#F2EAE6','#7A5248','rgba(180,120,100,.4)']};
+      if(cfg[s]){const[t,bg,c,b]=cfg[s];el.style.cssText=`display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;border-radius:14px;font-size:.6rem;border:1.5px solid ${b};background:${bg};color:${c};white-space:nowrap;flex-shrink:0`;el.textContent=t;el.style.display='inline-flex';}
+      else{el.style.display='none';}
+    }
+
+    async function cloudLoad(){
+      if(!currentUser)return;
+      try{
+        const snap=await getDoc(doc(db,'users',currentUser.uid,'data','main'));
+        if(snap.exists()){window.__applyCloudData(snap.data());}
+      }catch(e){console.warn('cloudLoad failed',e);}
+    }
+
+    window.__cloud.save=function(data){
+      if(!currentUser)return;
+      clearTimeout(saveTimer);
+      syncPillState('syncing');
+      saveTimer=setTimeout(async()=>{
+        try{
+          await setDoc(doc(db,'users',currentUser.uid,'data','main'),Object.assign({},data,{updatedAt:Date.now()}));
+          syncPillState('ok');
+        }catch(e){console.warn('cloudSave failed',e);syncPillState('err');}
+      },1500);
+    };
+
+    window.__fbSignIn=async function(){
+      try{
+        if(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent))await signInWithRedirect(auth,provider);
+        else await signInWithPopup(auth,provider);
+      }catch(e){
+        const t=document.getElementById('toast');
+        if(t){t.textContent='登入失敗：'+e.message;t.style.opacity='1';t.style.transform='translateY(0)';setTimeout(()=>{t.style.opacity='0';},2200);}
+      }
+    };
+    window.__fbSignOut=async function(){try{await signOut(auth);}catch(e){console.warn(e);}};
+
+    try{getRedirectResult(auth).catch(()=>{});}catch(e){}
+
+    onAuthStateChanged(auth,async u=>{
+      currentUser=u;
+      window.__cloud.ready=true;
+      if(window.__renderUserBar)window.__renderUserBar(u);
+      if(u){
+        syncPillState('syncing');
+        await cloudLoad();
+        syncPillState('ok');
+      }
+    });
+  }catch(e){
+    console.warn('Firebase 初始化失敗，將以本機模式運作（不影響其他功能）',e);
   }
-  icalUrl=val;
-  localStorage.setItem('xm3_icalUrl',val);
-  if(!val){icalEvents=[];renderSchedules();closeOverlays();return;}
-  closeOverlays();
-  fetchIcal();
-}
-
-
-(function boot(){
-  initData();buildNavTabs();updateClock();
-  setInterval(updateClock,15000);
-  setInterval(()=>{if(curTab==='today')renderSchedules();},60000);
-  renderAll();renderPomo();
-  // Fetch ical immediately, then again after auth settles
-  if(icalUrl) fetchIcal();
-  setTimeout(()=>{ if(icalUrl) fetchIcal(); }, 5000);
 })();
-
-// ── 將所有 HTML onclick 需要的函式掛到 window ──
-// 這樣即使 script 是 type="module" 也能被 inline handler 呼叫
-window.switchTab    = switchTab;
-window.openFocus    = openFocus;
-window.closeFocus   = closeFocus;
-window.pomoToggle   = pomoToggle;
-window.pomoReset    = pomoReset;
-window.pomoSkip     = pomoSkip;
-window.showAddSched = showAddSched;
-window.closeOverlays= closeOverlays;
-window.doAddSched   = doAddSched;
-window.showAddHabit = showAddHabit;
-window.doAddHabit   = doAddHabit;
-window.quickAdd     = quickAdd;
-window.saveNote     = saveNote;
-window.updateNote   = updateNote;
-window.addTodo      = addTodo;
-window.clearDone    = clearDone;
-window.renderTodos  = renderTodos;
-window.toggleTodo   = toggleTodo;
-window.delTodo      = delTodo;
-window.delSched     = delSched;
-window.delHabit     = delHabit;
-window.toggleHabit  = toggleHabit;
-window.toggleHabitT = toggleHabitT;
-window.googleSignIn  = googleSignIn;
-window.googleSignOut = googleSignOut;
-window.openIcalPanel = openIcalPanel;
-window.saveIcalUrl   = saveIcalUrl;
 </script>
 </body>
 </html>
