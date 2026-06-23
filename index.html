@@ -258,6 +258,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     </div>
     <div class="hdr-right">
       <div id="userBar" style="display:flex;align-items:center;gap:.3rem;flex-shrink:0"></div>
+      <div id="syncPill" style="display:none;flex-shrink:0"></div>
       <span class="hdr-date" id="hdrDate"></span>
       <div class="hdr-clock" id="hdrClock">00:00</div>
       <button class="undo-btn" id="undoBtn" onclick="undoAction()" title="復原 (Ctrl+Z)">↩</button>
@@ -866,6 +867,11 @@ function persist(){
   save('hlogs',habitLogs);save('notes',notes);save('subjects',subjects);
   save('studyLogs',studyLogs);save('pomoLogs',pomoLogs);
   save('vidCourses',vidCourses);
+  // Cloud sync
+  if(window.__cloud&&window.__cloud.ready&&window.__cloud.save){
+    try{window.__cloud.save({schedules,todos,habits,habitLogs,notes,subjects,studyLogs,pomoLogs,vidCourses});}
+    catch(e){console.warn('cloud save error',e);}
+  }
 }
 
 /* ── TABS ── */
@@ -2189,5 +2195,344 @@ renderAll();renderPomo();renderExamAlert();renderTodayStudyCard();updatePomoChap
 
 })();
 </script>
+
+<script>
+/* ════════════════════════════════
+   Cloud Sync Bridge — core app communicates via window.__cloud
+   ════════════════════════════════ */
+window.__cloud = {ready: false, save: null, load: null};
+
+function googleSignIn(){
+  if(window.__fbSignIn) window.__fbSignIn();
+  else showToast('⚠ 雲端同步初始化中，請稍候');
+}
+function googleSignOut(){
+  if(window.__fbSignOut) window.__fbSignOut();
+}
+
+function renderUserBar(u){
+  const el=document.getElementById('userBar'); if(!el)return;
+  if(!window.__cloud.ready){
+    el.innerHTML=`<span style="font-size:.58rem;color:var(--tx3);padding:.18rem .5rem;border-radius:10px;border:1.5px dashed rgba(160,148,132,.3);white-space:nowrap;cursor:pointer" onclick="googleSignIn()">☁ 登入同步</span>`;
+    return;
+  }
+  if(u){
+    el.innerHTML=`<img src="${u.photoURL||''}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(160,148,132,.3);flex-shrink:0" onerror="this.style.display='none'"><span style="font-size:.62rem;color:var(--tx2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.displayName||u.email||''}</span><button onclick="googleSignOut()" style="font-size:.56rem;padding:.15rem .42rem;border-radius:9px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.8);color:var(--tx3);cursor:pointer;font-family:inherit;flex-shrink:0">登出</button>`;
+  } else {
+    el.innerHTML=`<button onclick="googleSignIn()" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;padding:.28rem .7rem;border-radius:14px;border:1.5px solid rgba(140,140,168,.35);background:linear-gradient(135deg,rgba(192,168,154,.15),rgba(152,152,176,.15));color:var(--dusk-d);cursor:pointer;font-family:inherit;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Google 登入</button>`;
+  }
+}
+window.googleSignIn = googleSignIn;
+window.googleSignOut = googleSignOut;
+window.renderUserBar = renderUserBar;
+
+// Bridge for core app to push data to cloud
+window.__applyCloudData = function(d){
+  if(d.schedules) window._xm3_schedules = d.schedules;
+  // Dispatch event so core app can pick up
+  document.dispatchEvent(new CustomEvent('cloudDataLoaded', {detail: d}));
+};
+window.__getCurrentData = function(){
+  return {
+    schedules: window._xm3_schedules,
+    todos: window._xm3_todos,
+    habits: window._xm3_habits,
+    habitLogs: window._xm3_hlogs,
+    notes: window._xm3_notes,
+    subjects: window._xm3_subjects,
+    studyLogs: window._xm3_studyLogs,
+    pomoLogs: window._xm3_pomoLogs,
+    vidCourses: window._xm3_vidCourses,
+  };
+};
+
+// Init user bar immediately (offline state)
+renderUserBar(null);
+</script>
+
+<script>
+/* ════════════════════════════════
+   雲端同步：Firebase REST API（無需 SDK，無 CSP 問題）
+   使用 Firebase Auth REST + Firestore REST
+   ════════════════════════════════ */
+(function(){
+  const FB = {
+    apiKey:    'AIzaSyADa9M9-BCKebkfioxgFNOCxt7FNNyH5G8',
+    projectId: 'daily-route-e7fe7',
+    authDomain:'daily-route-e7fe7.firebaseapp.com',
+  };
+
+  // ── Storage helpers ──
+  const LS_TOKEN  = 'xm3_fb_token';
+  const LS_RTOKEN = 'xm3_fb_rtoken';
+  const LS_EXPIRY = 'xm3_fb_expiry';
+  const LS_USER   = 'xm3_fb_user';
+
+  let _idToken   = localStorage.getItem(LS_TOKEN)  || null;
+  let _rToken    = localStorage.getItem(LS_RTOKEN) || null;
+  let _expiry    = parseInt(localStorage.getItem(LS_EXPIRY)||'0');
+  let _user      = (() => { try{ return JSON.parse(localStorage.getItem(LS_USER)||'null'); }catch(e){return null;} })();
+  let _saveTimer = null;
+
+  function saveTokens(idToken, refreshToken, expiresIn, user){
+    _idToken = idToken;
+    _rToken  = refreshToken;
+    _expiry  = Date.now() + (parseInt(expiresIn)||3600) * 1000 - 60000;
+    _user    = user;
+    localStorage.setItem(LS_TOKEN,  idToken);
+    localStorage.setItem(LS_RTOKEN, refreshToken);
+    localStorage.setItem(LS_EXPIRY, String(_expiry));
+    localStorage.setItem(LS_USER,   JSON.stringify(user));
+  }
+  function clearTokens(){
+    _idToken=_rToken=_user=null; _expiry=0;
+    [LS_TOKEN,LS_RTOKEN,LS_EXPIRY,LS_USER].forEach(k=>localStorage.removeItem(k));
+  }
+
+  // ── Token refresh ──
+  async function getValidToken(){
+    if(_idToken && Date.now() < _expiry) return _idToken;
+    if(!_rToken) return null;
+    try{
+      const r = await fetch(
+        `https://securetoken.googleapis.com/v1/token?key=${FB.apiKey}`,
+        { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({grant_type:'refresh_token', refresh_token:_rToken}) }
+      );
+      const d = await r.json();
+      if(d.id_token){
+        _idToken = d.id_token;
+        _rToken  = d.refresh_token;
+        _expiry  = Date.now() + (parseInt(d.expires_in)||3600)*1000 - 60000;
+        localStorage.setItem(LS_TOKEN,  _idToken);
+        localStorage.setItem(LS_RTOKEN, _rToken);
+        localStorage.setItem(LS_EXPIRY, String(_expiry));
+        return _idToken;
+      }
+    } catch(e){ console.warn('token refresh failed',e); }
+    return null;
+  }
+
+  // ── Firestore REST helpers ──
+  function fsUrl(){ return `https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents`; }
+
+  function toFirestore(obj){
+    function encVal(v){
+      if(v===null||v===undefined) return {nullValue:null};
+      if(typeof v==='boolean') return {booleanValue:v};
+      if(typeof v==='number')  return Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v};
+      if(typeof v==='string')  return {stringValue:v};
+      if(Array.isArray(v))     return {arrayValue:{values:v.map(encVal)}};
+      if(typeof v==='object')  return {mapValue:{fields:Object.fromEntries(Object.entries(v).map(([k,vv])=>[k,encVal(vv)]))}};
+      return {stringValue:String(v)};
+    }
+    return {fields: Object.fromEntries(Object.entries(obj).map(([k,v])=>[k,encVal(v)]))};
+  }
+
+  function fromFirestore(fields){
+    function decVal(v){
+      if('nullValue' in v)    return null;
+      if('booleanValue' in v) return v.booleanValue;
+      if('integerValue' in v) return parseInt(v.integerValue);
+      if('doubleValue' in v)  return v.doubleValue;
+      if('stringValue' in v)  return v.stringValue;
+      if('arrayValue' in v)   return (v.arrayValue.values||[]).map(decVal);
+      if('mapValue' in v)     return fromFirestore(v.mapValue.fields||{});
+      return null;
+    }
+    return Object.fromEntries(Object.entries(fields||{}).map(([k,v])=>[k,decVal(v)]));
+  }
+
+  async function fsGet(uid, token){
+    const r = await fetch(`${fsUrl()}/users/${uid}/data/main`,
+      { headers:{ Authorization:`Bearer ${token}` } });
+    if(r.status===404) return null;
+    if(!r.ok) throw new Error('fsGet '+r.status);
+    const d = await r.json();
+    return fromFirestore(d.fields);
+  }
+
+  async function fsPatch(uid, token, data){
+    const body = toFirestore(data);
+    const r = await fetch(`${fsUrl()}/users/${uid}/data/main`,
+      { method:'PATCH', headers:{ Authorization:`Bearer ${token}`, 'Content-Type':'application/json' },
+        body: JSON.stringify(body) });
+    if(!r.ok) throw new Error('fsPatch '+r.status);
+  }
+
+  // ── Sync pill UI ──
+  function syncPillState(s){
+    const el = document.getElementById('syncPill'); if(!el) return;
+    const cfg = {
+      ok:      ['☁ 已同步',  '#EAF0EA','#4A6449','rgba(143,180,143,.5)'],
+      syncing: ['↻ 同步中',  '#EAEAF2','#4A4A6A','rgba(140,140,168,.4)'],
+      err:     ['⚠ 同步失敗','#F2EAE6','#7A5248','rgba(180,120,100,.4)']
+    };
+    if(cfg[s]){
+      const [t,bg,c,b] = cfg[s];
+      el.style.cssText = `display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;` +
+        `border-radius:14px;font-size:.6rem;border:1.5px solid ${b};` +
+        `background:${bg};color:${c};white-space:nowrap;flex-shrink:0`;
+      el.textContent = t;
+    } else { el.style.display='none'; }
+  }
+
+  // ── Cloud load ──
+  async function cloudLoad(){
+    const token = await getValidToken(); if(!token||!_user) return;
+    try{
+      const d = await fsGet(_user.uid, token);
+      if(!d) return;
+      const lsMap = {
+        schedules:'scheds', todos:'todos', habits:'habits',
+        habitLogs:'hlogs',  notes:'notes', subjects:'subjects',
+        studyLogs:'studyLogs', pomoLogs:'pomoLogs', vidCourses:'vidCourses'
+      };
+      let changed = false;
+      Object.keys(lsMap).forEach(k=>{
+        if(d[k]!==undefined){
+          const fresh = JSON.stringify(d[k]);
+          if(localStorage.getItem('xm3_'+lsMap[k]) !== fresh){
+            localStorage.setItem('xm3_'+lsMap[k], fresh);
+            changed = true;
+          }
+        }
+      });
+      if(changed) location.reload();
+    } catch(e){ console.warn('cloudLoad failed',e); syncPillState('err'); }
+  }
+
+  // ── Cloud save ──
+  window.__cloud.save = async function(data){
+    const token = await getValidToken(); if(!token||!_user) return;
+    clearTimeout(_saveTimer);
+    syncPillState('syncing');
+    _saveTimer = setTimeout(async()=>{
+      try{
+        await fsPatch(_user.uid, token, Object.assign({},data,{updatedAt:Date.now()}));
+        syncPillState('ok');
+      } catch(e){ console.warn('cloudSave failed',e); syncPillState('err'); }
+    }, 1500);
+  };
+
+  // ── Google Sign-In via OAuth popup ──
+  window.__fbSignIn = function(){
+    const w = 520, h = 600;
+    const left = Math.max(0, (screen.width-w)/2);
+    const top  = Math.max(0, (screen.height-h)/2);
+    const popup = window.open(
+      `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=458244739005-b8v8lkqhqf3g7q4g9e2k0j8n5r6t1u2m.apps.googleusercontent.com` +
+      `&redirect_uri=https://daily-route-e7fe7.firebaseapp.com/__/auth/handler` +
+      `&response_type=token` +
+      `&scope=profile email`,
+      'googleLogin', `width=${w},height=${h},left=${left},top=${top}`
+    );
+    // Use Firebase signInWithCredential via identity toolkit
+    // Simpler: use Firebase Auth REST signInWithIdp
+    popup && popup.focus();
+    // Instead use the Firebase Auth redirect flow via a hidden iframe approach
+    // Actually the cleanest no-SDK approach: signInWithPopup via identity toolkit
+    if(popup) popup.close();
+    // Best approach for no-SDK: use Firebase Auth emulator URL
+    doGoogleSignIn();
+  };
+
+  async function doGoogleSignIn(){
+    // Use Firebase Auth REST API signInWithPopup flow
+    // Step 1: Get auth URL
+    try{
+      const r = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri?key=${FB.apiKey}`,
+        { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            providerId:'google.com',
+            continueUri: location.href
+          })
+        }
+      );
+      const d = await r.json();
+      if(d.authUri){
+        // Open in popup
+        const w=520,h=600,left=Math.max(0,(screen.width-w)/2),top=Math.max(0,(screen.height-h)/2);
+        const popup = window.open(d.authUri,'googleAuth',`width=${w},height=${h},left=${left},top=${top}`);
+        // Poll for redirect back
+        const timer = setInterval(async()=>{
+          try{
+            if(popup.closed){
+              clearInterval(timer);
+              return;
+            }
+            const url = popup.location.href;
+            if(url && url.includes(location.hostname)){
+              clearInterval(timer);
+              popup.close();
+              // Extract token from URL
+              const hash = new URL(url).hash || new URL(url).search;
+              const params = new URLSearchParams(hash.replace('#','?').replace('?',''));
+              const accessToken = params.get('access_token');
+              if(accessToken) await signInWithGoogleToken(accessToken, d.sessionId);
+            }
+          } catch(e){ /* cross-origin, ignore */ }
+        }, 300);
+      }
+    } catch(e){ console.warn('signIn error',e); showToast&&showToast('登入失敗，請稍後再試'); }
+  }
+
+  async function signInWithGoogleToken(accessToken, sessionId){
+    try{
+      const r = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${FB.apiKey}`,
+        { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            requestUri: location.href,
+            postBody: `access_token=${accessToken}&providerId=google.com`,
+            returnSecureToken: true,
+            returnIdpCredential: true,
+            sessionId
+          })
+        }
+      );
+      const d = await r.json();
+      if(d.idToken){
+        const user = { uid:d.localId, displayName:d.displayName||'', email:d.email||'', photoURL:d.photoUrl||'' };
+        saveTokens(d.idToken, d.refreshToken, d.expiresIn, user);
+        window.__cloud.ready = true;
+        if(typeof renderUserBar==='function') renderUserBar(user);
+        syncPillState('syncing');
+        await cloudLoad();
+        syncPillState('ok');
+        showToast&&showToast('☁ 已登入並同步！');
+      }
+    } catch(e){ console.warn('signInWithIdp error',e); }
+  }
+
+  window.__fbSignOut = function(){
+    clearTokens();
+    window.__cloud.ready = false;
+    if(typeof renderUserBar==='function') renderUserBar(null);
+    syncPillState(null);
+    showToast&&showToast('已登出');
+  };
+
+  // ── Auto-restore session on load ──
+  (async function init(){
+    if(!_user){ return; }
+    const token = await getValidToken();
+    if(token){
+      window.__cloud.ready = true;
+      if(typeof renderUserBar==='function') renderUserBar(_user);
+      syncPillState('syncing');
+      await cloudLoad();
+      syncPillState('ok');
+    } else {
+      clearTokens();
+      if(typeof renderUserBar==='function') renderUserBar(null);
+    }
+  })();
+
+})();
+</script>
+
 </body>
 </html>
