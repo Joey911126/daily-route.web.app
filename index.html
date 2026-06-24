@@ -2252,281 +2252,295 @@ renderUserBar(null);
 
 <script>
 /* ════════════════════════════════
-   雲端同步：Firebase REST API（無需 SDK，無 CSP 問題）
-   使用 Firebase Auth REST + Firestore REST
+   雲端同步：Google Identity Services + Firestore REST
+   GSI 是 Google 官方輕量登入，不需 Firebase SDK
    ════════════════════════════════ */
 (function(){
-  const FB = {
-    apiKey:    'AIzaSyADa9M9-BCKebkfioxgFNOCxt7FNNyH5G8',
-    projectId: 'daily-route-e7fe7',
-    authDomain:'daily-route-e7fe7.firebaseapp.com',
-  };
+  const FB_KEY     = 'AIzaSyADa9M9-BCKebkfioxgFNOCxt7FNNyH5G8';
+  const FB_PROJECT = 'daily-route-e7fe7';
+  // Google OAuth Client ID (from Firebase project)
+  const G_CLIENT   = '458244739005-oiakm0qk4p88sf89vb2n2rv7f05rnolv.apps.googleusercontent.com';
 
-  // ── Storage helpers ──
-  const LS_TOKEN  = 'xm3_fb_token';
-  const LS_RTOKEN = 'xm3_fb_rtoken';
-  const LS_EXPIRY = 'xm3_fb_expiry';
-  const LS_USER   = 'xm3_fb_user';
-
-  let _idToken   = localStorage.getItem(LS_TOKEN)  || null;
-  let _rToken    = localStorage.getItem(LS_RTOKEN) || null;
-  let _expiry    = parseInt(localStorage.getItem(LS_EXPIRY)||'0');
-  let _user      = (() => { try{ return JSON.parse(localStorage.getItem(LS_USER)||'null'); }catch(e){return null;} })();
+  // ── LocalStorage keys ──
+  const K = { tok:'xm3_fb_tok', rtok:'xm3_fb_rtok', exp:'xm3_fb_exp', user:'xm3_fb_user' };
+  let _tok  = localStorage.getItem(K.tok)  || null;
+  let _rtok = localStorage.getItem(K.rtok) || null;
+  let _exp  = parseInt(localStorage.getItem(K.exp) || '0');
+  let _user = (() => { try{ return JSON.parse(localStorage.getItem(K.user)||'null'); }catch(e){return null;} })();
   let _saveTimer = null;
 
-  function saveTokens(idToken, refreshToken, expiresIn, user){
-    _idToken = idToken;
-    _rToken  = refreshToken;
-    _expiry  = Date.now() + (parseInt(expiresIn)||3600) * 1000 - 60000;
-    _user    = user;
-    localStorage.setItem(LS_TOKEN,  idToken);
-    localStorage.setItem(LS_RTOKEN, refreshToken);
-    localStorage.setItem(LS_EXPIRY, String(_expiry));
-    localStorage.setItem(LS_USER,   JSON.stringify(user));
+  function saveToks(tok, rtok, exp, user){
+    _tok=tok; _rtok=rtok;
+    _exp = Date.now() + (parseInt(exp)||3600)*1000 - 60000;
+    _user = user;
+    localStorage.setItem(K.tok,  tok);
+    localStorage.setItem(K.rtok, rtok);
+    localStorage.setItem(K.exp,  String(_exp));
+    localStorage.setItem(K.user, JSON.stringify(user));
   }
-  function clearTokens(){
-    _idToken=_rToken=_user=null; _expiry=0;
-    [LS_TOKEN,LS_RTOKEN,LS_EXPIRY,LS_USER].forEach(k=>localStorage.removeItem(k));
+  function clearToks(){
+    _tok=_rtok=_user=null; _exp=0;
+    Object.values(K).forEach(k=>localStorage.removeItem(k));
   }
 
   // ── Token refresh ──
-  async function getValidToken(){
-    if(_idToken && Date.now() < _expiry) return _idToken;
-    if(!_rToken) return null;
+  async function getToken(){
+    if(_tok && Date.now()<_exp) return _tok;
+    if(!_rtok) return null;
     try{
       const r = await fetch(
-        `https://securetoken.googleapis.com/v1/token?key=${FB.apiKey}`,
+        `https://securetoken.googleapis.com/v1/token?key=${FB_KEY}`,
         { method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({grant_type:'refresh_token', refresh_token:_rToken}) }
+          body: JSON.stringify({grant_type:'refresh_token', refresh_token:_rtok}) }
       );
       const d = await r.json();
       if(d.id_token){
-        _idToken = d.id_token;
-        _rToken  = d.refresh_token;
-        _expiry  = Date.now() + (parseInt(d.expires_in)||3600)*1000 - 60000;
-        localStorage.setItem(LS_TOKEN,  _idToken);
-        localStorage.setItem(LS_RTOKEN, _rToken);
-        localStorage.setItem(LS_EXPIRY, String(_expiry));
-        return _idToken;
+        _tok=d.id_token; _rtok=d.refresh_token;
+        _exp=Date.now()+(parseInt(d.expires_in)||3600)*1000-60000;
+        localStorage.setItem(K.tok,_tok);
+        localStorage.setItem(K.rtok,_rtok);
+        localStorage.setItem(K.exp,String(_exp));
+        return _tok;
       }
-    } catch(e){ console.warn('token refresh failed',e); }
+    } catch(e){ console.warn('refresh failed',e); }
+    clearToks(); return null;
+  }
+
+  // ── Firestore REST ──
+  const FS_BASE = `https://firestore.googleapis.com/v1/projects/${FB_PROJECT}/databases/(default)/documents`;
+
+  function enc(v){
+    if(v===null||v===undefined) return {nullValue:null};
+    if(typeof v==='boolean')    return {booleanValue:v};
+    if(typeof v==='number')     return Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v};
+    if(typeof v==='string')     return {stringValue:v};
+    if(Array.isArray(v))        return {arrayValue:{values:v.map(enc)}};
+    if(typeof v==='object')     return {mapValue:{fields:Object.fromEntries(Object.entries(v).map(([k,vv])=>[k,enc(vv)]))}};
+    return {stringValue:String(v)};
+  }
+  function dec(v){
+    if(!v) return null;
+    if('nullValue'    in v) return null;
+    if('booleanValue' in v) return v.booleanValue;
+    if('integerValue' in v) return parseInt(v.integerValue);
+    if('doubleValue'  in v) return v.doubleValue;
+    if('stringValue'  in v) return v.stringValue;
+    if('arrayValue'   in v) return (v.arrayValue.values||[]).map(dec);
+    if('mapValue'     in v) return Object.fromEntries(Object.entries(v.mapValue.fields||{}).map(([k,vv])=>[k,dec(vv)]));
     return null;
   }
+  function decFields(f){ return Object.fromEntries(Object.entries(f||{}).map(([k,v])=>[k,dec(v)])); }
 
-  // ── Firestore REST helpers ──
-  function fsUrl(){ return `https://firestore.googleapis.com/v1/projects/${FB.projectId}/databases/(default)/documents`; }
-
-  function toFirestore(obj){
-    function encVal(v){
-      if(v===null||v===undefined) return {nullValue:null};
-      if(typeof v==='boolean') return {booleanValue:v};
-      if(typeof v==='number')  return Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v};
-      if(typeof v==='string')  return {stringValue:v};
-      if(Array.isArray(v))     return {arrayValue:{values:v.map(encVal)}};
-      if(typeof v==='object')  return {mapValue:{fields:Object.fromEntries(Object.entries(v).map(([k,vv])=>[k,encVal(vv)]))}};
-      return {stringValue:String(v)};
-    }
-    return {fields: Object.fromEntries(Object.entries(obj).map(([k,v])=>[k,encVal(v)]))};
-  }
-
-  function fromFirestore(fields){
-    function decVal(v){
-      if('nullValue' in v)    return null;
-      if('booleanValue' in v) return v.booleanValue;
-      if('integerValue' in v) return parseInt(v.integerValue);
-      if('doubleValue' in v)  return v.doubleValue;
-      if('stringValue' in v)  return v.stringValue;
-      if('arrayValue' in v)   return (v.arrayValue.values||[]).map(decVal);
-      if('mapValue' in v)     return fromFirestore(v.mapValue.fields||{});
-      return null;
-    }
-    return Object.fromEntries(Object.entries(fields||{}).map(([k,v])=>[k,decVal(v)]));
-  }
-
-  async function fsGet(uid, token){
-    const r = await fetch(`${fsUrl()}/users/${uid}/data/main`,
-      { headers:{ Authorization:`Bearer ${token}` } });
+  async function fsGet(uid,tok){
+    const r=await fetch(`${FS_BASE}/users/${uid}/data/main`,
+      {headers:{Authorization:`Bearer ${tok}`}});
     if(r.status===404) return null;
     if(!r.ok) throw new Error('fsGet '+r.status);
-    const d = await r.json();
-    return fromFirestore(d.fields);
+    const d=await r.json();
+    return decFields(d.fields);
+  }
+  async function fsPut(uid,tok,data){
+    const r=await fetch(`${FS_BASE}/users/${uid}/data/main`,{
+      method:'PATCH',
+      headers:{Authorization:`Bearer ${tok}`,'Content-Type':'application/json'},
+      body:JSON.stringify({fields:Object.fromEntries(Object.entries(data).map(([k,v])=>[k,enc(v)]))})
+    });
+    if(!r.ok) throw new Error('fsPut '+r.status);
   }
 
-  async function fsPatch(uid, token, data){
-    const body = toFirestore(data);
-    const r = await fetch(`${fsUrl()}/users/${uid}/data/main`,
-      { method:'PATCH', headers:{ Authorization:`Bearer ${token}`, 'Content-Type':'application/json' },
-        body: JSON.stringify(body) });
-    if(!r.ok) throw new Error('fsPatch '+r.status);
-  }
-
-  // ── Sync pill UI ──
-  function syncPillState(s){
-    const el = document.getElementById('syncPill'); if(!el) return;
-    const cfg = {
-      ok:      ['☁ 已同步',  '#EAF0EA','#4A6449','rgba(143,180,143,.5)'],
-      syncing: ['↻ 同步中',  '#EAEAF2','#4A4A6A','rgba(140,140,168,.4)'],
-      err:     ['⚠ 同步失敗','#F2EAE6','#7A5248','rgba(180,120,100,.4)']
+  // ── Sync pill ──
+  function pill(s){
+    const el=document.getElementById('syncPill'); if(!el)return;
+    const m={
+      ok:     ['☁ 已同步',  '#EAF0EA','#4A6449','rgba(143,180,143,.5)'],
+      syncing:['↻ 同步中',  '#EAEAF2','#4A4A6A','rgba(140,140,168,.4)'],
+      err:    ['⚠ 同步失敗','#F2EAE6','#7A5248','rgba(180,120,100,.4)']
     };
-    if(cfg[s]){
-      const [t,bg,c,b] = cfg[s];
-      el.style.cssText = `display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;` +
-        `border-radius:14px;font-size:.6rem;border:1.5px solid ${b};` +
-        `background:${bg};color:${c};white-space:nowrap;flex-shrink:0`;
-      el.textContent = t;
+    if(m[s]){
+      const[t,bg,c,b]=m[s];
+      el.style.cssText=`display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;`+
+        `border-radius:14px;font-size:.6rem;border:1.5px solid ${b};background:${bg};color:${c};`+
+        `white-space:nowrap;flex-shrink:0`;
+      el.textContent=t;
     } else { el.style.display='none'; }
   }
 
   // ── Cloud load ──
   async function cloudLoad(){
-    const token = await getValidToken(); if(!token||!_user) return;
+    const tok=await getToken(); if(!tok||!_user) return;
     try{
-      const d = await fsGet(_user.uid, token);
-      if(!d) return;
-      const lsMap = {
-        schedules:'scheds', todos:'todos', habits:'habits',
-        habitLogs:'hlogs',  notes:'notes', subjects:'subjects',
-        studyLogs:'studyLogs', pomoLogs:'pomoLogs', vidCourses:'vidCourses'
-      };
-      let changed = false;
-      Object.keys(lsMap).forEach(k=>{
+      const d=await fsGet(_user.uid,tok); if(!d) return;
+      const map={schedules:'scheds',todos:'todos',habits:'habits',habitLogs:'hlogs',
+                 notes:'notes',subjects:'subjects',studyLogs:'studyLogs',
+                 pomoLogs:'pomoLogs',vidCourses:'vidCourses'};
+      let changed=false;
+      Object.keys(map).forEach(k=>{
         if(d[k]!==undefined){
-          const fresh = JSON.stringify(d[k]);
-          if(localStorage.getItem('xm3_'+lsMap[k]) !== fresh){
-            localStorage.setItem('xm3_'+lsMap[k], fresh);
-            changed = true;
+          const fresh=JSON.stringify(d[k]);
+          if(localStorage.getItem('xm3_'+map[k])!==fresh){
+            localStorage.setItem('xm3_'+map[k],fresh); changed=true;
           }
         }
       });
       if(changed) location.reload();
-    } catch(e){ console.warn('cloudLoad failed',e); syncPillState('err'); }
+    } catch(e){ console.warn('cloudLoad failed',e); pill('err'); }
   }
 
   // ── Cloud save ──
-  window.__cloud.save = async function(data){
-    const token = await getValidToken(); if(!token||!_user) return;
-    clearTimeout(_saveTimer);
-    syncPillState('syncing');
-    _saveTimer = setTimeout(async()=>{
+  window.__cloud.save=async function(data){
+    const tok=await getToken(); if(!tok||!_user) return;
+    clearTimeout(_saveTimer); pill('syncing');
+    _saveTimer=setTimeout(async()=>{
       try{
-        await fsPatch(_user.uid, token, Object.assign({},data,{updatedAt:Date.now()}));
-        syncPillState('ok');
-      } catch(e){ console.warn('cloudSave failed',e); syncPillState('err'); }
-    }, 1500);
+        await fsPut(_user.uid,tok,Object.assign({},data,{updatedAt:Date.now()}));
+        pill('ok');
+      } catch(e){ console.warn('cloudSave failed',e); pill('err'); }
+    },1500);
   };
 
-  // ── Google Sign-In via OAuth popup ──
-  window.__fbSignIn = function(){
-    const w = 520, h = 600;
-    const left = Math.max(0, (screen.width-w)/2);
-    const top  = Math.max(0, (screen.height-h)/2);
-    const popup = window.open(
-      `https://accounts.google.com/o/oauth2/v2/auth?` +
-      `client_id=458244739005-b8v8lkqhqf3g7q4g9e2k0j8n5r6t1u2m.apps.googleusercontent.com` +
-      `&redirect_uri=https://daily-route-e7fe7.firebaseapp.com/__/auth/handler` +
-      `&response_type=token` +
-      `&scope=profile email`,
-      'googleLogin', `width=${w},height=${h},left=${left},top=${top}`
+  // ── Exchange Google credential for Firebase token ──
+  async function firebaseSignInWithGoogle(googleIdToken){
+    const r=await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${FB_KEY}`,
+      { method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          postBody:`id_token=${googleIdToken}&providerId=google.com`,
+          requestUri:'http://localhost',
+          returnSecureToken:true,
+          returnIdpCredential:true
+        })
+      }
     );
-    // Use Firebase signInWithCredential via identity toolkit
-    // Simpler: use Firebase Auth REST signInWithIdp
-    popup && popup.focus();
-    // Instead use the Firebase Auth redirect flow via a hidden iframe approach
-    // Actually the cleanest no-SDK approach: signInWithPopup via identity toolkit
-    if(popup) popup.close();
-    // Best approach for no-SDK: use Firebase Auth emulator URL
-    doGoogleSignIn();
-  };
+    const d=await r.json();
+    if(!d.idToken) throw new Error(d.error?.message||'signInWithIdp failed');
+    const user={uid:d.localId,displayName:d.displayName||'',email:d.email||'',photoURL:d.photoUrl||''};
+    saveToks(d.idToken,d.refreshToken,d.expiresIn,user);
+    return user;
+  }
 
-  async function doGoogleSignIn(){
-    // Use Firebase Auth REST API signInWithPopup flow
-    // Step 1: Get auth URL
+  // ── Google Sign-In via GSI (Google Identity Services) ──
+  // Load GSI script lazily when user clicks login
+  let _gsiLoaded = false;
+  function loadGSI(){
+    return new Promise((resolve,reject)=>{
+      if(_gsiLoaded||window.google?.accounts){ _gsiLoaded=true; resolve(); return; }
+      const s=document.createElement('script');
+      s.src='https://accounts.google.com/gsi/client';
+      s.onload=()=>{ _gsiLoaded=true; resolve(); };
+      s.onerror=reject;
+      document.head.appendChild(s);
+    });
+  }
+
+  window.__fbSignIn = async function(){
     try{
-      const r = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri?key=${FB.apiKey}`,
-        { method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({
-            providerId:'google.com',
-            continueUri: location.href
-          })
-        }
-      );
-      const d = await r.json();
-      if(d.authUri){
-        // Open in popup
-        const w=520,h=600,left=Math.max(0,(screen.width-w)/2),top=Math.max(0,(screen.height-h)/2);
-        const popup = window.open(d.authUri,'googleAuth',`width=${w},height=${h},left=${left},top=${top}`);
-        // Poll for redirect back
-        const timer = setInterval(async()=>{
+      await loadGSI();
+      window.google.accounts.id.initialize({
+        client_id: G_CLIENT,
+        callback: async(response)=>{
+          if(!response.credential){ showToast&&showToast('登入取消'); return; }
           try{
-            if(popup.closed){
-              clearInterval(timer);
-              return;
-            }
-            const url = popup.location.href;
-            if(url && url.includes(location.hostname)){
-              clearInterval(timer);
-              popup.close();
-              // Extract token from URL
-              const hash = new URL(url).hash || new URL(url).search;
-              const params = new URLSearchParams(hash.replace('#','?').replace('?',''));
-              const accessToken = params.get('access_token');
-              if(accessToken) await signInWithGoogleToken(accessToken, d.sessionId);
-            }
-          } catch(e){ /* cross-origin, ignore */ }
-        }, 300);
-      }
-    } catch(e){ console.warn('signIn error',e); showToast&&showToast('登入失敗，請稍後再試'); }
-  }
-
-  async function signInWithGoogleToken(accessToken, sessionId){
-    try{
-      const r = await fetch(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${FB.apiKey}`,
-        { method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({
-            requestUri: location.href,
-            postBody: `access_token=${accessToken}&providerId=google.com`,
-            returnSecureToken: true,
-            returnIdpCredential: true,
-            sessionId
-          })
+            pill('syncing');
+            const user=await firebaseSignInWithGoogle(response.credential);
+            window.__cloud.ready=true;
+            if(typeof renderUserBar==='function') renderUserBar(user);
+            await cloudLoad();
+            pill('ok');
+            showToast&&showToast('☁ 已登入並同步！');
+          } catch(e){ console.warn('firebase signIn error',e); pill('err'); showToast&&showToast('登入失敗：'+e.message); }
+        },
+        use_fedcm_for_prompt: false,
+      });
+      // Show One Tap prompt; fallback to renderButton if prompt not shown
+      window.google.accounts.id.prompt(notification=>{
+        if(notification.isNotDisplayed()||notification.isSkippedMoment()){
+          // Fallback: render a button in a mini dialog
+          showGSIButtonDialog();
         }
-      );
-      const d = await r.json();
-      if(d.idToken){
-        const user = { uid:d.localId, displayName:d.displayName||'', email:d.email||'', photoURL:d.photoUrl||'' };
-        saveTokens(d.idToken, d.refreshToken, d.expiresIn, user);
-        window.__cloud.ready = true;
-        if(typeof renderUserBar==='function') renderUserBar(user);
-        syncPillState('syncing');
-        await cloudLoad();
-        syncPillState('ok');
-        showToast&&showToast('☁ 已登入並同步！');
-      }
-    } catch(e){ console.warn('signInWithIdp error',e); }
-  }
-
-  window.__fbSignOut = function(){
-    clearTokens();
-    window.__cloud.ready = false;
-    if(typeof renderUserBar==='function') renderUserBar(null);
-    syncPillState(null);
-    showToast&&showToast('已登出');
+      });
+    } catch(e){
+      console.warn('GSI load failed',e);
+      showToast&&showToast('無法載入 Google 登入，請檢查網路');
+    }
   };
 
-  // ── Auto-restore session on load ──
+  function showGSIButtonDialog(){
+    // Remove existing dialog if any
+    var old = document.getElementById("_gsiDialog");
+    if(old) old.remove();
+    var oldOv = document.getElementById("_gsiOv");
+    if(oldOv) oldOv.remove();
+
+    // Create overlay
+    var ov = document.createElement("div");
+    ov.id = "_gsiOv";
+    ov.style.cssText = "position:fixed;inset:0;z-index:9998;background:rgba(40,25,65,.4);backdrop-filter:blur(4px)";
+
+    // Create dialog
+    var dlg = document.createElement("div");
+    dlg.id = "_gsiDialog";
+    dlg.style.cssText = [
+      "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)",
+      "background:rgba(248,244,240,.97);backdrop-filter:blur(24px)",
+      "border:1.5px solid rgba(160,148,132,.25);border-radius:16px",
+      "padding:1.5rem;z-index:9999;box-shadow:0 16px 48px rgba(0,0,0,.2)",
+      "display:flex;flex-direction:column;align-items:center;gap:1rem;min-width:260px"
+    ].join(";");
+
+    var title = document.createElement("div");
+    title.style.cssText = "font-size:.85rem;font-weight:700;color:var(--tx)";
+    title.textContent = "Google 帳號登入";
+
+    var btnWrap = document.createElement("div");
+    btnWrap.id = "_gsiBtnWrap";
+
+    var cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "取消";
+    cancelBtn.style.cssText = [
+      "font-size:.65rem;padding:.25rem .8rem;border-radius:10px",
+      "border:1.5px solid rgba(160,148,132,.3);background:transparent",
+      "color:var(--tx3);cursor:pointer;font-family:inherit"
+    ].join(";");
+    cancelBtn.onclick = function(){
+      dlg.remove();
+      ov.remove();
+    };
+
+    ov.onclick = function(){ dlg.remove(); ov.remove(); };
+    dlg.appendChild(title);
+    dlg.appendChild(btnWrap);
+    dlg.appendChild(cancelBtn);
+    document.body.appendChild(ov);
+    document.body.appendChild(dlg);
+
+    window.google.accounts.id.renderButton(btnWrap, {
+      theme: "outline",
+      size: "large",
+      text: "signin_with",
+      shape: "pill",
+      width: 220
+    });
+  }
+
+  window.__fbSignOut=function(){
+    clearToks(); window.__cloud.ready=false;
+    if(window.google?.accounts?.id) window.google.accounts.id.disableAutoSelect();
+    if(typeof renderUserBar==='function') renderUserBar(null);
+    pill(null); showToast&&showToast('已登出');
+  };
+
+  // ── Auto restore session on load ──
   (async function init(){
-    if(!_user){ return; }
-    const token = await getValidToken();
-    if(token){
-      window.__cloud.ready = true;
+    if(!_user) return;
+    const tok=await getToken();
+    if(tok){
+      window.__cloud.ready=true;
       if(typeof renderUserBar==='function') renderUserBar(_user);
-      syncPillState('syncing');
+      pill('syncing');
       await cloudLoad();
-      syncPillState('ok');
+      pill('ok');
     } else {
-      clearTokens();
+      clearToks();
       if(typeof renderUserBar==='function') renderUserBar(null);
     }
   })();
