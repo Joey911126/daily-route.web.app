@@ -2228,21 +2228,40 @@ window.renderUserBar = renderUserBar;
 
 // Bridge for core app to push data to cloud
 window.__applyCloudData = function(d){
-  if(d.schedules) window._xm3_schedules = d.schedules;
-  // Dispatch event so core app can pick up
-  document.dispatchEvent(new CustomEvent('cloudDataLoaded', {detail: d}));
+  // Write to localStorage so core app variables get updated on next read
+  const map={schedules:'scheds',todos:'todos',habits:'habits',habitLogs:'hlogs',
+             notes:'notes',subjects:'subjects',studyLogs:'studyLogs',
+             pomoLogs:'pomoLogs',vidCourses:'vidCourses'};
+  Object.keys(map).forEach(k=>{
+    if(d[k]!==undefined) localStorage.setItem('xm3_'+map[k], JSON.stringify(d[k]));
+  });
+  // Re-initialize core app variables and re-render without page reload
+  if(typeof schedules!=='undefined'&&d.schedules) schedules=d.schedules;
+  if(typeof todos!=='undefined'&&d.todos) todos=d.todos;
+  if(typeof habits!=='undefined'&&d.habits) habits=d.habits;
+  if(typeof habitLogs!=='undefined'&&d.habitLogs) habitLogs=d.habitLogs;
+  if(typeof notes!=='undefined'&&d.notes) notes=d.notes;
+  if(typeof subjects!=='undefined'&&d.subjects) subjects=d.subjects;
+  if(typeof studyLogs!=='undefined'&&d.studyLogs) studyLogs=d.studyLogs;
+  if(typeof pomoLogs!=='undefined'&&d.pomoLogs) pomoLogs=d.pomoLogs;
+  if(typeof vidCourses!=='undefined'&&d.vidCourses) vidCourses=d.vidCourses;
+  // Re-render current view
+  if(typeof renderAll==='function') renderAll();
+  if(typeof updateStats==='function') updateStats();
+  if(typeof renderExamAlert==='function') renderExamAlert();
+  if(typeof renderTodayStudyCard==='function') renderTodayStudyCard();
 };
 window.__getCurrentData = function(){
   return {
-    schedules: window._xm3_schedules,
-    todos: window._xm3_todos,
-    habits: window._xm3_habits,
-    habitLogs: window._xm3_hlogs,
-    notes: window._xm3_notes,
-    subjects: window._xm3_subjects,
-    studyLogs: window._xm3_studyLogs,
-    pomoLogs: window._xm3_pomoLogs,
-    vidCourses: window._xm3_vidCourses,
+    schedules: typeof schedules!=='undefined'?schedules:[],
+    todos: typeof todos!=='undefined'?todos:[],
+    habits: typeof habits!=='undefined'?habits:[],
+    habitLogs: typeof habitLogs!=='undefined'?habitLogs:{},
+    notes: typeof notes!=='undefined'?notes:{},
+    subjects: typeof subjects!=='undefined'?subjects:[],
+    studyLogs: typeof studyLogs!=='undefined'?studyLogs:{},
+    pomoLogs: typeof pomoLogs!=='undefined'?pomoLogs:[],
+    vidCourses: typeof vidCourses!=='undefined'?vidCourses:[],
   };
 };
 
@@ -2378,11 +2397,19 @@ renderUserBar(null);
         if(d[k]!==undefined){
           const fresh=JSON.stringify(d[k]);
           if(localStorage.getItem('xm3_'+map[k])!==fresh){
-            localStorage.setItem('xm3_'+map[k],fresh); changed=true;
+            localStorage.setItem('xm3_'+map[k],fresh);
+            changed=true;
           }
         }
       });
-      if(changed) location.reload();
+      // Apply data directly without reload to avoid infinite loop
+      if(changed && window.__applyCloudData){
+        const parsed={};
+        Object.keys(map).forEach(k=>{
+          try{ parsed[k]=JSON.parse(localStorage.getItem('xm3_'+map[k])||'null'); }catch(e){}
+        });
+        window.__applyCloudData(parsed);
+      }
     } catch(e){ console.warn('cloudLoad failed',e); pill('err'); }
   }
 
