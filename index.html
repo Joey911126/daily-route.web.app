@@ -2425,152 +2425,171 @@ renderUserBar(null);
     },1500);
   };
 
-  // ── Exchange Google credential for Firebase token ──
-  async function firebaseSignInWithGoogle(googleIdToken){
-    const r=await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=${FB_KEY}`,
-      { method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          postBody:`id_token=${googleIdToken}&providerId=google.com`,
-          requestUri:'http://localhost',
-          returnSecureToken:true,
-          returnIdpCredential:true
-        })
-      }
-    );
-    const d=await r.json();
-    if(!d.idToken) throw new Error(d.error?.message||'signInWithIdp failed');
-    const user={uid:d.localId,displayName:d.displayName||'',email:d.email||'',photoURL:d.photoUrl||''};
-    saveToks(d.idToken,d.refreshToken,d.expiresIn,user);
-    return user;
-  }
+  // ── Google Sign-In via GSI renderButton (most reliable in iframe/artifact env) ──
+  let _gsiReady = false;
 
-  // ── Google Sign-In via GSI (Google Identity Services) ──
-  // Load GSI script lazily when user clicks login
-  let _gsiLoaded = false;
   function loadGSI(){
-    return new Promise((resolve,reject)=>{
-      if(_gsiLoaded||window.google?.accounts){ _gsiLoaded=true; resolve(); return; }
-      const s=document.createElement('script');
-      s.src='https://accounts.google.com/gsi/client';
-      s.onload=()=>{ _gsiLoaded=true; resolve(); };
-      s.onerror=reject;
+    return new Promise((resolve, reject)=>{
+      if(_gsiReady || (window.google && window.google.accounts)){
+        _gsiReady = true; resolve(); return;
+      }
+      const s = document.createElement('script');
+      s.src = 'https://accounts.google.com/gsi/client';
+      s.async = true;
+      s.defer = true;
+      s.onload = ()=>{ _gsiReady = true; resolve(); };
+      s.onerror = ()=> reject(new Error('GSI load failed'));
       document.head.appendChild(s);
     });
+  }
+
+  async function onGoogleCredential(response){
+    if(!response || !response.credential){ showToast&&showToast('登入取消'); return; }
+    try{
+      pill('syncing');
+      // Remove dialog if open
+      var dlg = document.getElementById('_gsiDialog');
+      var ov  = document.getElementById('_gsiOv');
+      if(dlg) dlg.remove();
+      if(ov)  ov.remove();
+      // Exchange Google ID token for Firebase token
+      const r = await fetch(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key=' + FB_KEY,
+        { method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            postBody: 'id_token=' + response.credential + '&providerId=google.com',
+            requestUri: 'http://localhost',
+            returnSecureToken: true,
+            returnIdpCredential: true
+          })
+        }
+      );
+      const d = await r.json();
+      if(!d.idToken) throw new Error(d.error && d.error.message || 'signInWithIdp failed');
+      const user = {
+        uid: d.localId,
+        displayName: d.displayName || '',
+        email: d.email || '',
+        photoURL: d.photoUrl || ''
+      };
+      saveToks(d.idToken, d.refreshToken, d.expiresIn, user);
+      window.__cloud.ready = true;
+      if(typeof renderUserBar === 'function') renderUserBar(user);
+      await cloudLoad();
+      pill('ok');
+      showToast && showToast('☁ 已登入並同步！');
+    } catch(e){
+      console.warn('Google sign-in error', e);
+      pill('err');
+      showToast && showToast('登入失敗：' + e.message);
+    }
   }
 
   window.__fbSignIn = async function(){
     try{
       await loadGSI();
+      // Initialize GSI with callback
       window.google.accounts.id.initialize({
         client_id: G_CLIENT,
-        callback: async(response)=>{
-          if(!response.credential){ showToast&&showToast('登入取消'); return; }
-          try{
-            pill('syncing');
-            const user=await firebaseSignInWithGoogle(response.credential);
-            window.__cloud.ready=true;
-            if(typeof renderUserBar==='function') renderUserBar(user);
-            await cloudLoad();
-            pill('ok');
-            showToast&&showToast('☁ 已登入並同步！');
-          } catch(e){ console.warn('firebase signIn error',e); pill('err'); showToast&&showToast('登入失敗：'+e.message); }
-        },
+        callback: onGoogleCredential,
         use_fedcm_for_prompt: false,
+        cancel_on_tap_outside: false,
       });
-      // Show One Tap prompt; fallback to renderButton if prompt not shown
-      window.google.accounts.id.prompt(notification=>{
-        if(notification.isNotDisplayed()||notification.isSkippedMoment()){
-          // Fallback: render a button in a mini dialog
-          showGSIButtonDialog();
-        }
-      });
+      // Always show button dialog (most reliable across environments)
+      showGSIButtonDialog();
     } catch(e){
-      console.warn('GSI load failed',e);
-      showToast&&showToast('無法載入 Google 登入，請檢查網路');
+      console.warn('GSI error', e);
+      showToast && showToast('無法載入 Google 登入：' + e.message);
     }
   };
 
   function showGSIButtonDialog(){
-    // Remove existing dialog if any
-    var old = document.getElementById("_gsiDialog");
-    if(old) old.remove();
-    var oldOv = document.getElementById("_gsiOv");
-    if(oldOv) oldOv.remove();
+    // Remove existing
+    var existing = document.getElementById('_gsiDialog');
+    var existingOv = document.getElementById('_gsiOv');
+    if(existing) existing.remove();
+    if(existingOv) existingOv.remove();
 
-    // Create overlay
-    var ov = document.createElement("div");
-    ov.id = "_gsiOv";
-    ov.style.cssText = "position:fixed;inset:0;z-index:9998;background:rgba(40,25,65,.4);backdrop-filter:blur(4px)";
+    // Overlay
+    var ov = document.createElement('div');
+    ov.id = '_gsiOv';
+    ov.style.position = 'fixed';
+    ov.style.inset = '0';
+    ov.style.zIndex = '9998';
+    ov.style.background = 'rgba(40,25,65,.45)';
+    ov.style.backdropFilter = 'blur(4px)';
 
-    // Create dialog
-    var dlg = document.createElement("div");
-    dlg.id = "_gsiDialog";
-    dlg.style.cssText = [
-      "position:fixed;top:50%;left:50%;transform:translate(-50%,-50%)",
-      "background:rgba(248,244,240,.97);backdrop-filter:blur(24px)",
-      "border:1.5px solid rgba(160,148,132,.25);border-radius:16px",
-      "padding:1.5rem;z-index:9999;box-shadow:0 16px 48px rgba(0,0,0,.2)",
-      "display:flex;flex-direction:column;align-items:center;gap:1rem;min-width:260px"
-    ].join(";");
+    // Dialog
+    var dlg = document.createElement('div');
+    dlg.id = '_gsiDialog';
+    dlg.style.position = 'fixed';
+    dlg.style.top = '50%';
+    dlg.style.left = '50%';
+    dlg.style.transform = 'translate(-50%,-50%)';
+    dlg.style.background = 'rgba(248,244,240,.98)';
+    dlg.style.backdropFilter = 'blur(24px)';
+    dlg.style.border = '1.5px solid rgba(160,148,132,.25)';
+    dlg.style.borderRadius = '16px';
+    dlg.style.padding = '1.5rem';
+    dlg.style.zIndex = '9999';
+    dlg.style.boxShadow = '0 16px 48px rgba(0,0,0,.2)';
+    dlg.style.display = 'flex';
+    dlg.style.flexDirection = 'column';
+    dlg.style.alignItems = 'center';
+    dlg.style.gap = '1rem';
+    dlg.style.minWidth = '280px';
 
-    var title = document.createElement("div");
-    title.style.cssText = "font-size:.85rem;font-weight:700;color:var(--tx)";
-    title.textContent = "Google 帳號登入";
+    var title = document.createElement('div');
+    title.style.fontSize = '.88rem';
+    title.style.fontWeight = '700';
+    title.style.color = 'var(--tx)';
+    title.textContent = '使用 Google 帳號登入';
 
-    var btnWrap = document.createElement("div");
-    btnWrap.id = "_gsiBtnWrap";
+    var sub = document.createElement('div');
+    sub.style.fontSize = '.62rem';
+    sub.style.color = 'var(--tx3)';
+    sub.style.textAlign = 'center';
+    sub.textContent = '登入後資料可跨裝置同步';
 
-    var cancelBtn = document.createElement("button");
-    cancelBtn.textContent = "取消";
-    cancelBtn.style.cssText = [
-      "font-size:.65rem;padding:.25rem .8rem;border-radius:10px",
-      "border:1.5px solid rgba(160,148,132,.3);background:transparent",
-      "color:var(--tx3);cursor:pointer;font-family:inherit"
-    ].join(";");
+    var btnWrap = document.createElement('div');
+    btnWrap.id = '_gsiBtnWrap';
+    btnWrap.style.minHeight = '44px';
+    btnWrap.style.display = 'flex';
+    btnWrap.style.alignItems = 'center';
+    btnWrap.style.justifyContent = 'center';
+
+    var cancelBtn = document.createElement('button');
+    cancelBtn.textContent = '取消';
+    cancelBtn.style.fontSize = '.65rem';
+    cancelBtn.style.padding = '.25rem .8rem';
+    cancelBtn.style.borderRadius = '10px';
+    cancelBtn.style.border = '1.5px solid rgba(160,148,132,.3)';
+    cancelBtn.style.background = 'transparent';
+    cancelBtn.style.color = 'var(--tx3)';
+    cancelBtn.style.cursor = 'pointer';
+    cancelBtn.style.fontFamily = 'inherit';
     cancelBtn.onclick = function(){
-      dlg.remove();
-      ov.remove();
+      dlg.remove(); ov.remove();
     };
 
     ov.onclick = function(){ dlg.remove(); ov.remove(); };
     dlg.appendChild(title);
+    dlg.appendChild(sub);
     dlg.appendChild(btnWrap);
     dlg.appendChild(cancelBtn);
     document.body.appendChild(ov);
     document.body.appendChild(dlg);
 
+    // Render the official Google Sign-In button
     window.google.accounts.id.renderButton(btnWrap, {
-      theme: "outline",
-      size: "large",
-      text: "signin_with",
-      shape: "pill",
-      width: 220
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+      shape: 'pill',
+      width: 240,
+      logo_alignment: 'left'
     });
   }
-
-  window.__fbSignOut=function(){
-    clearToks(); window.__cloud.ready=false;
-    if(window.google?.accounts?.id) window.google.accounts.id.disableAutoSelect();
-    if(typeof renderUserBar==='function') renderUserBar(null);
-    pill(null); showToast&&showToast('已登出');
-  };
-
-  // ── Auto restore session on load ──
-  (async function init(){
-    if(!_user) return;
-    const tok=await getToken();
-    if(tok){
-      window.__cloud.ready=true;
-      if(typeof renderUserBar==='function') renderUserBar(_user);
-      pill('syncing');
-      await cloudLoad();
-      pill('ok');
-    } else {
-      clearToks();
-      if(typeof renderUserBar==='function') renderUserBar(null);
-    }
-  })();
 
 })();
 </script>
