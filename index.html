@@ -776,7 +776,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 <!-- AI IMPORT CHAPTER PANEL -->
 <div id="aiImportChapPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(143,166,142,.3);border-radius:16px;padding:1.25rem;width:min(440px,95vw);z-index:400;box-shadow:0 16px 56px rgba(74,96,80,.18);max-height:94vh;overflow-y:auto">
   <div style="font-size:.88rem;font-weight:700;margin-bottom:.2rem;background:linear-gradient(120deg,#3A5840,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">✨ AI 匯入章節</div>
-  <div style="font-size:.62rem;color:var(--tx3);margin-bottom:.75rem;line-height:1.65">貼上目錄文字，或上傳目錄照片，AI 自動解析章節名稱與頁碼範圍。</div>
+  <div style="font-size:.62rem;color:var(--tx3);margin-bottom:.75rem;line-height:1.65">貼上目錄文字或上傳照片，AI 自動解析。支援書本目錄（章節＋頁碼）或課程教學大綱（週次＋日期，可自動抓出報告/考試截止日）。</div>
   <div style="margin-bottom:.65rem">
     <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">匯入到哪個科目</label>
     <select id="aiImportSubjSel" class="add-inp" style="border-radius:8px;width:100%" onchange="updateAiImportSubjUI()">
@@ -785,6 +785,13 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     <div id="aiImportNewSubjWrap" style="margin-top:.4rem;display:flex;gap:.3rem">
       <input class="add-inp" id="aiImportNewSubjName" placeholder="新科目名稱" style="border-radius:8px">
       <input class="add-inp" id="aiImportNewSubjEmoji" placeholder="📖" maxlength="4" style="width:44px;border-radius:8px;text-align:center;font-size:1rem;flex-shrink:0">
+    </div>
+  </div>
+  <div style="margin-bottom:.55rem">
+    <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">內容格式</label>
+    <div style="display:flex;gap:.4rem">
+      <button id="aiImportFmtBook" onclick="switchAiImportFormat('book')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(74,96,80,.3);background:linear-gradient(135deg,#8FA898,#6A8870);color:#fff;font-size:.68rem;font-weight:700;font-family:inherit;cursor:pointer">📖 書本目錄（頁碼）</button>
+      <button id="aiImportFmtWeek" onclick="switchAiImportFormat('week')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(140,140,168,.25);background:rgba(255,255,255,.8);color:var(--dusk-d);font-size:.68rem;font-weight:600;font-family:inherit;cursor:pointer">🗓 課程週次（教學大綱）</button>
     </div>
   </div>
   <div style="display:flex;gap:.4rem;margin-bottom:.65rem">
@@ -889,7 +896,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   <div style="font-size:.88rem;font-weight:700;margin-bottom:.3rem;background:linear-gradient(120deg,#484868,#785048);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🔗 訂閱公開行事曆</div>
   <div style="font-size:.6rem;color:var(--tx3);margin-bottom:.7rem;line-height:1.7;background:rgba(140,140,168,.06);border:1.5px solid rgba(140,140,168,.15);border-radius:8px;padding:.5rem .65rem">
     在 iPhone「行事曆」App：選要分享的行事曆 →「共享行事曆」→ 開啟「<b>公開行事曆</b>」→ 複製連結，貼到下面。<br><br>
-    ⚠ 部分連結因瀏覽器安全限制（CORS）可能無法直接讀取，若同步失敗會有提示。
+    ⚠ 若直接讀取被瀏覽器安全限制（CORS）擋下，會自動改用第三方代理服務重試一次——代表行事曆內容會經過該代理伺服器中轉，並非只在你和 Apple 之間。如果仍失敗，請改用「📥 匯入行事曆」手動匯出 .ics。
   </div>
   <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">訂閱連結（webcal:// 或 https://...ics）</label><input class="add-inp" id="icsSubUrl" placeholder="webcal://p00-caldav.icloud.com/published/..." style="width:100%;border-radius:8px"></div>
   <div style="font-size:.6rem;color:var(--tx3);margin-bottom:.7rem" id="icsSubStatus">尚未設定訂閱連結</div>
@@ -1194,13 +1201,24 @@ function clearIcsSubscribe(){
   save('icsSubUrl','');save('icsSubLastSync',null);
   closeOverlays();showToast('已取消訂閱');
 }
+async function fetchICSWithFallback(url){
+  try{
+    const resp=await fetch(url,{cache:'no-store'});
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    return{text:await resp.text(),viaProxy:false};
+  }catch(directErr){
+    console.warn('direct ics fetch failed, trying CORS proxy',directErr);
+    const proxyUrl='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
+    const resp2=await fetch(proxyUrl,{cache:'no-store'});
+    if(!resp2.ok)throw new Error('Proxy HTTP '+resp2.status);
+    return{text:await resp2.text(),viaProxy:true};
+  }
+}
 async function syncIcsSubscription(manual){
   if(!icsSubUrl)return;
   const url=normalizeIcsUrl(icsSubUrl);
   try{
-    const resp=await fetch(url,{cache:'no-store'});
-    if(!resp.ok)throw new Error('HTTP '+resp.status);
-    const text=await resp.text();
+    const{text,viaProxy}=await fetchICSWithFallback(url);
     const events=parseICSEvents(text);
     if(manual)snapshot();
     const{added,updated}=mergeICSEvents(events);
@@ -1210,10 +1228,10 @@ async function syncIcsSubscription(manual){
     icsSubLastSync=new Date().toLocaleString('zh-TW',{hour12:false});
     save('icsSubLastSync',icsSubLastSync);
     updateIcsSubStatus();
-    if(manual)showToast(added||updated?`🔗 已同步：新增 ${added} 筆、更新 ${updated} 筆`:'🔗 已同步，沒有新變更');
+    if(manual)showToast(added||updated?`🔗 ${viaProxy?'（經代理）':''}已同步：新增 ${added} 筆、更新 ${updated} 筆`:`🔗 ${viaProxy?'（經代理）':''}已同步，沒有新變更`);
   }catch(err){
     console.warn('ics subscribe sync failed',err);
-    if(manual)showToast('⚠ 同步失敗：瀏覽器安全限制（CORS）可能擋下了跨網域讀取，這個連結的伺服器不一定允許網頁直接存取');
+    if(manual)showToast('⚠ 同步失敗：直接讀取和代理備援都被擋下了，這個連結可能無法被網頁存取，建議改用手動匯入 .ics');
   }
 }
 
@@ -1815,9 +1833,18 @@ function renderAll(){
    AI IMPORT CHAPTERS (TEXT + IMAGE)
 ───────────────────────────────────── */
 let _aiImportMode = 'text';
+let _aiImportFormat = 'book'; // 'book' = page-range TOC, 'week' = weekly syllabus
+let _aiImportPreviewFormat = 'book'; // format that was active when the preview was generated
 let _aiImportImages = [];  // [{base64, dataUrl}]
-let _aiImportPreviewChaps = [];  // [{name, pageStart, pageEnd, selected}]
+let _aiImportPreviewChaps = [];  // [{name, pageStart, pageEnd, selected}] or week-format fields
 let _aiImportTargetSubjId = null; // null = new subject
+
+function switchAiImportFormat(fmt){
+  _aiImportFormat = fmt;
+  const bb=$('aiImportFmtBook'), wb=$('aiImportFmtWeek');
+  if(bb){bb.style.background=fmt==='book'?'linear-gradient(135deg,#8FA898,#6A8870)':'rgba(255,255,255,.8)';bb.style.color=fmt==='book'?'#fff':'var(--sage-d)';bb.style.fontWeight=fmt==='book'?'700':'600';}
+  if(wb){wb.style.background=fmt==='week'?'linear-gradient(135deg,#9898B0,#7868A0)':'rgba(255,255,255,.8)';wb.style.color=fmt==='week'?'#fff':'var(--dusk-d)';wb.style.fontWeight=fmt==='week'?'700':'600';}
+}
 
 function openAiImportChap(sjId) {
   _aiImportTargetSubjId = sjId || null;
@@ -1842,6 +1869,7 @@ function openAiImportChap(sjId) {
   $('aiImportBtn').style.opacity = '1';
   clearImportImg();
   switchAiImportMode('text');
+  switchAiImportFormat('book');
 
   $('aiImportChapPanel').style.display = 'block';
   $('overlay').style.display = 'block';
@@ -1928,24 +1956,25 @@ function resetAiImport() {
 
 async function doAiImportChap() {
   const mode = _aiImportMode;
+  const fmt = _aiImportFormat;
   const statusEl = $('aiImportStatus');
   const btn = $('aiImportBtn');
 
   if (mode === 'text') {
     const text = $('aiImportText').value.trim();
-    if (!text) { showToast('請貼上目錄文字'); return; }
+    if (!text) { showToast('請貼上內容文字'); return; }
   } else {
     if (!_aiImportImages.length) { showToast('請先上傳照片'); return; }
   }
 
   // Show loading
   statusEl.style.display = 'block';
-  statusEl.innerHTML = `<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>AI 正在解析${mode==='img'&&_aiImportImages.length>1?'『'+_aiImportImages.length+' 張』目錄照片':'目錄'}，請稍候…</span></div>`;
+  statusEl.innerHTML = `<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>AI 正在解析${mode==='img'&&_aiImportImages.length>1?'『'+_aiImportImages.length+' 張』照片':'內容'}，請稍候…</span></div>`;
   btn.disabled = true; btn.style.opacity = '.6';
 
   try {
     let messages;
-    const prompt = `你是書本目錄解析助理。請從以下內容中提取所有章節資訊。
+    const bookPrompt = `你是書本目錄解析助理。請從以下內容中提取所有章節資訊。
 
 要求：
 1. 每個章節輸出：章節名稱、起始頁、結束頁
@@ -1957,11 +1986,26 @@ async function doAiImportChap() {
 
 注意：若頁碼格式是 p.XX 或 ......XX 也要正確解析。`;
 
+    const weekPrompt = `你是課程教學大綱解析助理。請從以下課程週次進度表中，逐週提取資訊。
+
+要求：
+1. 每週輸出：週次（數字）、完整日期（若表格已給出日期，換算成 YYYY-MM-DD；沒有給日期就填 null）
+2. 若大綱標題含「N學年度」等民國學年度字樣，換算西元年規則為：民國年+1911=該學年度起始西元年（例如115學年度→2026年起始）；第1學期從該起始西元年9月開始，第2學期從隔一年2月開始，用這個規則推算每週的完整西元日期
+3. name 欄位請合併「主題」與「教學內容」重點，簡短摘要（15字以內優先）
+4. isDeadline：若該週內容屬於報告繳交、期中/期末考試、proposal、作業繳交等有截止性質的項目，設為 true，否則 false
+5. deadlineType：isDeadline 為 true 時，判斷屬於 "exam"（考試、口試、口頭報告發表）還是 "assignment"（書面作業、報告繳交），isDeadline 為 false 則設 null
+6. 若提供多張照片，代表進度表橫跨多頁，請合併、依週次順序輸出，去除重複
+7. 只回傳 JSON array，不要其他文字：
+[{"week":1,"date":"2026-09-08","name":"課程介紹","isDeadline":false,"deadlineType":null},...]`;
+
+    const prompt = fmt === 'week' ? weekPrompt : bookPrompt;
+    const contentLabel = fmt === 'week' ? '教學大綱內容' : '目錄內容';
+
     if (mode === 'text') {
       const text = $('aiImportText').value.trim();
       messages = [{ role: 'user', content: `${prompt}
 
-目錄內容：
+${contentLabel}：
 ${text}` }];
     } else {
       const imgBlocks = _aiImportImages.map(img => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: img.base64 } }));
@@ -1974,7 +2018,7 @@ ${text}` }];
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, messages })
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages })
     });
     const data = await resp.json();
     const raw = (data.content || []).map(b => b.text || '').join('').trim();
@@ -1985,17 +2029,34 @@ ${text}` }];
       try { chaps = JSON.parse(match[0]); } catch(e) { throw new Error('JSON 解析失敗'); }
     }
 
-    if (!chaps.length) throw new Error('未能解析到章節，請確認格式或換文字貼上');
+    if (!chaps.length) throw new Error(fmt==='week'?'未能解析到週次，請確認格式或換文字貼上':'未能解析到章節，請確認格式或換文字貼上');
 
-    // Validate fields
-    chaps = chaps.filter(c => c.name && c.pageStart).map(c => ({
-      name: String(c.name).trim(),
-      pageStart: parseInt(c.pageStart) || 1,
-      pageEnd: parseInt(c.pageEnd) || parseInt(c.pageStart) + 30,
-      selected: true
-    }));
+    if (fmt === 'week') {
+      chaps = chaps.filter(c => c.name && c.week).map(c => {
+        const wk = parseInt(c.week) || 1;
+        return {
+          name: String(c.name).trim(),
+          pageStart: wk,
+          pageEnd: wk,
+          weekLabel: `第${wk}週${c.date?`（${c.date}）`:''}`,
+          dueDate: c.date || null,
+          isDeadline: !!c.isDeadline,
+          deadlineType: c.deadlineType === 'exam' ? 'exam' : 'assignment',
+          createDeadline: !!c.isDeadline && !!c.date,
+          selected: true
+        };
+      });
+    } else {
+      chaps = chaps.filter(c => c.name && c.pageStart).map(c => ({
+        name: String(c.name).trim(),
+        pageStart: parseInt(c.pageStart) || 1,
+        pageEnd: parseInt(c.pageEnd) || parseInt(c.pageStart) + 30,
+        selected: true
+      }));
+    }
 
     _aiImportPreviewChaps = chaps;
+    _aiImportPreviewFormat = fmt;
     statusEl.style.display = 'none';
     btn.disabled = false; btn.style.opacity = '1';
     renderImportChapPreview();
@@ -2010,21 +2071,32 @@ ${text}` }];
 function renderImportChapPreview() {
   const list = $('aiImportChapList');
   if (!list) return;
+  const isWeek = _aiImportPreviewFormat === 'week';
 
-  list.innerHTML = _aiImportPreviewChaps.map((c, i) => `
-    <div style="display:flex;align-items:flex-start;gap:.4rem;padding:.35rem .4rem;border-radius:7px;border:1.5px solid ${c.selected ? 'rgba(143,166,142,.3)' : 'rgba(160,148,132,.15)'};background:${c.selected ? 'rgba(143,166,142,.08)' : 'rgba(240,238,235,.5)'};cursor:pointer;transition:all .15s" onclick="toggleImportChap(${i},this)">
-      <div style="width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(143,166,142,.45);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.5rem;background:${c.selected ? 'linear-gradient(135deg,#8FA898,#6A7890)' : 'transparent'};color:${c.selected ? '#fff' : 'transparent'};transition:all .18s;margin-top:1px">${c.selected ? '✓' : ''}</div>
-      <div style="flex:1;min-width:0">
-        <div contenteditable="true" onfocus="event.stopPropagation()" onblur="updateImportChapName(${i},this.textContent)" style="font-size:.73rem;font-weight:600;color:var(--tx);outline:none;border-bottom:1px dashed transparent" onfocusin="this.style.borderBottomColor='rgba(143,166,142,.4)'" onfocusout="this.style.borderBottomColor='transparent'">${escHtml(c.name)}</div>
+  list.innerHTML = _aiImportPreviewChaps.map((c, i) => {
+    const metaHtml = isWeek ? `
+        <div style="font-size:.56rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace;display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
+          <span>第</span>
+          <input type="number" value="${c.pageStart}" min="1" style="width:34px;font-size:.58rem;border:none;border-bottom:1px solid rgba(140,140,168,.35);background:transparent;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--tx2);outline:none;padding:0" onclick="event.stopPropagation()" onchange="updateImportChapWeek(${i},this.value)">
+          <span>週${c.dueDate?` · ${c.dueDate}`:''}</span>
+          ${c.dueDate ? `<label onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:2px;cursor:pointer;font-size:.54rem;color:${c.createDeadline?'var(--clay-d)':'var(--tx3)'};font-weight:${c.createDeadline?700:400}"><input type="checkbox" ${c.createDeadline?'checked':''} onchange="toggleImportChapDeadline(${i},this.checked)" style="width:11px;height:11px;accent-color:var(--clay-d)">列入${c.deadlineType==='exam'?'🎯考試':'📝作業'}</label>` : ''}
+        </div>` : `
         <div style="font-size:.56rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace;display:flex;gap:.4rem;align-items:center">
           <span>p.</span>
           <input type="number" value="${c.pageStart}" min="1" style="width:40px;font-size:.58rem;border:none;border-bottom:1px solid rgba(143,166,142,.35);background:transparent;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--tx2);outline:none;padding:0" onclick="event.stopPropagation()" onchange="updateImportChapPage(${i},'pageStart',this.value)">
           <span>–</span>
           <input type="number" value="${c.pageEnd}" min="1" style="width:40px;font-size:.58rem;border:none;border-bottom:1px solid rgba(143,166,142,.35);background:transparent;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--tx2);outline:none;padding:0" onclick="event.stopPropagation()" onchange="updateImportChapPage(${i},'pageEnd',this.value)">
           <span>（${Math.max(c.pageEnd - c.pageStart + 1, 0)} 頁）</span>
-        </div>
+        </div>`;
+    return `
+    <div style="display:flex;align-items:flex-start;gap:.4rem;padding:.35rem .4rem;border-radius:7px;border:1.5px solid ${c.selected ? 'rgba(143,166,142,.3)' : 'rgba(160,148,132,.15)'};background:${c.selected ? 'rgba(143,166,142,.08)' : 'rgba(240,238,235,.5)'};cursor:pointer;transition:all .15s" onclick="toggleImportChap(${i},this)">
+      <div style="width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(143,166,142,.45);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.5rem;background:${c.selected ? 'linear-gradient(135deg,#8FA898,#6A7890)' : 'transparent'};color:${c.selected ? '#fff' : 'transparent'};transition:all .18s;margin-top:1px">${c.selected ? '✓' : ''}</div>
+      <div style="flex:1;min-width:0">
+        <div contenteditable="true" onfocus="event.stopPropagation()" onblur="updateImportChapName(${i},this.textContent)" style="font-size:.73rem;font-weight:600;color:var(--tx);outline:none;border-bottom:1px dashed transparent" onfocusin="this.style.borderBottomColor='rgba(143,166,142,.4)'" onfocusout="this.style.borderBottomColor='transparent'">${escHtml(c.name)}</div>
+        ${metaHtml}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 
   $('aiImportPreview').style.display = '';
   $('aiImportActions').style.display = 'none';
@@ -2048,10 +2120,23 @@ function updateImportChapPage(idx, field, val) {
   updateImportChapCount();
 }
 
+function updateImportChapWeek(idx, val) {
+  const c = _aiImportPreviewChaps[idx];
+  if (!c) return;
+  const wk = parseInt(val) || 1;
+  c.pageStart = wk; c.pageEnd = wk;
+  c.weekLabel = `第${wk}週${c.dueDate?`（${c.dueDate}）`:''}`;
+}
+
+function toggleImportChapDeadline(idx, checked) {
+  const c = _aiImportPreviewChaps[idx];
+  if (c) c.createDeadline = checked;
+}
+
 function updateImportChapCount() {
   const sel = _aiImportPreviewChaps.filter(c => c.selected).length;
   const el = $('aiImportChapCount');
-  if (el) el.textContent = `已選 ${sel} / ${_aiImportPreviewChaps.length} 個章節`;
+  if (el) el.textContent = `已選 ${sel} / ${_aiImportPreviewChaps.length} 個項目`;
   const btn = $('importChapToggleBtn');
   if (btn) btn.textContent = sel === _aiImportPreviewChaps.length ? '全不選' : '全選';
 }
@@ -2084,23 +2169,39 @@ function doConfirmImportChaps() {
   snapshot();
   if (!targetSj.chapters) targetSj.chapters = [];
 
+  let deadlineCount = 0;
+  const isWeek = _aiImportPreviewFormat === 'week';
   selected.forEach(c => {
     targetSj.chapters.push({
       id: genId(),
-      name: c.name,
+      name: isWeek ? `${c.weekLabel || ('第'+c.pageStart+'週')}｜${c.name}` : c.name,
       pageStart: c.pageStart,
       pageEnd: c.pageEnd,
       currentPage: c.pageStart,
       notes: '',
       reviews: []
     });
+    if (isWeek && c.createDeadline && c.dueDate) {
+      deadlines.push({
+        id: genId(),
+        type: c.deadlineType === 'exam' ? 'exam' : 'assignment',
+        name: c.name,
+        subjectId: targetSj.id,
+        dueDate: c.dueDate,
+        dueTime: '',
+        notes: '',
+        done: false
+      });
+      deadlineCount++;
+    }
   });
 
   persist();
   closeOverlays();
   if (curStudyTab !== 'book') switchStudyTab('book');
   else renderStudy();
-  showToast(`✦ 已匯入 ${selected.length} 個章節到「${targetSj.name}」！`);
+  updateDlStats();
+  showToast(`✦ 已匯入 ${selected.length} 個${isWeek?'週次':'章節'}到「${targetSj.name}」！${deadlineCount?`並新增 ${deadlineCount} 筆考試/作業`:''}`);
 }
 
 
@@ -2628,6 +2729,8 @@ window.doAiImportChap=doAiImportChap;window.toggleImportChap=toggleImportChap;
 window.toggleAllImportChaps=toggleAllImportChaps;window.doConfirmImportChaps=doConfirmImportChaps;
 window.resetAiImport=resetAiImport;window.updateAiImportSubjUI=updateAiImportSubjUI;
 window.updateImportChapName=updateImportChapName;window.updateImportChapPage=updateImportChapPage;
+window.switchAiImportFormat=switchAiImportFormat;window.updateImportChapWeek=updateImportChapWeek;
+window.toggleImportChapDeadline=toggleImportChapDeadline;
 window.openAiGenCourse=openAiGenCourse;window.doAiGenerate=doAiGenerate;window.doImportCourse=doImportCourse;
 window.togglePreviewEp=togglePreviewEp;window.toggleAllPreviewEps=toggleAllPreviewEps;window.backToAiStep1=backToAiStep1;
 window.openAddDeadline=openAddDeadline;window.setDlType=setDlType;window.doAddDeadline=doAddDeadline;
