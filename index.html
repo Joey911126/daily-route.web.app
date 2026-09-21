@@ -370,7 +370,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 
     <div class="grid">
       <div class="card col-w">
-        <div class="card-hdr"><div class="card-title">🗓 今日行程</div><button class="card-act" onclick="showAddSched()">＋ 新增</button></div>
+        <div class="card-hdr"><div class="card-title">🗓 今日行程</div><div style="display:flex;gap:.3rem"><input type="file" id="icsImportInput" accept=".ics,text/calendar" multiple style="display:none" onchange="handleICSImport(this)"><button class="card-act" onclick="openIcsSubscribe()">🔗 訂閱同步</button><button class="card-act" onclick="triggerImportICS()">📥 匯入行事曆</button><button class="card-act" onclick="showAddSched()">＋ 新增</button></div></div>
         <div class="card-body" id="schedList"><div class="empty">尚無行程</div></div>
       </div>
       <div class="card col-n">
@@ -446,9 +446,9 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.75rem">
       <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">科目數</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stSubjCount">0</div></div>
       <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">章節完成</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stChapDone">0</div></div>
-      <div class="vid-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--vid-d);letter-spacing:.1em;margin-bottom:.2rem">影片課程</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--vid-d)" id="stVidCourses">0</div></div>
-      <div class="vid-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--vid-d);letter-spacing:.1em;margin-bottom:.2rem">集數已看</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--vid-d)" id="stVidDone">0</div></div>
-      <div class="dl-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--clay-d);letter-spacing:.1em;margin-bottom:.2rem">待繳/待考</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--clay-d)" id="stDlPending">0</div></div>
+      <div class="vid-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--vid-d);letter-spacing:.1em;margin-bottom:.2rem">影片課程</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;color:var(--vid-d);white-space:nowrap" id="stVidCourses">0／0</div></div>
+      <div class="dl-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--clay-d);letter-spacing:.1em;margin-bottom:.2rem">待考</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--clay-d)" id="stDlExamPending">0</div></div>
+      <div class="dl-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--dusk-d);letter-spacing:.1em;margin-bottom:.2rem">待繳</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--dusk-d)" id="stDlAssignPending">0</div></div>
       <div class="dl-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:#C04040;letter-spacing:.1em;margin-bottom:.2rem">3天內</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:#C04040" id="stDlUrgent">0</div></div>
     </div>
 
@@ -804,13 +804,16 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   <div id="aiImportImgMode" style="display:none">
     <div id="aiImportDropZone" onclick="document.getElementById('aiImportFileInput').click()" style="border:2px dashed rgba(143,166,142,.4);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;background:rgba(143,166,142,.04);transition:all .18s" ondragover="event.preventDefault();this.style.background='rgba(143,166,142,.1)'" ondragleave="this.style.background='rgba(143,166,142,.04)'" ondrop="handleImgDrop(event)">
       <div style="font-size:2rem;margin-bottom:.4rem">📷</div>
-      <div style="font-size:.75rem;font-weight:600;color:var(--sage-d)">點此選擇或拖曳照片</div>
-      <div style="font-size:.6rem;color:var(--tx3);margin-top:.2rem">支援 JPG、PNG，建議拍目錄頁</div>
-      <input type="file" id="aiImportFileInput" accept="image/*" capture="environment" style="display:none" onchange="handleImgFile(this)">
+      <div style="font-size:.75rem;font-weight:600;color:var(--sage-d)">點此選擇或拖曳照片（可多選）</div>
+      <div style="font-size:.6rem;color:var(--tx3);margin-top:.2rem">支援 JPG、PNG，目錄跨多頁可一次上傳多張</div>
+      <input type="file" id="aiImportFileInput" accept="image/*" multiple style="display:none" onchange="handleImgFile(this)">
     </div>
-    <div id="aiImportImgPreview" style="display:none;margin-top:.55rem;position:relative">
-      <img id="aiImportImgEl" style="width:100%;border-radius:10px;max-height:200px;object-fit:contain;border:1.5px solid rgba(143,166,142,.25)" alt="目錄預覽">
-      <button onclick="clearImportImg()" style="position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;border:none;cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center">✕</button>
+    <div id="aiImportImgPreview" style="display:none;margin-top:.55rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
+        <span style="font-size:.58rem;color:var(--tx3)" id="aiImportImgCount"></span>
+        <button onclick="document.getElementById('aiImportFileInput').click()" style="font-size:.55rem;padding:.14rem .45rem;border-radius:8px;border:1.5px solid rgba(143,166,142,.3);background:rgba(255,255,255,.7);color:var(--sage-d);cursor:pointer;font-family:inherit">＋ 再新增</button>
+      </div>
+      <div id="aiImportImgGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem"></div>
     </div>
   </div>
   <div id="aiImportStatus" style="display:none;margin-top:.55rem"></div>
@@ -878,6 +881,22 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   <div style="display:flex;gap:.4rem">
     <button onclick="doAutoSchedule()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#8FA898,#9898B0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">⚡ 立即排程</button>
     <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- ICS SUBSCRIBE PANEL -->
+<div id="icsSubscribePanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(140,140,168,.28);border-radius:16px;padding:1.25rem;width:min(380px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18);max-height:90vh;overflow-y:auto">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.3rem;background:linear-gradient(120deg,#484868,#785048);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🔗 訂閱公開行事曆</div>
+  <div style="font-size:.6rem;color:var(--tx3);margin-bottom:.7rem;line-height:1.7;background:rgba(140,140,168,.06);border:1.5px solid rgba(140,140,168,.15);border-radius:8px;padding:.5rem .65rem">
+    在 iPhone「行事曆」App：選要分享的行事曆 →「共享行事曆」→ 開啟「<b>公開行事曆</b>」→ 複製連結，貼到下面。<br><br>
+    ⚠ 部分連結因瀏覽器安全限制（CORS）可能無法直接讀取，若同步失敗會有提示。
+  </div>
+  <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">訂閱連結（webcal:// 或 https://...ics）</label><input class="add-inp" id="icsSubUrl" placeholder="webcal://p00-caldav.icloud.com/published/..." style="width:100%;border-radius:8px"></div>
+  <div style="font-size:.6rem;color:var(--tx3);margin-bottom:.7rem" id="icsSubStatus">尚未設定訂閱連結</div>
+  <div style="display:flex;gap:.4rem">
+    <button onclick="saveIcsSubscribe()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#9898B0,#7868A0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存並同步</button>
+    <button onclick="clearIcsSubscribe()" style="padding:.42rem .65rem;border-radius:10px;border:1.5px solid rgba(184,144,128,.3);background:rgba(255,255,255,.7);color:var(--clay-d);font-size:.72rem;cursor:pointer;font-family:inherit">取消訂閱</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .65rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.72rem;cursor:pointer;font-family:inherit">關閉</button>
   </div>
 </div>
 
@@ -1021,6 +1040,183 @@ function showAddSched(){$('sName').value='';$('addSchedPanel').style.display='bl
 function doAddSched(){const name=$('sName').value.trim();if(!name){showToast('請填寫活動名稱');return;}snapshot();const targetDate=(curTab==='review'&&window._weekSchedDate)?window._weekSchedDate:todayKey();schedules.push({id:genId(),name,start:$('sStart').value,end:$('sEnd').value,priority:'normal',date:targetDate});window._weekSchedDate=null;persist();closeOverlays();if(curTab==='review'&&_wrTab==='week')renderWeekPlan();else{renderSchedules();updateStats();}showToast('🌸 行程已新增');}
 function delSched(id){snapshot();schedules=schedules.filter(s=>s.id!==id);persist();renderSchedules();updateStats();}
 
+/* ── EXPORT TO iOS CALENDAR (.ics) ── */
+function icsEscape(s){return String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');}
+function icsAddHour(t){const [h,m]=(t||'09:00').split(':').map(Number);return `${pad((h+1)%24)}:${pad(m||0)}`;}
+function schedToICSDate(dateStr,timeStr){
+  const [y,mo,d]=dateStr.split('-');
+  const [hh,mm]=(timeStr||'00:00').split(':');
+  return `${y}${mo}${d}T${pad(+hh)}${pad(+mm)}00`;
+}
+function buildICS(events){
+  const dtstamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  let ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//PersonalSchedule//ZH-TW//EN\r\nCALSCALE:GREGORIAN\r\n';
+  events.forEach(ev=>{
+    const dtStart=schedToICSDate(ev.date,ev.start||'09:00');
+    const dtEnd=schedToICSDate(ev.date,ev.end||icsAddHour(ev.start||'09:00'));
+    ics+=`BEGIN:VEVENT\r\nUID:${ev.id}@personal-schedule\r\nDTSTAMP:${dtstamp}\r\nDTSTART:${dtStart}\r\nDTEND:${dtEnd}\r\nSUMMARY:${icsEscape(ev.name)}\r\nEND:VEVENT\r\n`;
+  });
+  ics+='END:VCALENDAR\r\n';
+  return ics;
+}
+function downloadICS(ics,filename){
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.target='_blank';a.rel='noopener';
+  // No download attribute on purpose: lets iOS Safari hand off to the Calendar app's "Add Events" sheet
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+function exportScheduleICS(){
+  if(!schedules.length){showToast('尚無行程可匯出');return;}
+  downloadICS(buildICS(schedules),'我的行程.ics');
+  showToast('📤 已匯出，請在跳出的畫面選擇加入 iOS 行事曆');
+}
+function exportTodayICS(){
+  const tk=todayKey();
+  const items=schedules.filter(s=>s.date===tk);
+  if(!items.length){showToast('今日尚無行程');return;}
+  downloadICS(buildICS(items),'今日行程.ics');
+  showToast('📤 已匯出今日行程');
+}
+
+/* ── IMPORT FROM iOS CALENDAR (.ics) ── */
+function icsUnescape(s){return String(s||'').replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\');}
+function unfoldICS(text){return String(text||'').replace(/\r\n[ \t]/g,'').replace(/\n[ \t]/g,'');}
+function parseICSDateTime(raw){
+  const hasZ=raw.endsWith('Z');
+  const clean=raw.replace('Z','');
+  const y=clean.slice(0,4),mo=clean.slice(4,6),d=clean.slice(6,8);
+  let hh='09',mm='00';
+  if(clean.length>8){hh=clean.slice(9,11);mm=clean.slice(11,13);}
+  if(hasZ){
+    const utcMs=Date.UTC(+y,+mo-1,+d,+hh,+mm);
+    const tp=new Date(new Date(utcMs).toLocaleString('en-US',{timeZone:'Asia/Taipei'}));
+    return{date:dayKey(tp),time:`${pad(tp.getHours())}:${pad(tp.getMinutes())}`};
+  }
+  return{date:`${y}-${mo}-${d}`,time:`${hh}:${mm}`};
+}
+// Parse raw .ics text into a plain list of events (does not touch app state)
+function parseICSEvents(text){
+  const unfolded=unfoldICS(text);
+  const blocks=[...unfolded.matchAll(/BEGIN:VEVENT([\s\S]*?)END:VEVENT/g)].map(m=>m[1]);
+  const events=[];
+  blocks.forEach(b=>{
+    const lines=b.split(/\r?\n/).filter(Boolean);
+    const props={};
+    lines.forEach(line=>{
+      const m=line.match(/^([A-Za-z-]+)(;[^:]*)?:(.*)$/);
+      if(m)props[m[1]]={params:m[2]||'',value:m[3]};
+    });
+    if(!props.DTSTART)return;
+    const s=parseICSDateTime(props.DTSTART.value);
+    const e2=props.DTEND?parseICSDateTime(props.DTEND.value):null;
+    const name=props.SUMMARY?icsUnescape(props.SUMMARY.value):'（未命名行程）';
+    events.push({
+      uid:props.UID?props.UID.value:null,
+      name,
+      start:s.time,
+      end:(e2&&e2.date===s.date)?e2.time:icsAddHour(s.time),
+      date:s.date
+    });
+  });
+  return events;
+}
+// Merge parsed events into schedules: matches existing items by icsUid so re-syncing
+// updates changed times/names instead of creating duplicates every pull.
+function mergeICSEvents(events){
+  let added=0,updated=0;
+  events.forEach(ev=>{
+    const existing=ev.uid?schedules.find(s=>s.icsUid===ev.uid):null;
+    if(existing){
+      if(existing.name!==ev.name||existing.date!==ev.date||existing.start!==ev.start||existing.end!==ev.end){
+        existing.name=ev.name;existing.date=ev.date;existing.start=ev.start;existing.end=ev.end;
+        updated++;
+      }
+    }else{
+      schedules.push({id:genId(),name:ev.name,start:ev.start,end:ev.end,date:ev.date,priority:'normal',icsUid:ev.uid||undefined});
+      added++;
+    }
+  });
+  return{added,updated};
+}
+function triggerImportICS(){const el=$('icsImportInput');if(el)el.click();}
+function handleICSImport(input){
+  const files=[...(input.files||[])];if(!files.length)return;
+  let allEvents=[],badFiles=0,filesLeft=files.length;
+  function finishUp(){
+    snapshot();
+    const{added,updated}=mergeICSEvents(allEvents);
+    persist();
+    renderSchedules();updateStats();
+    if(curTab==='review')renderWeekPlan();
+    let msg=added||updated?`📥 已匯入 ${added} 筆新行程${updated?`，更新 ${updated} 筆`:''}（共 ${files.length} 個檔案）`:'沒有解析到有效的活動';
+    if(badFiles)msg+=`，${badFiles} 個檔案讀取失敗`;
+    showToast(msg);
+    input.value='';
+  }
+  files.forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{allEvents=allEvents.concat(parseICSEvents(e.target.result));}
+      catch(err){console.warn('ICS parse error',err);badFiles++;}
+      filesLeft--;
+      if(filesLeft===0)finishUp();
+    };
+    reader.onerror=()=>{badFiles++;filesLeft--;if(filesLeft===0)finishUp();};
+    reader.readAsText(file);
+  });
+}
+
+/* ── SUBSCRIBE TO A PUBLIC iCLOUD CALENDAR LINK ── */
+let icsSubUrl=load('icsSubUrl','');
+let icsSubLastSync=load('icsSubLastSync',null);
+function normalizeIcsUrl(u){return u.trim().replace(/^webcal:\/\//i,'https://');}
+function openIcsSubscribe(){
+  $('icsSubUrl').value=icsSubUrl||'';
+  updateIcsSubStatus();
+  $('icsSubscribePanel').style.display='block';$('overlay').style.display='block';
+}
+function updateIcsSubStatus(){
+  const el=$('icsSubStatus');if(!el)return;
+  el.textContent=icsSubUrl?(icsSubLastSync?`上次同步：${icsSubLastSync}`:'已設定，尚未同步過'):'尚未設定訂閱連結';
+}
+function saveIcsSubscribe(){
+  const raw=$('icsSubUrl').value.trim();
+  if(!raw){showToast('請貼上訂閱連結');return;}
+  icsSubUrl=raw;save('icsSubUrl',icsSubUrl);
+  closeOverlays();
+  syncIcsSubscription(true);
+}
+function clearIcsSubscribe(){
+  icsSubUrl='';icsSubLastSync=null;
+  save('icsSubUrl','');save('icsSubLastSync',null);
+  closeOverlays();showToast('已取消訂閱');
+}
+async function syncIcsSubscription(manual){
+  if(!icsSubUrl)return;
+  const url=normalizeIcsUrl(icsSubUrl);
+  try{
+    const resp=await fetch(url,{cache:'no-store'});
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    const text=await resp.text();
+    const events=parseICSEvents(text);
+    if(manual)snapshot();
+    const{added,updated}=mergeICSEvents(events);
+    persist();
+    renderSchedules();updateStats();
+    if(curTab==='review')renderWeekPlan();
+    icsSubLastSync=new Date().toLocaleString('zh-TW',{hour12:false});
+    save('icsSubLastSync',icsSubLastSync);
+    updateIcsSubStatus();
+    if(manual)showToast(added||updated?`🔗 已同步：新增 ${added} 筆、更新 ${updated} 筆`:'🔗 已同步，沒有新變更');
+  }catch(err){
+    console.warn('ics subscribe sync failed',err);
+    if(manual)showToast('⚠ 同步失敗：瀏覽器安全限制（CORS）可能擋下了跨網域讀取，這個連結的伺服器不一定允許網頁直接存取');
+  }
+}
+
 /* ── TODOS ── */
 const PCOL={high:{dot:'p-hi',label:'高',style:'background:#F2EAE6;color:#7A5248'},mid:{dot:'p-mid',label:'中',style:'background:#F0EEE8;color:#5A5448'},low:{dot:'p-lo',label:'低',style:'background:#EAF0EA;color:#4A6449'}};
 function todoHTML(t,full=false){const pc=PCOL[t.priority]||PCOL.mid;return`<div class="todo-item${t.done?' done':''}" onclick="toggleTodo('${t.id}',event)"><div class="todo-check">${t.done?'✓':''}</div><div class="todo-text">${t.text}</div>${full?`<span style="font-size:.55rem;padding:2px 6px;border-radius:8px;${pc.style};flex-shrink:0">${pc.label}</span>`:''}<button class="del-btn" onclick="event.stopPropagation();delTodo('${t.id}')">✕</button></div>`;}
@@ -1147,8 +1343,10 @@ function renderStudyProgressAll(){const el=$('studyProgressAll');if(!el)return;i
 function updateStudyStats(){
   const allC=subjects.flatMap(sj=>sj.chapters||[]);
   const done=allC.filter(isChapDone).length;
-  const totalVidDone=vidCourses.reduce((s,c)=>s+(c.episodes||[]).filter(e=>e.done).length,0);
-  [['stSubjCount',subjects.length],['stChapDone',done],['stVidCourses',vidCourses.length],['stVidDone',totalVidDone]].forEach(([id,v])=>{const e=$(id);if(e)e.textContent=v;});
+  const allEps=vidCourses.flatMap(c=>c.episodes||[]);
+  const vidDoneTotal=allEps.filter(e=>e.done).length;
+  [['stSubjCount',subjects.length],['stChapDone',done]].forEach(([id,v])=>{const e=$(id);if(e)e.textContent=v;});
+  const vc=$('stVidCourses');if(vc)vc.textContent=`${vidDoneTotal}／${allEps.length}`;
 }
 
 function renderReviewReminders(){
@@ -1509,8 +1707,11 @@ function renderDeadlines(){
 }
 function updateDlStats(){
   const pending=deadlines.filter(d=>!d.done);
+  const examPending=pending.filter(d=>d.type==='exam');
+  const assignPending=pending.filter(d=>d.type==='assignment');
   const urgent=pending.filter(d=>dlDaysLeft(d)<=3);
-  (($('stDlPending'))||{}).textContent=pending.length;
+  (($('stDlExamPending'))||{}).textContent=examPending.length;
+  (($('stDlAssignPending'))||{}).textContent=assignPending.length;
   (($('stDlUrgent'))||{}).textContent=urgent.length;
   const badge=$('dlTabBadge');
   if(badge)badge.innerHTML=urgent.length?`<span class="dl-tab-badge">${urgent.length}</span>`:'';
@@ -1579,7 +1780,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeFocus();closeO
 function closeOverlays(){
   ['addSchedPanel','addHabitPanel','addSubjectPanel','addChapterPanel',
    'addCoursePanel','addEpPanel','aiGenPanel','aiImportChapPanel',
-   'editSchedPanel','editExamPanel','autoSchedPanel','addDeadlinePanel'].forEach(id=>{const el=$(id);if(el)el.style.display='none';});
+   'editSchedPanel','editExamPanel','autoSchedPanel','addDeadlinePanel','icsSubscribePanel'].forEach(id=>{const el=$(id);if(el)el.style.display='none';});
   $('overlay').style.display='none';
 }
 
@@ -1614,13 +1815,13 @@ function renderAll(){
    AI IMPORT CHAPTERS (TEXT + IMAGE)
 ───────────────────────────────────── */
 let _aiImportMode = 'text';
-let _aiImportImgBase64 = null;
+let _aiImportImages = [];  // [{base64, dataUrl}]
 let _aiImportPreviewChaps = [];  // [{name, pageStart, pageEnd, selected}]
 let _aiImportTargetSubjId = null; // null = new subject
 
 function openAiImportChap(sjId) {
   _aiImportTargetSubjId = sjId || null;
-  _aiImportImgBase64 = null;
+  _aiImportImages = [];
   _aiImportPreviewChaps = [];
 
   // Populate subject selector
@@ -1663,29 +1864,54 @@ function switchAiImportMode(mode) {
 }
 
 function handleImgFile(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const dataUrl = e.target.result;
-    _aiImportImgBase64 = dataUrl.split(',')[1];
-    const imgEl = $('aiImportImgEl');
-    if (imgEl) imgEl.src = dataUrl;
-    $('aiImportImgPreview').style.display = '';
-    $('aiImportDropZone').style.display = 'none';
-  };
-  reader.readAsDataURL(file);
+  const files = [...(input.files || [])]; if (!files.length) return;
+  let pending = files.length;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const dataUrl = e.target.result;
+      _aiImportImages.push({ base64: dataUrl.split(',')[1], dataUrl });
+      pending--;
+      if (pending === 0) { renderImportImgGrid(); input.value = ''; }
+    };
+    reader.readAsDataURL(file);
+  });
 }
 
 function handleImgDrop(e) {
   e.preventDefault();
   $('aiImportDropZone').style.background = 'rgba(143,166,142,.04)';
-  const file = e.dataTransfer.files[0]; if (!file) return;
-  const fakeInput = { files: [file] };
+  const files = [...(e.dataTransfer.files || [])]; if (!files.length) return;
+  const fakeInput = { files, value: '' };
   handleImgFile(fakeInput);
 }
 
+function renderImportImgGrid() {
+  const grid = $('aiImportImgGrid'), preview = $('aiImportImgPreview'), cnt = $('aiImportImgCount');
+  if (!grid) return;
+  if (!_aiImportImages.length) {
+    preview.style.display = 'none';
+    $('aiImportDropZone').style.display = '';
+    return;
+  }
+  $('aiImportDropZone').style.display = 'none';
+  preview.style.display = '';
+  if (cnt) cnt.textContent = `已選 ${_aiImportImages.length} 張照片`;
+  grid.innerHTML = _aiImportImages.map((img, i) => `
+    <div style="position:relative;border-radius:8px;overflow:hidden;border:1.5px solid rgba(143,166,142,.25);aspect-ratio:1">
+      <img src="${img.dataUrl}" style="width:100%;height:100%;object-fit:cover" alt="目錄照片 ${i+1}">
+      <span style="position:absolute;bottom:2px;left:3px;font-size:.5rem;color:#fff;background:rgba(0,0,0,.5);padding:0 4px;border-radius:5px">${i+1}</span>
+      <button onclick="removeImportImg(${i})" style="position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:none;cursor:pointer;font-size:.55rem;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>`).join('');
+}
+
+function removeImportImg(idx) {
+  _aiImportImages.splice(idx, 1);
+  renderImportImgGrid();
+}
+
 function clearImportImg() {
-  _aiImportImgBase64 = null;
+  _aiImportImages = [];
   $('aiImportImgPreview').style.display = 'none';
   $('aiImportDropZone').style.display = '';
   $('aiImportFileInput').value = '';
@@ -1709,12 +1935,12 @@ async function doAiImportChap() {
     const text = $('aiImportText').value.trim();
     if (!text) { showToast('請貼上目錄文字'); return; }
   } else {
-    if (!_aiImportImgBase64) { showToast('請先上傳照片'); return; }
+    if (!_aiImportImages.length) { showToast('請先上傳照片'); return; }
   }
 
   // Show loading
   statusEl.style.display = 'block';
-  statusEl.innerHTML = '<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>AI 正在解析目錄，請稍候…</span></div>';
+  statusEl.innerHTML = `<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>AI 正在解析${mode==='img'&&_aiImportImages.length>1?'『'+_aiImportImages.length+' 張』目錄照片':'目錄'}，請稍候…</span></div>`;
   btn.disabled = true; btn.style.opacity = '.6';
 
   try {
@@ -1725,7 +1951,8 @@ async function doAiImportChap() {
 1. 每個章節輸出：章節名稱、起始頁、結束頁
 2. 若只有起始頁（沒有結束頁），則結束頁 = 下一章起始頁 - 1（最後一章估算 +30 頁）
 3. 章節名稱保留完整（含章節編號）
-4. 只回傳 JSON array，不要其他文字：
+4. 若提供多張照片，代表目錄橫跨多頁，請將所有照片內容合併、依原順序輸出成同一份章節清單，並自動去除重複章節
+5. 只回傳 JSON array，不要其他文字：
 [{"name":"第一章 感覺與知覺","pageStart":1,"pageEnd":40},...]
 
 注意：若頁碼格式是 p.XX 或 ......XX 也要正確解析。`;
@@ -1737,12 +1964,10 @@ async function doAiImportChap() {
 目錄內容：
 ${text}` }];
     } else {
+      const imgBlocks = _aiImportImages.map(img => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: img.base64 } }));
       messages = [{
         role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: _aiImportImgBase64 } },
-          { type: 'text', text: prompt }
-        ]
+        content: [...imgBlocks, { type: 'text', text: prompt }]
       }];
     }
 
@@ -2369,6 +2594,10 @@ window.switchTab=switchTab;window.switchStudyTab=switchStudyTab;
 window.openFocus=openFocus;window.closeFocus=closeFocus;
 window.pomoSetType=pomoSetType;window.pomoToggle=pomoToggle;window.pomoStop=pomoStop;window.pomoReset=pomoReset;window.renderPomo=renderPomo;window.pomoSetType=pomoSetType;
 window.showAddSched=showAddSched;window.doAddSched=doAddSched;window.delSched=delSched;
+window.exportScheduleICS=exportScheduleICS;window.exportTodayICS=exportTodayICS;
+window.triggerImportICS=triggerImportICS;window.handleICSImport=handleICSImport;
+window.openIcsSubscribe=openIcsSubscribe;window.saveIcsSubscribe=saveIcsSubscribe;
+window.clearIcsSubscribe=clearIcsSubscribe;window.syncIcsSubscription=syncIcsSubscription;
 window.closeOverlays=closeOverlays;
 window.showAddHabit=showAddHabit;window.doAddHabit=doAddHabit;window.delHabit=delHabit;
 window.toggleHabit=toggleHabit;window.toggleHabitT=toggleHabitT;
@@ -2394,6 +2623,7 @@ window.pomoStop=pomoStop;
 window.renderWeekPlan=renderWeekPlan;window.shiftWeek=shiftWeek;window.addWeekSched=addWeekSched;window.switchWRTab=switchWRTab;window.renderWeekHabitSummary=renderWeekHabitSummary;
 window.openAiImportChap=openAiImportChap;window.switchAiImportMode=switchAiImportMode;
 window.handleImgFile=handleImgFile;window.handleImgDrop=handleImgDrop;window.clearImportImg=clearImportImg;
+window.removeImportImg=removeImportImg;window.renderImportImgGrid=renderImportImgGrid;
 window.doAiImportChap=doAiImportChap;window.toggleImportChap=toggleImportChap;
 window.toggleAllImportChaps=toggleAllImportChaps;window.doConfirmImportChaps=doConfirmImportChaps;
 window.resetAiImport=resetAiImport;window.updateAiImportSubjUI=updateAiImportSubjUI;
@@ -2406,6 +2636,9 @@ window.toggleDlDone=toggleDlDone;window.delDeadline=delDeadline;window.renderDea
 /* ── BOOT ── */
 initData();buildNavTabs();updateClock();setInterval(updateClock,15000);
 renderAll();renderPomo();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();updateDlStats();switchWRTab('week');
+// Auto-sync the subscribed public calendar (if set) on load, then every 30 minutes
+if(icsSubUrl){syncIcsSubscription(false);}
+setInterval(()=>{if(icsSubUrl)syncIcsSubscription(false);},30*60*1000);
 
 })();
 </script>
