@@ -612,6 +612,16 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     <div class="modal-half"><label>開始</label><input type="time" class="add-inp" id="sStart" value="09:00"></div>
     <div class="modal-half"><label>結束</label><input type="time" class="add-inp" id="sEnd" value="10:00"></div>
   </div>
+  <div style="margin-bottom:.6rem;padding:.5rem .6rem;border-radius:10px;background:rgba(140,140,168,.06);border:1.5px solid rgba(140,140,168,.16)">
+    <label style="display:flex;align-items:center;gap:.4rem;font-size:.68rem;color:var(--tx2);cursor:pointer">
+      <input type="checkbox" id="sRepeat" onchange="toggleSchedRepeatUI()" style="width:14px;height:14px;accent-color:var(--dusk-d)">
+      🔁 每週重複
+    </label>
+    <div id="sRepeatOpts" style="display:none;margin-top:.45rem">
+      <label style="font-size:.58rem;color:var(--tx3);display:block;margin-bottom:.2rem">重複幾週（含本週）</label>
+      <input type="number" class="add-inp" id="sRepeatWeeks" value="8" min="2" max="52" style="width:100%;border-radius:8px">
+    </div>
+  </div>
   <div style="display:flex;gap:.4rem">
     <button onclick="doAddSched()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#C0A89A,#9898B0,#8FA898);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 加入行程</button>
     <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
@@ -896,7 +906,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   <div style="font-size:.88rem;font-weight:700;margin-bottom:.3rem;background:linear-gradient(120deg,#484868,#785048);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🔗 訂閱公開行事曆</div>
   <div style="font-size:.6rem;color:var(--tx3);margin-bottom:.7rem;line-height:1.7;background:rgba(140,140,168,.06);border:1.5px solid rgba(140,140,168,.15);border-radius:8px;padding:.5rem .65rem">
     在 iPhone「行事曆」App：選要分享的行事曆 →「共享行事曆」→ 開啟「<b>公開行事曆</b>」→ 複製連結，貼到下面。<br><br>
-    ⚠ 若直接讀取被瀏覽器安全限制（CORS）擋下，會自動改用第三方代理服務重試一次——代表行事曆內容會經過該代理伺服器中轉，並非只在你和 Apple 之間。如果仍失敗，請改用「📥 匯入行事曆」手動匯出 .ics。
+    ⚠ 若直接讀取被瀏覽器安全限制（CORS）擋下，會自動改用第三方代理服務重試——代表行事曆內容會經過該代理伺服器中轉，並非只在你和 Apple 之間。如果全部都失敗，請改用「📥 匯入行事曆」手動匯出 .ics。
   </div>
   <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">訂閱連結（webcal:// 或 https://...ics）</label><input class="add-inp" id="icsSubUrl" placeholder="webcal://p00-caldav.icloud.com/published/..." style="width:100%;border-radius:8px"></div>
   <div style="font-size:.6rem;color:var(--tx3);margin-bottom:.7rem" id="icsSubStatus">尚未設定訂閱連結</div>
@@ -920,6 +930,35 @@ const TABS=['today','habits','todos','study','review'];
 let curTab='today', curStudyTab='book';
 const $=id=>document.getElementById(id);
 const genId=()=>Math.random().toString(36).slice(2,9);
+/* ── AI 功能設定 ──────────────────────────────────────────────
+   這個頁面現在部署在 GitHub 上（不是 Claude 網站），瀏覽器沒辦法
+   直接呼叫 https://api.anthropic.com/v1/messages：一來會被該網站的
+   CORS 政策擋下，二來這裡也沒有可用的 API 金鑰。
+   若要讓「✨ AI 產生課程」「✨ AI 匯入章節」正常運作，你需要自己架一個
+   小型代理伺服器（例如 Cloudflare Worker / Vercel Edge Function），
+   在代理伺服器裡用你自己申請的 Anthropic API Key 呼叫
+   https://api.anthropic.com/v1/messages，再把下面 AI_API_URL
+   換成你代理伺服器的網址（例如 'https://your-worker.workers.dev/ai'）。
+   留空的話：AI 產生課程會自動改用本機規則產生集數名稱；
+   AI 匯入章節（文字/照片解析）無法在沒有代理的情況下運作，
+   會顯示清楚的提示訊息，請改用「📝 貼上文字」手動輸入。
+   ──────────────────────────────────────────────────────────── */
+const AI_API_URL='';
+/* 跟你 Cloudflare Worker 裡設定的 APP_SECRET 填同一組字串（自己隨便想一串，例如一長串英數字）。
+   這樣別人就算挖到你的 Worker 網址，沒有這組密碼也打不通，不會偷用你的 API 額度。
+   留空 = 不送這個 header（如果你的 Worker 沒做檢查，留空也沒關係）。 */
+const AI_API_SECRET='';
+async function callAI(messages,maxTokens){
+  if(!AI_API_URL)throw new Error('AI_NOT_CONFIGURED');
+  const resp=await fetch(AI_API_URL,{
+    method:'POST',
+    headers:Object.assign({'Content-Type':'application/json'},AI_API_SECRET?{'x-app-secret':AI_API_SECRET}:{}),
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,messages})
+  });
+  if(!resp.ok)throw new Error('HTTP '+resp.status);
+  const data=await resp.json();
+  return (data.content||[]).map(b=>b.text||'').join('').trim();
+}
 function getTW(){return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Taipei'}))}
 function pad(n){return String(n).padStart(2,'0')}
 function dayKey(d){return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
@@ -1039,13 +1078,45 @@ function renderSchedules(){
     const top=(sm-SH*60)*PPM,height=Math.max((em-sm)*PPM,22);
     const past=em<nm,isNow=sm<=nm&&nm<=em,pct=isNow?Math.round((nm-sm)/(em-sm)*100):0;
     const bl=isNow?'var(--clay-d)':s.priority==='high'?'var(--clay-d)':'var(--dusk)';
-    html+=`<div style="position:absolute;left:42px;right:4px;top:${top}px;height:${height}px;background:rgba(255,255,255,.92);border:1.5px solid rgba(160,148,132,.22);border-left:3px solid ${bl};border-radius:6px;padding:2px 22px 2px 6px;overflow:hidden;${past?'opacity:.4':''}"><div style="display:flex;align-items:center;gap:4px"><span style="font-size:.7rem">${schedIcon(s.name)}</span><span style="font-size:.72rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}${isNow?` <span style="font-size:.48rem;padding:1px 5px;border-radius:6px;background:linear-gradient(90deg,var(--clay-d),var(--dusk-d));color:#fff;font-weight:700;vertical-align:middle">NOW</span>`:''}</span></div>${height>28&&s.end?`<div style="font-size:.55rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;margin-left:18px">${s.start}–${s.end}</div>`:''}${isNow?`<div style="position:absolute;bottom:0;left:0;height:2px;width:${pct}%;background:linear-gradient(90deg,var(--clay-d),var(--dusk))"></div>`:''}<button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')" style="position:absolute;top:3px;right:3px">✕</button><button onclick="event.stopPropagation();openEditSched('${s.id}')" style="position:absolute;top:3px;right:22px;width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(160,148,132,.25);background:rgba(255,255,255,.7);color:var(--tx3);font-size:.5rem;cursor:pointer;display:none;align-items:center;justify-content:center" class="del-btn">✎</button></div>`;
+    html+=`<div style="position:absolute;left:42px;right:4px;top:${top}px;height:${height}px;background:rgba(255,255,255,.92);border:1.5px solid rgba(160,148,132,.22);border-left:3px solid ${bl};border-radius:6px;padding:2px 22px 2px 6px;overflow:hidden;${past?'opacity:.4':''}"><div style="display:flex;align-items:center;gap:4px"><span style="font-size:.7rem">${schedIcon(s.name)}</span><span style="font-size:.72rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}${s.recurId?` <span style="font-size:.46rem;color:var(--dusk-d);vertical-align:middle">🔁</span>`:''}${isNow?` <span style="font-size:.48rem;padding:1px 5px;border-radius:6px;background:linear-gradient(90deg,var(--clay-d),var(--dusk-d));color:#fff;font-weight:700;vertical-align:middle">NOW</span>`:''}</span></div>${height>28&&s.end?`<div style="font-size:.55rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;margin-left:18px">${s.start}–${s.end}</div>`:''}${isNow?`<div style="position:absolute;bottom:0;left:0;height:2px;width:${pct}%;background:linear-gradient(90deg,var(--clay-d),var(--dusk))"></div>`:''}<button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')" style="position:absolute;top:3px;right:3px">✕</button><button onclick="event.stopPropagation();openEditSched('${s.id}')" style="position:absolute;top:3px;right:22px;width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(160,148,132,.25);background:rgba(255,255,255,.7);color:var(--tx3);font-size:.5rem;cursor:pointer;display:none;align-items:center;justify-content:center" class="del-btn">✎</button></div>`;
   });
   html+=`</div>`;el.innerHTML=html;
 }
-function showAddSched(){$('sName').value='';$('addSchedPanel').style.display='block';$('overlay').style.display='block';}
-function doAddSched(){const name=$('sName').value.trim();if(!name){showToast('請填寫活動名稱');return;}snapshot();const targetDate=(curTab==='review'&&window._weekSchedDate)?window._weekSchedDate:todayKey();schedules.push({id:genId(),name,start:$('sStart').value,end:$('sEnd').value,priority:'normal',date:targetDate});window._weekSchedDate=null;persist();closeOverlays();if(curTab==='review'&&_wrTab==='week')renderWeekPlan();else{renderSchedules();updateStats();}showToast('🌸 行程已新增');}
-function delSched(id){snapshot();schedules=schedules.filter(s=>s.id!==id);persist();renderSchedules();updateStats();}
+function showAddSched(){$('sName').value='';if($('sRepeat')){$('sRepeat').checked=false;}if($('sRepeatOpts'))$('sRepeatOpts').style.display='none';if($('sRepeatWeeks'))$('sRepeatWeeks').value='8';$('addSchedPanel').style.display='block';$('overlay').style.display='block';}
+function toggleSchedRepeatUI(){const on=$('sRepeat')&&$('sRepeat').checked;if($('sRepeatOpts'))$('sRepeatOpts').style.display=on?'':'none';}
+function doAddSched(){
+  const name=$('sName').value.trim();if(!name){showToast('請填寫活動名稱');return;}
+  snapshot();
+  const targetDate=(curTab==='review'&&window._weekSchedDate)?window._weekSchedDate:todayKey();
+  const start=$('sStart').value,end=$('sEnd').value;
+  const repeat=!!($('sRepeat')&&$('sRepeat').checked);
+  const weeks=repeat?Math.max(2,Math.min(52,parseInt(($('sRepeatWeeks')||{value:8}).value)||8)):1;
+  const recurId=repeat?genId():null;
+  for(let i=0;i<weeks;i++){
+    const d=new Date(targetDate+'T00:00:00');
+    d.setDate(d.getDate()+i*7);
+    schedules.push({id:genId(),name,start,end,priority:'normal',date:dayKey(d),recurId:recurId||undefined});
+  }
+  window._weekSchedDate=null;
+  persist();closeOverlays();
+  if($('sRepeat'))$('sRepeat').checked=false;
+  if($('sRepeatOpts'))$('sRepeatOpts').style.display='none';
+  if(curTab==='review'&&_wrTab==='week')renderWeekPlan();else{renderSchedules();updateStats();}
+  showToast(repeat?`🔁 已新增 ${weeks} 週的重複行程`:'🌸 行程已新增');
+}
+function delSched(id){
+  const s=schedules.find(x=>x.id===id);
+  snapshot();
+  if(s&&s.recurId){
+    const deleteAll=confirm('這是每週重複行程的其中一筆。\n按「確定」刪除整個系列，按「取消」只刪除這一筆。');
+    if(deleteAll)schedules=schedules.filter(x=>x.recurId!==s.recurId);
+    else schedules=schedules.filter(x=>x.id!==id);
+  }else{
+    schedules=schedules.filter(x=>x.id!==id);
+  }
+  persist();renderSchedules();updateStats();
+  if(curTab==='review')renderWeekPlan();
+}
 
 /* ── EXPORT TO iOS CALENDAR (.ics) ── */
 function icsEscape(s){return String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');}
@@ -1205,14 +1276,30 @@ async function fetchICSWithFallback(url){
   try{
     const resp=await fetch(url,{cache:'no-store'});
     if(!resp.ok)throw new Error('HTTP '+resp.status);
-    return{text:await resp.text(),viaProxy:false};
+    const text=await resp.text();
+    if(/BEGIN:VCALENDAR/i.test(text))return{text,viaProxy:false};
+    throw new Error('直接讀取回傳的內容不是有效的行事曆');
   }catch(directErr){
-    console.warn('direct ics fetch failed, trying CORS proxy',directErr);
-    const proxyUrl='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
-    const resp2=await fetch(proxyUrl,{cache:'no-store'});
-    if(!resp2.ok)throw new Error('Proxy HTTP '+resp2.status);
-    return{text:await resp2.text(),viaProxy:true};
+    console.warn('direct ics fetch failed, trying CORS proxies',directErr);
   }
+  // 依序嘗試多個公用 CORS 代理，任一個成功即可（allorigins.win 經常不穩定/被限流，
+  // 所以放在最後當作最後手段，優先試更穩定的 corsproxy.io / codetabs）
+  const proxies=[
+    u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
+    u=>'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
+    u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
+  ];
+  let lastErr=null;
+  for(const build of proxies){
+    try{
+      const resp=await fetch(build(url),{cache:'no-store'});
+      if(!resp.ok){lastErr=new Error('Proxy HTTP '+resp.status);continue;}
+      const text=await resp.text();
+      if(!text||!/BEGIN:VCALENDAR/i.test(text)){lastErr=new Error('代理回傳的內容不是有效的行事曆');continue;}
+      return{text,viaProxy:true};
+    }catch(e){lastErr=e;}
+  }
+  throw lastErr||new Error('所有代理皆失敗');
 }
 async function syncIcsSubscription(manual){
   if(!icsSubUrl)return;
@@ -1537,17 +1624,7 @@ ${hint?`- 內容提示：${hint}`:'- 依照課程主題合理發揮'}
 
 共需產生 ${totalEps} 個集數（${chapCount}章 × ${secPerChap}節）。`;
 
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1000,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    const data=await resp.json();
-    const raw=data.content?.map(b=>b.text||'').join('').trim();
+    const raw=await callAI([{role:'user',content:prompt}],1000);
 
     // Parse JSON
     let eps=[];
@@ -1581,7 +1658,7 @@ ${hint?`- 內容提示：${hint}`:'- 依照課程主題合理發揮'}
     statusEl.style.display='none';
     btn.disabled=false;btn.style.opacity='1';
     showAiPreview();
-    showToast('🔄 使用本機產生（AI 暫時無法連線）');
+    showToast(err.message==='AI_NOT_CONFIGURED'?'🔄 尚未設定 AI 代理伺服器，改用本機自動命名':'🔄 使用本機產生（AI 暫時無法連線）');
   }
 }
 
@@ -2015,13 +2092,7 @@ ${text}` }];
       }];
     }
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1500, messages })
-    });
-    const data = await resp.json();
-    const raw = (data.content || []).map(b => b.text || '').join('').trim();
+    const raw = await callAI(messages, 1500);
 
     let chaps = [];
     const match = raw.match(/\[[\s\S]*\]/);
@@ -2063,7 +2134,10 @@ ${text}` }];
 
   } catch(err) {
     console.warn('AI import error:', err);
-    statusEl.innerHTML = `<div style="font-size:.65rem;color:var(--clay-d);background:rgba(184,144,128,.1);border:1.5px solid rgba(184,144,128,.25);border-radius:8px;padding:.4rem .6rem">⚠ ${err.message || 'AI 解析失敗，請檢查網路或改用文字模式'}</div>`;
+    const msg = err.message==='AI_NOT_CONFIGURED'
+      ? 'AI 功能尚未設定代理伺服器。這個頁面部署在 GitHub 上，瀏覽器無法直接呼叫 Anthropic API（會被 CORS 擋下）。請在程式碼最上方的 AI_API_URL 填入你自己架設的代理伺服器網址（例如 Cloudflare Worker），或改用「📝 貼上文字」手動輸入目錄。'
+      : (err.message || 'AI 解析失敗，請檢查網路或改用文字模式');
+    statusEl.innerHTML = `<div style="font-size:.65rem;color:var(--clay-d);background:rgba(184,144,128,.1);border:1.5px solid rgba(184,144,128,.25);border-radius:8px;padding:.4rem .6rem;line-height:1.6">⚠ ${msg}</div>`;
     btn.disabled = false; btn.style.opacity = '1';
   }
 }
@@ -2445,7 +2519,7 @@ function renderWeekPlan(){
         const isVid=/影片|video/i.test(ev.name);
         const isHigh=ev.priority==='high';
         const cls=isStudy?'evt-study':isVid?'evt-vid':isHigh?'evt-high':'';
-        return`<div class="week-evt ${cls}" title="${ev.name} ${ev.start}${ev.end?'–'+ev.end:''}">${ev.start} ${ev.name}</div>`;
+        return`<div class="week-evt ${cls}" title="${ev.name} ${ev.start}${ev.end?'–'+ev.end:''}">${ev.start} ${ev.name}${ev.recurId?' 🔁':''}</div>`;
       }).join('');
 
       const habitDots=habits.length?`<div style="display:flex;gap:2px;flex-wrap:wrap;margin-top:3px">${habits.map(h=>{const done=!!(habitLogs[h.id]||{})[dk];return`<div style="width:8px;height:8px;border-radius:50%;background:${done?'var(--sage-d)':'rgba(160,148,132,.2)'}" title="${h.name}"></div>`;}).join('')}</div>`:'';
@@ -2496,6 +2570,9 @@ function renderWeekPlan(){
 function addWeekSched(dk){
   $('sName').value='';
   $('sStart').value='09:00';$('sEnd').value='10:00';
+  if($('sRepeat')){$('sRepeat').checked=false;}
+  if($('sRepeatOpts'))$('sRepeatOpts').style.display='none';
+  if($('sRepeatWeeks'))$('sRepeatWeeks').value='8';
   // Store target date
   window._weekSchedDate=dk;
   $('addSchedPanel').style.display='block';$('overlay').style.display='block';
@@ -2695,6 +2772,7 @@ window.switchTab=switchTab;window.switchStudyTab=switchStudyTab;
 window.openFocus=openFocus;window.closeFocus=closeFocus;
 window.pomoSetType=pomoSetType;window.pomoToggle=pomoToggle;window.pomoStop=pomoStop;window.pomoReset=pomoReset;window.renderPomo=renderPomo;window.pomoSetType=pomoSetType;
 window.showAddSched=showAddSched;window.doAddSched=doAddSched;window.delSched=delSched;
+window.toggleSchedRepeatUI=toggleSchedRepeatUI;
 window.exportScheduleICS=exportScheduleICS;window.exportTodayICS=exportTodayICS;
 window.triggerImportICS=triggerImportICS;window.handleICSImport=handleICSImport;
 window.openIcsSubscribe=openIcsSubscribe;window.saveIcsSubscribe=saveIcsSubscribe;
