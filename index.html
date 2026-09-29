@@ -203,18 +203,6 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .dl-days.urgent{color:#C04040}
 .dl-days.normal{color:var(--clay-d)}
 .dl-tab-badge{font-size:.5rem;padding:1px 5px;border-radius:8px;background:#C04040;color:#fff;font-weight:700;margin-left:3px;vertical-align:middle}
-.ai-gen-badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.58rem;padding:.2rem .5rem;border-radius:10px;background:linear-gradient(135deg,rgba(123,101,196,.15),rgba(168,144,192,.12));border:1.5px solid rgba(123,101,196,.25);color:var(--vid-d);cursor:pointer;font-family:inherit;transition:all .18s;font-weight:600}
-.ai-gen-badge:hover{background:linear-gradient(135deg,rgba(123,101,196,.25),rgba(168,144,192,.2));transform:translateY(-1px)}
-.ai-thinking{display:flex;align-items:center;gap:.4rem;font-size:.68rem;color:var(--vid-d);padding:.5rem .7rem;background:rgba(123,101,196,.06);border-radius:8px;border:1.5px solid rgba(123,101,196,.15)}
-.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--vid);animation:ai-pulse 1.2s ease-in-out infinite}
-.ai-dot:nth-child(2){animation-delay:.2s}
-.ai-dot:nth-child(3){animation-delay:.4s}
-@keyframes ai-pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
-.preview-ep-item{display:flex;align-items:center;gap:.45rem;padding:.3rem .4rem;border-radius:6px;border:1.5px solid rgba(123,101,196,.1);background:rgba(248,246,255,.5);margin-bottom:3px;cursor:pointer;transition:background .12s}
-.preview-ep-item:hover{background:rgba(240,236,255,.8)}
-.preview-ep-item.selected{background:rgba(123,101,196,.12);border-color:rgba(123,101,196,.3)}
-.preview-ep-num{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--vid-d);font-weight:700;flex-shrink:0;min-width:28px}
-.preview-ep-name{font-size:.7rem;color:var(--tx);flex:1}
 .modal-row{display:flex;gap:.4rem;margin-bottom:.55rem}
 .modal-half{flex:1;min-width:0;overflow:hidden}
 .modal-half label{font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem}
@@ -466,7 +454,6 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
           <div style="display:flex;align-items:center;justify-content:space-between">
             <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase">📖 讀書計劃</div>
             <div style="display:flex;gap:.35rem">
-              <button class="ai-gen-badge" onclick="openAiImportChap()" style="font-size:.6rem">✨ AI 匯入章節</button>
               <div style="display:flex;gap:.3rem">
               <button class="add-btn-s" onclick="openAutoSchedule()" style="font-size:.64rem;padding:.22rem .62rem;background:linear-gradient(135deg,rgba(143,166,142,.2),rgba(144,144,168,.15));color:var(--sage-d);border-color:rgba(143,166,142,.4)">⚡ 一鍵排程</button>
               <button class="add-btn-s" onclick="showAddSubject()" style="font-size:.64rem;padding:.22rem .62rem">＋ 新增科目</button>
@@ -493,14 +480,13 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem">
         <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--vid-d);letter-spacing:.08em;text-transform:uppercase">🎬 教學影片課程</div>
         <div style="display:flex;gap:.35rem">
-          <button class="ai-gen-badge" onclick="openAiGenCourse()">✨ AI 產生課程</button>
           <button class="add-btn-s" onclick="showAddCourse()" style="font-size:.64rem;padding:.22rem .62rem;background:var(--vid-l);color:var(--vid-d);border-color:rgba(123,101,196,.3)">＋ 手動新增</button>
         </div>
       </div>
       <div id="vidCourseList" style="display:flex;flex-direction:column;gap:.65rem"></div>
       <div id="vidEmptyState" class="empty" style="display:none;padding:2rem;border:1.5px dashed rgba(123,101,196,.2);border-radius:12px;background:rgba(123,101,196,.04)">
         🎬<br>尚未建立影片課程<br>
-        <span style="font-size:.65rem">點「✨ AI 產生課程」讓 AI 幫你快速建立章-節架構</span>
+        <span style="font-size:.65rem">點「＋ 手動新增」建立課程，再加入集數</span>
       </div>
     </div>
 
@@ -713,149 +699,6 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   </div>
 </div>
 
-<!-- AI GEN COURSE PANEL -->
-<div id="aiGenPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(123,101,196,.3);border-radius:16px;padding:1.25rem;width:min(420px,95vw);z-index:400;box-shadow:0 16px 56px rgba(123,101,196,.22);max-height:92vh;overflow-y:auto">
-  <div style="font-size:.88rem;font-weight:700;margin-bottom:.25rem;background:linear-gradient(120deg,#4A3888,#7B65C4,#A890C0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">✨ AI 產生章節架構</div>
-  <div style="font-size:.62rem;color:var(--tx3);margin-bottom:.85rem;line-height:1.65">輸入課程名稱和章-節範圍，AI 會幫你自動產生所有集數，確認後一鍵帶入。</div>
-
-  <!-- STEP 1: Input -->
-  <div id="aiStep1">
-    <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">課程名稱</label><input class="add-inp" id="aiCrsName" placeholder="e.g. 心理學概論" style="width:100%;border-radius:8px"></div>
-    <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">課程圖示</label><input class="add-inp" id="aiCrsEmoji" placeholder="🧠" maxlength="4" style="width:100%;border-radius:8px;text-align:center;font-size:1.1rem"></div>
-    <div style="margin-bottom:.55rem">
-      <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">章節範圍格式說明</label>
-      <div style="font-size:.62rem;color:var(--tx3);background:rgba(123,101,196,.06);border:1.5px solid rgba(123,101,196,.15);border-radius:8px;padding:.5rem .65rem;line-height:1.8">
-        <b style="color:var(--vid-d)">格式：</b>章數-節數<br>
-        例：<code style="background:rgba(123,101,196,.1);padding:1px 4px;border-radius:4px">心理學：1-1 到 8-2</code><br>
-        表示第1章第1節 → 第8章第2節
-      </div>
-    </div>
-    <div class="modal-row">
-      <div class="modal-half">
-        <label>每章有幾節</label>
-        <input type="number" class="add-inp" id="aiSecPerChap" placeholder="3" min="1" max="20" value="3" style="border-radius:8px">
-        <div style="font-size:.56rem;color:var(--tx3);margin-top:.2rem">（每章統一節數）</div>
-      </div>
-      <div class="modal-half">
-        <label>共幾章</label>
-        <input type="number" class="add-inp" id="aiChapCount" placeholder="8" min="1" max="50" value="8" style="border-radius:8px">
-      </div>
-    </div>
-    <div style="margin-bottom:.7rem">
-      <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">每集預設時長（分鐘）</label>
-      <select class="add-inp" id="aiEpDur" style="border-radius:8px">
-        <option value="">不設定</option>
-        <option value="10">10 分鐘</option>
-        <option value="15" selected>15 分鐘</option>
-        <option value="20">20 分鐘</option>
-        <option value="25">25 分鐘</option>
-        <option value="30">30 分鐘</option>
-        <option value="45">45 分鐘</option>
-        <option value="60">60 分鐘</option>
-      </select>
-    </div>
-    <div style="margin-bottom:.7rem">
-      <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">✨ 讓 AI 幫你命名各集內容（選填）</label>
-      <textarea class="add-inp" id="aiTopicHint" placeholder="例：心理學概論，第1章講感覺與知覺，第2章記憶，第3章學習理論…（可以不填，AI 會自動用 章-節 編號命名）" style="border-radius:8px;min-height:60px;resize:vertical;line-height:1.6;font-size:.7rem"></textarea>
-    </div>
-    <div id="aiGenStatus" style="display:none"></div>
-    <div style="display:flex;gap:.4rem">
-      <button onclick="doAiGenerate()" id="aiGenBtn" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#7B65C4,#A890C0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✨ AI 產生預覽</button>
-      <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(123,101,196,.2);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
-    </div>
-  </div>
-
-  <!-- STEP 2: Preview -->
-  <div id="aiStep2" style="display:none">
-    <div style="font-size:.72rem;font-weight:600;color:var(--vid-d);margin-bottom:.4rem" id="aiPreviewTitle"></div>
-    <div style="font-size:.6rem;color:var(--tx3);margin-bottom:.55rem" id="aiPreviewMeta"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.3rem">
-      <div style="font-size:.6rem;color:var(--tx2);font-weight:600">預覽集數（可點選取消）</div>
-      <button onclick="toggleAllPreviewEps()" id="previewToggleBtn" style="font-size:.55rem;padding:.12rem .4rem;border-radius:8px;border:1.5px solid rgba(123,101,196,.2);background:rgba(255,255,255,.7);color:var(--vid-d);cursor:pointer;font-family:inherit">全不選</button>
-    </div>
-    <div id="aiPreviewList" style="max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:3px;border:1.5px solid rgba(123,101,196,.15);border-radius:8px;padding:.4rem;background:rgba(255,255,255,.7);margin-bottom:.65rem"></div>
-    <div style="font-size:.58rem;color:var(--tx3);margin-bottom:.65rem" id="aiPreviewCount"></div>
-    <div style="display:flex;gap:.4rem">
-      <button onclick="doImportCourse()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#7B65C4,#A890C0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 確認帶入</button>
-      <button onclick="backToAiStep1()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(123,101,196,.2);background:rgba(248,244,240,.7);color:var(--vid-d);font-size:.75rem;cursor:pointer;font-family:inherit">← 重新設定</button>
-      <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
-    </div>
-  </div>
-</div>
-
-<!-- AI IMPORT CHAPTER PANEL -->
-<div id="aiImportChapPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(143,166,142,.3);border-radius:16px;padding:1.25rem;width:min(440px,95vw);z-index:400;box-shadow:0 16px 56px rgba(74,96,80,.18);max-height:94vh;overflow-y:auto">
-  <div style="font-size:.88rem;font-weight:700;margin-bottom:.2rem;background:linear-gradient(120deg,#3A5840,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">✨ AI 匯入章節</div>
-  <div style="font-size:.62rem;color:var(--tx3);margin-bottom:.75rem;line-height:1.65">貼上目錄文字或上傳照片，AI 自動解析。支援書本目錄（章節＋頁碼）或課程教學大綱（週次＋日期，可自動抓出報告/考試截止日）。</div>
-  <div style="margin-bottom:.65rem">
-    <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">匯入到哪個科目</label>
-    <select id="aiImportSubjSel" class="add-inp" style="border-radius:8px;width:100%" onchange="updateAiImportSubjUI()">
-      <option value="">── 新建科目 ──</option>
-    </select>
-    <div id="aiImportNewSubjWrap" style="margin-top:.4rem;display:flex;gap:.3rem">
-      <input class="add-inp" id="aiImportNewSubjName" placeholder="新科目名稱" style="border-radius:8px">
-      <input class="add-inp" id="aiImportNewSubjEmoji" placeholder="📖" maxlength="4" style="width:44px;border-radius:8px;text-align:center;font-size:1rem;flex-shrink:0">
-    </div>
-  </div>
-  <div style="margin-bottom:.55rem">
-    <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">內容格式</label>
-    <div style="display:flex;gap:.4rem">
-      <button id="aiImportFmtBook" onclick="switchAiImportFormat('book')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(74,96,80,.3);background:linear-gradient(135deg,#8FA898,#6A8870);color:#fff;font-size:.68rem;font-weight:700;font-family:inherit;cursor:pointer">📖 書本目錄（頁碼）</button>
-      <button id="aiImportFmtWeek" onclick="switchAiImportFormat('week')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(140,140,168,.25);background:rgba(255,255,255,.8);color:var(--dusk-d);font-size:.68rem;font-weight:600;font-family:inherit;cursor:pointer">🗓 課程週次（教學大綱）</button>
-    </div>
-  </div>
-  <div style="display:flex;gap:.4rem;margin-bottom:.65rem">
-    <button id="aiImportModeText" onclick="switchAiImportMode('text')" style="flex:1;padding:.32rem;border-radius:9px;border:1.5px solid rgba(74,96,80,.3);background:linear-gradient(135deg,#8FA898,#6A8870);color:#fff;font-size:.7rem;font-weight:700;font-family:inherit;cursor:pointer">📝 貼上文字</button>
-    <button id="aiImportModeImg" onclick="switchAiImportMode('img')" style="flex:1;padding:.32rem;border-radius:9px;border:1.5px solid rgba(143,166,142,.25);background:rgba(255,255,255,.8);color:var(--sage-d);font-size:.7rem;font-weight:600;font-family:inherit;cursor:pointer">📷 上傳照片</button>
-  </div>
-  <div id="aiImportTextMode">
-    <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">貼上目錄或章節列表</label>
-    <div style="font-size:.58rem;color:var(--tx3);margin-bottom:.35rem;line-height:1.7;background:rgba(143,166,142,.07);border:1.5px solid rgba(143,166,142,.18);border-radius:8px;padding:.4rem .6rem">
-      支援多種格式：<br>
-      <code style="background:rgba(255,255,255,.7);padding:1px 4px;border-radius:3px">第一章 感覺與知覺 1-40</code><br>
-      <code style="background:rgba(255,255,255,.7);padding:1px 4px;border-radius:3px">Ch.1 Introduction ........... p.1</code><br>
-      <code style="background:rgba(255,255,255,.7);padding:1px 4px;border-radius:3px">1. 機率基礎（第1-40頁）</code>
-    </div>
-    <textarea class="add-inp" id="aiImportText" placeholder="在這裡貼上目錄文字…&#10;&#10;例如：&#10;第一章 感覺與知覺 1&#10;第二章 記憶 41&#10;第三章 學習與制約 85" style="border-radius:8px;min-height:120px;resize:vertical;line-height:1.65;font-size:.72rem;font-family:inherit"></textarea>
-  </div>
-  <div id="aiImportImgMode" style="display:none">
-    <div id="aiImportDropZone" onclick="document.getElementById('aiImportFileInput').click()" style="border:2px dashed rgba(143,166,142,.4);border-radius:12px;padding:1.5rem;text-align:center;cursor:pointer;background:rgba(143,166,142,.04);transition:all .18s" ondragover="event.preventDefault();this.style.background='rgba(143,166,142,.1)'" ondragleave="this.style.background='rgba(143,166,142,.04)'" ondrop="handleImgDrop(event)">
-      <div style="font-size:2rem;margin-bottom:.4rem">📷</div>
-      <div style="font-size:.75rem;font-weight:600;color:var(--sage-d)">點此選擇或拖曳照片（可多選）</div>
-      <div style="font-size:.6rem;color:var(--tx3);margin-top:.2rem">支援 JPG、PNG，目錄跨多頁可一次上傳多張</div>
-      <input type="file" id="aiImportFileInput" accept="image/*" multiple style="display:none" onchange="handleImgFile(this)">
-    </div>
-    <div id="aiImportImgPreview" style="display:none;margin-top:.55rem">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
-        <span style="font-size:.58rem;color:var(--tx3)" id="aiImportImgCount"></span>
-        <button onclick="document.getElementById('aiImportFileInput').click()" style="font-size:.55rem;padding:.14rem .45rem;border-radius:8px;border:1.5px solid rgba(143,166,142,.3);background:rgba(255,255,255,.7);color:var(--sage-d);cursor:pointer;font-family:inherit">＋ 再新增</button>
-      </div>
-      <div id="aiImportImgGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem"></div>
-    </div>
-  </div>
-  <div id="aiImportStatus" style="display:none;margin-top:.55rem"></div>
-  <div id="aiImportPreview" style="display:none;margin-top:.6rem">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
-      <div style="font-size:.65rem;font-weight:600;color:var(--sage-d)">📋 解析結果（可勾選／編輯）</div>
-      <div style="display:flex;gap:.3rem">
-        <button onclick="toggleAllImportChaps()" id="importChapToggleBtn" style="font-size:.55rem;padding:.12rem .4rem;border-radius:8px;border:1.5px solid rgba(143,166,142,.28);background:rgba(255,255,255,.7);color:var(--sage-d);cursor:pointer;font-family:inherit">全不選</button>
-      </div>
-    </div>
-    <div id="aiImportChapList" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;border:1.5px solid rgba(143,166,142,.18);border-radius:8px;padding:.4rem;background:rgba(255,255,255,.75);margin-bottom:.4rem"></div>
-    <div style="font-size:.58rem;color:var(--tx3)" id="aiImportChapCount"></div>
-  </div>
-  <div style="display:flex;gap:.4rem;margin-top:.75rem" id="aiImportActions">
-    <button onclick="doAiImportChap()" id="aiImportBtn" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#8FA898,#6A7890);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✨ AI 解析</button>
-    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
-  </div>
-  <div style="display:none;gap:.4rem;margin-top:.75rem" id="aiImportConfirmActions">
-    <button onclick="doConfirmImportChaps()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#8FA898,#6A7890);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 確認匯入</button>
-    <button onclick="resetAiImport()" style="padding:.42rem .65rem;border-radius:10px;border:1.5px solid rgba(143,166,142,.28);background:rgba(255,255,255,.7);color:var(--sage-d);font-size:.72rem;cursor:pointer;font-family:inherit">← 重新解析</button>
-    <button onclick="closeOverlays()" style="padding:.42rem .65rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.72rem;cursor:pointer;font-family:inherit">取消</button>
-  </div>
-</div>
-
-
 <!-- EDIT SCHEDULE PANEL -->
 <div id="editSchedPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.2rem;width:min(340px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
   <div style="font-size:.88rem;font-weight:700;margin-bottom:.7rem;background:linear-gradient(120deg,#785048,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">編輯行程</div>
@@ -930,35 +773,6 @@ const TABS=['today','habits','todos','study','review'];
 let curTab='today', curStudyTab='book';
 const $=id=>document.getElementById(id);
 const genId=()=>Math.random().toString(36).slice(2,9);
-/* ── AI 功能設定 ──────────────────────────────────────────────
-   這個頁面現在部署在 GitHub 上（不是 Claude 網站），瀏覽器沒辦法
-   直接呼叫 https://api.anthropic.com/v1/messages：一來會被該網站的
-   CORS 政策擋下，二來這裡也沒有可用的 API 金鑰。
-   若要讓「✨ AI 產生課程」「✨ AI 匯入章節」正常運作，你需要自己架一個
-   小型代理伺服器（例如 Cloudflare Worker / Vercel Edge Function），
-   在代理伺服器裡用你自己申請的 Anthropic API Key 呼叫
-   https://api.anthropic.com/v1/messages，再把下面 AI_API_URL
-   換成你代理伺服器的網址（例如 'https://your-worker.workers.dev/ai'）。
-   留空的話：AI 產生課程會自動改用本機規則產生集數名稱；
-   AI 匯入章節（文字/照片解析）無法在沒有代理的情況下運作，
-   會顯示清楚的提示訊息，請改用「📝 貼上文字」手動輸入。
-   ──────────────────────────────────────────────────────────── */
-const AI_API_URL='';
-/* 跟你 Cloudflare Worker 裡設定的 APP_SECRET 填同一組字串（自己隨便想一串，例如一長串英數字）。
-   這樣別人就算挖到你的 Worker 網址，沒有這組密碼也打不通，不會偷用你的 API 額度。
-   留空 = 不送這個 header（如果你的 Worker 沒做檢查，留空也沒關係）。 */
-const AI_API_SECRET='';
-async function callAI(messages,maxTokens){
-  if(!AI_API_URL)throw new Error('AI_NOT_CONFIGURED');
-  const resp=await fetch(AI_API_URL,{
-    method:'POST',
-    headers:Object.assign({'Content-Type':'application/json'},AI_API_SECRET?{'x-app-secret':AI_API_SECRET}:{}),
-    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,messages})
-  });
-  if(!resp.ok)throw new Error('HTTP '+resp.status);
-  const data=await resp.json();
-  return (data.content||[]).map(b=>b.text||'').join('').trim();
-}
 function getTW(){return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Taipei'}))}
 function pad(n){return String(n).padStart(2,'0')}
 function dayKey(d){return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
@@ -980,8 +794,6 @@ let pomoLogs=load('pomoLogs',[]);
 let vidCourses=load('vidCourses',[]);
 // NEW: exam / assignment deadlines
 let deadlines=load('deadlines',[]);
-
-const SUBJ_COLORS=['#9898B0','#8FA898','#B89A88','#9AAAB8','#C0A89A','#A8A49A'];
 
 function initData(){
   const tk=todayKey();
@@ -1431,7 +1243,6 @@ function renderStudy(){
             <select onclick="event.stopPropagation()" onchange="setSubjSpeed('${sj.id}',this.value)" style="font-size:.55rem;border:none;border-bottom:1px solid rgba(160,148,132,.3);background:transparent;color:var(--tx3);cursor:pointer;padding:0 2px;-webkit-appearance:none">
               ${[3,4,5,6,8,10,15,20].map(v=>`<option value="${v}" ${(sj.minsPerPage||6)==v?'selected':''} >${v}分/頁</option>`).join('')}
             </select>
-            <button class="chap-btn" onclick="openAiImportChap('${sj.id}')">✨ AI</button>
             <button class="chap-btn" onclick="openAddChapter('${sj.id}')">＋章節</button>
             <button class="del-btn" style="display:flex" onclick="delSubject('${sj.id}')">✕</button>
           </div>
@@ -1487,7 +1298,7 @@ let selColor='#9898B0';
 const SUBJ_COLORS_LIST=['#9898B0','#8FA898','#B89A88','#9AAAB8','#C0A89A','#A8A49A'];
 function showAddSubject(){selColor=SUBJ_COLORS_LIST[0];const pal=$('colorPalette');if(pal)pal.innerHTML=SUBJ_COLORS_LIST.map((c,i)=>`<div class="color-chip${i===0?' selected':''}" style="background:${c}" onclick="selectColor('${c}',this)"></div>`).join('');$('sjName').value='';$('sjEmoji').value='';$('addSubjectPanel').style.display='block';$('overlay').style.display='block';}
 function selectColor(c,el){selColor=c;document.querySelectorAll('.color-chip').forEach(e=>e.classList.remove('selected'));el.classList.add('selected');}
-function doAddSubject(){const name=$('sjName').value.trim();if(!name){showToast('請填寫科目名稱');return;}const examDate=$('sjExamDate')&&$('sjExamDate').value||null;const mpp=parseInt(($('sjMinsPerPage')||{value:'6'}).value)||6;subjects.push({id:genId(),name,emoji:$('sjEmoji').value.trim()||'📖',color:selColor,examDate,minsPerPage:mpp,chapters:[]});persist();closeOverlays();renderStudy();renderExamAlert();showToast('📖 科目已建立！');}
+function doAddSubject(){const name=$('sjName').value.trim();if(!name){showToast('請填寫科目名稱');return;}subjects.push({id:genId(),name,emoji:$('sjEmoji').value.trim()||'📖',color:selColor,examDate:null,minsPerPage:6,chapters:[]});persist();closeOverlays();renderStudy();renderExamAlert();showToast('📖 科目已建立！');}
 function openAddChapter(sjId){$('chapSubjId').value=sjId;$('chapName').value='';$('chapPageStart').value='';$('chapPageEnd').value='';$('addChapterPanel').style.display='block';$('overlay').style.display='block';}
 function doAddChapter(){const sjId=$('chapSubjId').value;const sj=subjects.find(s=>s.id===sjId);if(!sj)return;const name=$('chapName').value.trim();if(!name){showToast('請填寫章節名稱');return;}const ps=parseInt($('chapPageStart').value)||1,pe=parseInt($('chapPageEnd').value)||ps+30;if(!sj.chapters)sj.chapters=[];sj.chapters.push({id:genId(),name,pageStart:ps,pageEnd:pe,currentPage:ps,notes:'',reviews:[]});persist();closeOverlays();renderStudy();showToast('✦ 章節已新增！');}
 
@@ -1532,7 +1343,7 @@ function renderVidCourses(){
           <button class="del-btn" style="display:flex" onclick="delCourse('${crs.id}')">✕</button>
         </div>
       </div>
-      <div class="vid-episodes">${eps||`<div style="font-size:.7rem;color:var(--tx3);padding:.4rem 0">尚無集數，點「＋集數」或使用「✨ AI 產生課程」</div>`}</div>
+      <div class="vid-episodes">${eps||`<div style="font-size:.7rem;color:var(--tx3);padding:.4rem 0">尚無集數，點「＋集數」新增</div>`}</div>
     </div>`;
   }).join('');
   updateStudyStats();
@@ -1571,157 +1382,6 @@ function doAddEpisode(){
   if(!crs.episodes)crs.episodes=[];
   crs.episodes.push({id:genId(),num,name:displayName,duration:dur||null,done:false});
   persist();closeOverlays();renderVidCourses();showToast('✦ 集數已新增！');
-}
-
-/* ─────────────────────────────────────
-   AI GENERATE COURSE
-───────────────────────────────────── */
-let _aiPreviewEps=[];
-let _aiPreviewCourse={name:'',emoji:''};
-
-function openAiGenCourse(){
-  $('aiCrsName').value='';$('aiCrsEmoji').value='';
-  $('aiSecPerChap').value='3';$('aiChapCount').value='8';
-  $('aiTopicHint').value='';$('aiEpDur').value='15';
-  $('aiGenStatus').style.display='none';
-  $('aiStep1').style.display='';$('aiStep2').style.display='none';
-  $('aiGenPanel').style.display='block';$('overlay').style.display='block';
-}
-
-function backToAiStep1(){
-  $('aiStep1').style.display='';$('aiStep2').style.display='none';
-}
-
-async function doAiGenerate(){
-  const name=$('aiCrsName').value.trim();
-  if(!name){showToast('請填寫課程名稱');return;}
-  const chapCount=parseInt($('aiChapCount').value)||8;
-  const secPerChap=parseInt($('aiSecPerChap').value)||3;
-  const dur=parseInt($('aiEpDur').value)||null;
-  const hint=$('aiTopicHint').value.trim();
-  const emoji=$('aiCrsEmoji').value.trim()||'🎬';
-
-  // Show loading
-  const statusEl=$('aiGenStatus');
-  const btn=$('aiGenBtn');
-  statusEl.style.display='block';
-  statusEl.innerHTML=`<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>AI 正在產生 ${name} 的章節架構…</span></div>`;
-  btn.disabled=true;btn.style.opacity='.6';
-
-  try{
-    // Build prompt for AI
-    const totalEps=chapCount*secPerChap;
-    let prompt=`你是課程助理。請為「${name}」課程產生章節集數清單，格式為 JSON。
-
-規則：
-- 共 ${chapCount} 章，每章 ${secPerChap} 節
-- 集數編號格式：章-節，如 1-1、1-2、2-1
-- 為每集取一個簡短中文名稱（5-15字）
-${hint?`- 內容提示：${hint}`:'- 依照課程主題合理發揮'}
-
-請只回傳 JSON array，不要其他文字：
-[{"num":"1-1","name":"集數名稱"},{"num":"1-2","name":"集數名稱"},...]
-
-共需產生 ${totalEps} 個集數（${chapCount}章 × ${secPerChap}節）。`;
-
-    const raw=await callAI([{role:'user',content:prompt}],1000);
-
-    // Parse JSON
-    let eps=[];
-    const match=raw.match(/\[[\s\S]*\]/);
-    if(match){
-      try{eps=JSON.parse(match[0]);}catch(e){throw new Error('JSON 解析失敗');}
-    } else {
-      // Fallback: generate locally if AI fails
-      eps=generateEpsLocally(chapCount,secPerChap,name);
-    }
-
-    // Validate & add duration
-    eps=eps.filter(e=>e.num&&e.name).map(e=>({...e,duration:dur,done:false,id:genId()}));
-
-    if(!eps.length){eps=generateEpsLocally(chapCount,secPerChap,name).map(e=>({...e,duration:dur,done:false,id:genId()}));}
-
-    _aiPreviewEps=[...eps];
-    _aiPreviewCourse={name,emoji};
-
-    // Show preview
-    statusEl.style.display='none';
-    btn.disabled=false;btn.style.opacity='1';
-    showAiPreview();
-
-  }catch(err){
-    console.warn('AI gen error, using local fallback:',err);
-    // Fallback: generate locally
-    const eps=generateEpsLocally(chapCount,secPerChap,name).map(e=>({...e,duration:dur,done:false,id:genId()}));
-    _aiPreviewEps=[...eps];
-    _aiPreviewCourse={name,emoji};
-    statusEl.style.display='none';
-    btn.disabled=false;btn.style.opacity='1';
-    showAiPreview();
-    showToast(err.message==='AI_NOT_CONFIGURED'?'🔄 尚未設定 AI 代理伺服器，改用本機自動命名':'🔄 使用本機產生（AI 暫時無法連線）');
-  }
-}
-
-function generateEpsLocally(chapCount,secPerChap,courseName){
-  const eps=[];
-  for(let ch=1;ch<=chapCount;ch++){
-    for(let sec=1;sec<=secPerChap;sec++){
-      eps.push({num:`${ch}-${sec}`,name:`第${ch}章 第${sec}節`});
-    }
-  }
-  return eps;
-}
-
-function showAiPreview(){
-  $('aiStep1').style.display='none';
-  $('aiStep2').style.display='';
-  $('aiPreviewTitle').textContent=`${_aiPreviewCourse.emoji} ${_aiPreviewCourse.name}`;
-  $('aiPreviewMeta').textContent=`共 ${_aiPreviewEps.length} 集，可點選取消不需要的集數`;
-  $('aiPreviewCount').textContent=`已選 ${_aiPreviewEps.length} / ${_aiPreviewEps.length} 集`;
-  $('previewToggleBtn').textContent='全不選';
-
-  const list=$('aiPreviewList');
-  list.innerHTML=_aiPreviewEps.map((ep,i)=>`
-    <div class="preview-ep-item selected" data-idx="${i}" onclick="togglePreviewEp(${i},this)">
-      <div class="preview-ep-num">${ep.num}</div>
-      <div class="preview-ep-name">${ep.name}${ep.duration?` <span style="font-size:.52rem;color:var(--tx3)">${ep.duration}m</span>`:''}</div>
-      <div style="font-size:.7rem;color:rgba(123,101,196,.5)">✓</div>
-    </div>`).join('');
-}
-
-function togglePreviewEp(idx,el){
-  el.classList.toggle('selected');
-  updatePreviewCount();
-}
-function toggleAllPreviewEps(){
-  const items=[...$('aiPreviewList').querySelectorAll('.preview-ep-item')];
-  const allSel=items.every(e=>e.classList.contains('selected'));
-  items.forEach(e=>e.classList.toggle('selected',!allSel));
-  $('previewToggleBtn').textContent=allSel?'全選':'全不選';
-  updatePreviewCount();
-}
-function updatePreviewCount(){
-  const total=$('aiPreviewList').querySelectorAll('.preview-ep-item').length;
-  const sel=$('aiPreviewList').querySelectorAll('.preview-ep-item.selected').length;
-  $('aiPreviewCount').textContent=`已選 ${sel} / ${total} 集`;
-}
-
-function doImportCourse(){
-  const selected=[...$('aiPreviewList').querySelectorAll('.preview-ep-item.selected')].map(el=>_aiPreviewEps[+el.dataset.idx]);
-  if(!selected.length){showToast('請至少選取一集');return;}
-  snapshot();
-  vidCourses.push({
-    id:genId(),
-    name:_aiPreviewCourse.name,
-    emoji:_aiPreviewCourse.emoji,
-    episodes:selected.map(ep=>({...ep,id:genId(),done:false}))
-  });
-  persist();
-  closeOverlays();
-  if(curStudyTab!=='vid')switchStudyTab('vid');
-  else renderVidCourses();
-  updateStudyStats();
-  showToast(`🎬 已匯入「${_aiPreviewCourse.name}」，共 ${selected.length} 集！`);
 }
 
 /* ─────────────────────────────────────
@@ -1874,7 +1534,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeFocus();closeO
 /* ── OVERLAYS ── */
 function closeOverlays(){
   ['addSchedPanel','addHabitPanel','addSubjectPanel','addChapterPanel',
-   'addCoursePanel','addEpPanel','aiGenPanel','aiImportChapPanel',
+   'addCoursePanel','addEpPanel',
    'editSchedPanel','editExamPanel','autoSchedPanel','addDeadlinePanel','icsSubscribePanel'].forEach(id=>{const el=$(id);if(el)el.style.display='none';});
   $('overlay').style.display='none';
 }
@@ -1903,379 +1563,6 @@ function renderAll(){
     else{renderHeatmap();renderStreakBoard();renderWeeklyBar();renderRecentNotes();}
     renderWeekHabitSummary();
   }
-}
-
-
-/* ─────────────────────────────────────
-   AI IMPORT CHAPTERS (TEXT + IMAGE)
-───────────────────────────────────── */
-let _aiImportMode = 'text';
-let _aiImportFormat = 'book'; // 'book' = page-range TOC, 'week' = weekly syllabus
-let _aiImportPreviewFormat = 'book'; // format that was active when the preview was generated
-let _aiImportImages = [];  // [{base64, dataUrl}]
-let _aiImportPreviewChaps = [];  // [{name, pageStart, pageEnd, selected}] or week-format fields
-let _aiImportTargetSubjId = null; // null = new subject
-
-function switchAiImportFormat(fmt){
-  _aiImportFormat = fmt;
-  const bb=$('aiImportFmtBook'), wb=$('aiImportFmtWeek');
-  if(bb){bb.style.background=fmt==='book'?'linear-gradient(135deg,#8FA898,#6A8870)':'rgba(255,255,255,.8)';bb.style.color=fmt==='book'?'#fff':'var(--sage-d)';bb.style.fontWeight=fmt==='book'?'700':'600';}
-  if(wb){wb.style.background=fmt==='week'?'linear-gradient(135deg,#9898B0,#7868A0)':'rgba(255,255,255,.8)';wb.style.color=fmt==='week'?'#fff':'var(--dusk-d)';wb.style.fontWeight=fmt==='week'?'700':'600';}
-}
-
-function openAiImportChap(sjId) {
-  _aiImportTargetSubjId = sjId || null;
-  _aiImportImages = [];
-  _aiImportPreviewChaps = [];
-
-  // Populate subject selector
-  const sel = $('aiImportSubjSel');
-  if (sel) {
-    sel.innerHTML = '<option value="">── 新建科目 ──</option>' +
-      subjects.map(sj => `<option value="${sj.id}" ${sj.id === sjId ? 'selected' : ''}>${sj.emoji} ${sj.name}</option>`).join('');
-  }
-  updateAiImportSubjUI();
-
-  // Reset UI
-  $('aiImportText').value = '';
-  $('aiImportStatus').style.display = 'none';
-  $('aiImportPreview').style.display = 'none';
-  $('aiImportActions').style.display = 'flex';
-  $('aiImportConfirmActions').style.display = 'none';
-  $('aiImportBtn').disabled = false;
-  $('aiImportBtn').style.opacity = '1';
-  clearImportImg();
-  switchAiImportMode('text');
-  switchAiImportFormat('book');
-
-  $('aiImportChapPanel').style.display = 'block';
-  $('overlay').style.display = 'block';
-}
-
-function updateAiImportSubjUI() {
-  const sel = $('aiImportSubjSel');
-  const wrap = $('aiImportNewSubjWrap');
-  if (!sel || !wrap) return;
-  wrap.style.display = sel.value === '' ? 'flex' : 'none';
-}
-
-function switchAiImportMode(mode) {
-  _aiImportMode = mode;
-  $('aiImportTextMode').style.display = mode === 'text' ? '' : 'none';
-  $('aiImportImgMode').style.display = mode === 'img' ? '' : 'none';
-  const tb = $('aiImportModeText'), ib = $('aiImportModeImg');
-  if (tb) { tb.style.background = mode==='text' ? 'linear-gradient(135deg,#8FA898,#6A8870)' : 'rgba(255,255,255,.8)'; tb.style.color = mode==='text' ? '#fff' : 'var(--sage-d)'; tb.style.fontWeight = mode==='text' ? '700' : '600'; }
-  if (ib) { ib.style.background = mode==='img' ? 'linear-gradient(135deg,#8FA898,#6A8870)' : 'rgba(255,255,255,.8)'; ib.style.color = mode==='img' ? '#fff' : 'var(--sage-d)'; ib.style.fontWeight = mode==='img' ? '700' : '600'; }
-}
-
-function handleImgFile(input) {
-  const files = [...(input.files || [])]; if (!files.length) return;
-  let pending = files.length;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const dataUrl = e.target.result;
-      _aiImportImages.push({ base64: dataUrl.split(',')[1], dataUrl });
-      pending--;
-      if (pending === 0) { renderImportImgGrid(); input.value = ''; }
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function handleImgDrop(e) {
-  e.preventDefault();
-  $('aiImportDropZone').style.background = 'rgba(143,166,142,.04)';
-  const files = [...(e.dataTransfer.files || [])]; if (!files.length) return;
-  const fakeInput = { files, value: '' };
-  handleImgFile(fakeInput);
-}
-
-function renderImportImgGrid() {
-  const grid = $('aiImportImgGrid'), preview = $('aiImportImgPreview'), cnt = $('aiImportImgCount');
-  if (!grid) return;
-  if (!_aiImportImages.length) {
-    preview.style.display = 'none';
-    $('aiImportDropZone').style.display = '';
-    return;
-  }
-  $('aiImportDropZone').style.display = 'none';
-  preview.style.display = '';
-  if (cnt) cnt.textContent = `已選 ${_aiImportImages.length} 張照片`;
-  grid.innerHTML = _aiImportImages.map((img, i) => `
-    <div style="position:relative;border-radius:8px;overflow:hidden;border:1.5px solid rgba(143,166,142,.25);aspect-ratio:1">
-      <img src="${img.dataUrl}" style="width:100%;height:100%;object-fit:cover" alt="目錄照片 ${i+1}">
-      <span style="position:absolute;bottom:2px;left:3px;font-size:.5rem;color:#fff;background:rgba(0,0,0,.5);padding:0 4px;border-radius:5px">${i+1}</span>
-      <button onclick="removeImportImg(${i})" style="position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:none;cursor:pointer;font-size:.55rem;display:flex;align-items:center;justify-content:center">✕</button>
-    </div>`).join('');
-}
-
-function removeImportImg(idx) {
-  _aiImportImages.splice(idx, 1);
-  renderImportImgGrid();
-}
-
-function clearImportImg() {
-  _aiImportImages = [];
-  $('aiImportImgPreview').style.display = 'none';
-  $('aiImportDropZone').style.display = '';
-  $('aiImportFileInput').value = '';
-}
-
-function resetAiImport() {
-  $('aiImportPreview').style.display = 'none';
-  $('aiImportActions').style.display = 'flex';
-  $('aiImportConfirmActions').style.display = 'none';
-  $('aiImportStatus').style.display = 'none';
-  $('aiImportBtn').disabled = false;
-  $('aiImportBtn').style.opacity = '1';
-}
-
-async function doAiImportChap() {
-  const mode = _aiImportMode;
-  const fmt = _aiImportFormat;
-  const statusEl = $('aiImportStatus');
-  const btn = $('aiImportBtn');
-
-  if (mode === 'text') {
-    const text = $('aiImportText').value.trim();
-    if (!text) { showToast('請貼上內容文字'); return; }
-  } else {
-    if (!_aiImportImages.length) { showToast('請先上傳照片'); return; }
-  }
-
-  // Show loading
-  statusEl.style.display = 'block';
-  statusEl.innerHTML = `<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>AI 正在解析${mode==='img'&&_aiImportImages.length>1?'『'+_aiImportImages.length+' 張』照片':'內容'}，請稍候…</span></div>`;
-  btn.disabled = true; btn.style.opacity = '.6';
-
-  try {
-    let messages;
-    const bookPrompt = `你是書本目錄解析助理。請從以下內容中提取所有章節資訊。
-
-要求：
-1. 每個章節輸出：章節名稱、起始頁、結束頁
-2. 若只有起始頁（沒有結束頁），則結束頁 = 下一章起始頁 - 1（最後一章估算 +30 頁）
-3. 章節名稱保留完整（含章節編號）
-4. 若提供多張照片，代表目錄橫跨多頁，請將所有照片內容合併、依原順序輸出成同一份章節清單，並自動去除重複章節
-5. 只回傳 JSON array，不要其他文字：
-[{"name":"第一章 感覺與知覺","pageStart":1,"pageEnd":40},...]
-
-注意：若頁碼格式是 p.XX 或 ......XX 也要正確解析。`;
-
-    const weekPrompt = `你是課程教學大綱解析助理。請從以下課程週次進度表中，逐週提取資訊。
-
-要求：
-1. 每週輸出：週次（數字）、完整日期（若表格已給出日期，換算成 YYYY-MM-DD；沒有給日期就填 null）
-2. 若大綱標題含「N學年度」等民國學年度字樣，換算西元年規則為：民國年+1911=該學年度起始西元年（例如115學年度→2026年起始）；第1學期從該起始西元年9月開始，第2學期從隔一年2月開始，用這個規則推算每週的完整西元日期
-3. name 欄位請合併「主題」與「教學內容」重點，簡短摘要（15字以內優先）
-4. isDeadline：若該週內容屬於報告繳交、期中/期末考試、proposal、作業繳交等有截止性質的項目，設為 true，否則 false
-5. deadlineType：isDeadline 為 true 時，判斷屬於 "exam"（考試、口試、口頭報告發表）還是 "assignment"（書面作業、報告繳交），isDeadline 為 false 則設 null
-6. 若提供多張照片，代表進度表橫跨多頁，請合併、依週次順序輸出，去除重複
-7. 只回傳 JSON array，不要其他文字：
-[{"week":1,"date":"2026-09-08","name":"課程介紹","isDeadline":false,"deadlineType":null},...]`;
-
-    const prompt = fmt === 'week' ? weekPrompt : bookPrompt;
-    const contentLabel = fmt === 'week' ? '教學大綱內容' : '目錄內容';
-
-    if (mode === 'text') {
-      const text = $('aiImportText').value.trim();
-      messages = [{ role: 'user', content: `${prompt}
-
-${contentLabel}：
-${text}` }];
-    } else {
-      const imgBlocks = _aiImportImages.map(img => ({ type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: img.base64 } }));
-      messages = [{
-        role: 'user',
-        content: [...imgBlocks, { type: 'text', text: prompt }]
-      }];
-    }
-
-    const raw = await callAI(messages, 1500);
-
-    let chaps = [];
-    const match = raw.match(/\[[\s\S]*\]/);
-    if (match) {
-      try { chaps = JSON.parse(match[0]); } catch(e) { throw new Error('JSON 解析失敗'); }
-    }
-
-    if (!chaps.length) throw new Error(fmt==='week'?'未能解析到週次，請確認格式或換文字貼上':'未能解析到章節，請確認格式或換文字貼上');
-
-    if (fmt === 'week') {
-      chaps = chaps.filter(c => c.name && c.week).map(c => {
-        const wk = parseInt(c.week) || 1;
-        return {
-          name: String(c.name).trim(),
-          pageStart: wk,
-          pageEnd: wk,
-          weekLabel: `第${wk}週${c.date?`（${c.date}）`:''}`,
-          dueDate: c.date || null,
-          isDeadline: !!c.isDeadline,
-          deadlineType: c.deadlineType === 'exam' ? 'exam' : 'assignment',
-          createDeadline: !!c.isDeadline && !!c.date,
-          selected: true
-        };
-      });
-    } else {
-      chaps = chaps.filter(c => c.name && c.pageStart).map(c => ({
-        name: String(c.name).trim(),
-        pageStart: parseInt(c.pageStart) || 1,
-        pageEnd: parseInt(c.pageEnd) || parseInt(c.pageStart) + 30,
-        selected: true
-      }));
-    }
-
-    _aiImportPreviewChaps = chaps;
-    _aiImportPreviewFormat = fmt;
-    statusEl.style.display = 'none';
-    btn.disabled = false; btn.style.opacity = '1';
-    renderImportChapPreview();
-
-  } catch(err) {
-    console.warn('AI import error:', err);
-    const msg = err.message==='AI_NOT_CONFIGURED'
-      ? 'AI 功能尚未設定代理伺服器。這個頁面部署在 GitHub 上，瀏覽器無法直接呼叫 Anthropic API（會被 CORS 擋下）。請在程式碼最上方的 AI_API_URL 填入你自己架設的代理伺服器網址（例如 Cloudflare Worker），或改用「📝 貼上文字」手動輸入目錄。'
-      : (err.message || 'AI 解析失敗，請檢查網路或改用文字模式');
-    statusEl.innerHTML = `<div style="font-size:.65rem;color:var(--clay-d);background:rgba(184,144,128,.1);border:1.5px solid rgba(184,144,128,.25);border-radius:8px;padding:.4rem .6rem;line-height:1.6">⚠ ${msg}</div>`;
-    btn.disabled = false; btn.style.opacity = '1';
-  }
-}
-
-function renderImportChapPreview() {
-  const list = $('aiImportChapList');
-  if (!list) return;
-  const isWeek = _aiImportPreviewFormat === 'week';
-
-  list.innerHTML = _aiImportPreviewChaps.map((c, i) => {
-    const metaHtml = isWeek ? `
-        <div style="font-size:.56rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace;display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
-          <span>第</span>
-          <input type="number" value="${c.pageStart}" min="1" style="width:34px;font-size:.58rem;border:none;border-bottom:1px solid rgba(140,140,168,.35);background:transparent;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--tx2);outline:none;padding:0" onclick="event.stopPropagation()" onchange="updateImportChapWeek(${i},this.value)">
-          <span>週${c.dueDate?` · ${c.dueDate}`:''}</span>
-          ${c.dueDate ? `<label onclick="event.stopPropagation()" style="display:flex;align-items:center;gap:2px;cursor:pointer;font-size:.54rem;color:${c.createDeadline?'var(--clay-d)':'var(--tx3)'};font-weight:${c.createDeadline?700:400}"><input type="checkbox" ${c.createDeadline?'checked':''} onchange="toggleImportChapDeadline(${i},this.checked)" style="width:11px;height:11px;accent-color:var(--clay-d)">列入${c.deadlineType==='exam'?'🎯考試':'📝作業'}</label>` : ''}
-        </div>` : `
-        <div style="font-size:.56rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace;display:flex;gap:.4rem;align-items:center">
-          <span>p.</span>
-          <input type="number" value="${c.pageStart}" min="1" style="width:40px;font-size:.58rem;border:none;border-bottom:1px solid rgba(143,166,142,.35);background:transparent;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--tx2);outline:none;padding:0" onclick="event.stopPropagation()" onchange="updateImportChapPage(${i},'pageStart',this.value)">
-          <span>–</span>
-          <input type="number" value="${c.pageEnd}" min="1" style="width:40px;font-size:.58rem;border:none;border-bottom:1px solid rgba(143,166,142,.35);background:transparent;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--tx2);outline:none;padding:0" onclick="event.stopPropagation()" onchange="updateImportChapPage(${i},'pageEnd',this.value)">
-          <span>（${Math.max(c.pageEnd - c.pageStart + 1, 0)} 頁）</span>
-        </div>`;
-    return `
-    <div style="display:flex;align-items:flex-start;gap:.4rem;padding:.35rem .4rem;border-radius:7px;border:1.5px solid ${c.selected ? 'rgba(143,166,142,.3)' : 'rgba(160,148,132,.15)'};background:${c.selected ? 'rgba(143,166,142,.08)' : 'rgba(240,238,235,.5)'};cursor:pointer;transition:all .15s" onclick="toggleImportChap(${i},this)">
-      <div style="width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(143,166,142,.45);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.5rem;background:${c.selected ? 'linear-gradient(135deg,#8FA898,#6A7890)' : 'transparent'};color:${c.selected ? '#fff' : 'transparent'};transition:all .18s;margin-top:1px">${c.selected ? '✓' : ''}</div>
-      <div style="flex:1;min-width:0">
-        <div contenteditable="true" onfocus="event.stopPropagation()" onblur="updateImportChapName(${i},this.textContent)" style="font-size:.73rem;font-weight:600;color:var(--tx);outline:none;border-bottom:1px dashed transparent" onfocusin="this.style.borderBottomColor='rgba(143,166,142,.4)'" onfocusout="this.style.borderBottomColor='transparent'">${escHtml(c.name)}</div>
-        ${metaHtml}
-      </div>
-    </div>`;
-  }).join('');
-
-  $('aiImportPreview').style.display = '';
-  $('aiImportActions').style.display = 'none';
-  $('aiImportConfirmActions').style.display = 'flex';
-  updateImportChapCount();
-}
-
-function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function toggleImportChap(idx, el) {
-  _aiImportPreviewChaps[idx].selected = !_aiImportPreviewChaps[idx].selected;
-  renderImportChapPreview();
-}
-
-function updateImportChapName(idx, val) {
-  if (_aiImportPreviewChaps[idx]) _aiImportPreviewChaps[idx].name = val.trim();
-}
-
-function updateImportChapPage(idx, field, val) {
-  if (_aiImportPreviewChaps[idx]) _aiImportPreviewChaps[idx][field] = parseInt(val) || 1;
-  updateImportChapCount();
-}
-
-function updateImportChapWeek(idx, val) {
-  const c = _aiImportPreviewChaps[idx];
-  if (!c) return;
-  const wk = parseInt(val) || 1;
-  c.pageStart = wk; c.pageEnd = wk;
-  c.weekLabel = `第${wk}週${c.dueDate?`（${c.dueDate}）`:''}`;
-}
-
-function toggleImportChapDeadline(idx, checked) {
-  const c = _aiImportPreviewChaps[idx];
-  if (c) c.createDeadline = checked;
-}
-
-function updateImportChapCount() {
-  const sel = _aiImportPreviewChaps.filter(c => c.selected).length;
-  const el = $('aiImportChapCount');
-  if (el) el.textContent = `已選 ${sel} / ${_aiImportPreviewChaps.length} 個項目`;
-  const btn = $('importChapToggleBtn');
-  if (btn) btn.textContent = sel === _aiImportPreviewChaps.length ? '全不選' : '全選';
-}
-
-function toggleAllImportChaps() {
-  const allSel = _aiImportPreviewChaps.every(c => c.selected);
-  _aiImportPreviewChaps.forEach(c => c.selected = !allSel);
-  renderImportChapPreview();
-}
-
-function doConfirmImportChaps() {
-  const selected = _aiImportPreviewChaps.filter(c => c.selected);
-  if (!selected.length) { showToast('請至少選取一個章節'); return; }
-
-  const selEl = $('aiImportSubjSel');
-  const subjId = selEl ? selEl.value : '';
-
-  let targetSj;
-  if (subjId) {
-    targetSj = subjects.find(s => s.id === subjId);
-  } else {
-    // Create new subject
-    const newName = ($('aiImportNewSubjName').value || '').trim();
-    const newEmoji = ($('aiImportNewSubjEmoji').value || '').trim() || '📖';
-    if (!newName) { showToast('請填寫新科目名稱'); return; }
-    targetSj = { id: genId(), name: newName, emoji: newEmoji, color: '#9898B0', minsPerPage: 6, chapters: [] };
-    subjects.push(targetSj);
-  }
-
-  snapshot();
-  if (!targetSj.chapters) targetSj.chapters = [];
-
-  let deadlineCount = 0;
-  const isWeek = _aiImportPreviewFormat === 'week';
-  selected.forEach(c => {
-    targetSj.chapters.push({
-      id: genId(),
-      name: isWeek ? `${c.weekLabel || ('第'+c.pageStart+'週')}｜${c.name}` : c.name,
-      pageStart: c.pageStart,
-      pageEnd: c.pageEnd,
-      currentPage: c.pageStart,
-      notes: '',
-      reviews: []
-    });
-    if (isWeek && c.createDeadline && c.dueDate) {
-      deadlines.push({
-        id: genId(),
-        type: c.deadlineType === 'exam' ? 'exam' : 'assignment',
-        name: c.name,
-        subjectId: targetSj.id,
-        dueDate: c.dueDate,
-        dueTime: '',
-        notes: '',
-        done: false
-      });
-      deadlineCount++;
-    }
-  });
-
-  persist();
-  closeOverlays();
-  if (curStudyTab !== 'book') switchStudyTab('book');
-  else renderStudy();
-  updateDlStats();
-  showToast(`✦ 已匯入 ${selected.length} 個${isWeek?'週次':'章節'}到「${targetSj.name}」！${deadlineCount?`並新增 ${deadlineCount} 筆考試/作業`:''}`);
 }
 
 
@@ -2800,17 +2087,6 @@ window.renderExamAlert=renderExamAlert;window.renderTodayStudyCard=renderTodaySt
 window.markStudyTaskDone=markStudyTaskDone;window.updatePomoChapSel=updatePomoChapSel;
 window.pomoStop=pomoStop;
 window.renderWeekPlan=renderWeekPlan;window.shiftWeek=shiftWeek;window.addWeekSched=addWeekSched;window.switchWRTab=switchWRTab;window.renderWeekHabitSummary=renderWeekHabitSummary;
-window.openAiImportChap=openAiImportChap;window.switchAiImportMode=switchAiImportMode;
-window.handleImgFile=handleImgFile;window.handleImgDrop=handleImgDrop;window.clearImportImg=clearImportImg;
-window.removeImportImg=removeImportImg;window.renderImportImgGrid=renderImportImgGrid;
-window.doAiImportChap=doAiImportChap;window.toggleImportChap=toggleImportChap;
-window.toggleAllImportChaps=toggleAllImportChaps;window.doConfirmImportChaps=doConfirmImportChaps;
-window.resetAiImport=resetAiImport;window.updateAiImportSubjUI=updateAiImportSubjUI;
-window.updateImportChapName=updateImportChapName;window.updateImportChapPage=updateImportChapPage;
-window.switchAiImportFormat=switchAiImportFormat;window.updateImportChapWeek=updateImportChapWeek;
-window.toggleImportChapDeadline=toggleImportChapDeadline;
-window.openAiGenCourse=openAiGenCourse;window.doAiGenerate=doAiGenerate;window.doImportCourse=doImportCourse;
-window.togglePreviewEp=togglePreviewEp;window.toggleAllPreviewEps=toggleAllPreviewEps;window.backToAiStep1=backToAiStep1;
 window.openAddDeadline=openAddDeadline;window.setDlType=setDlType;window.doAddDeadline=doAddDeadline;
 window.toggleDlDone=toggleDlDone;window.delDeadline=delDeadline;window.renderDeadlines=renderDeadlines;
 
