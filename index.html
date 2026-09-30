@@ -92,7 +92,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .card-body{padding:.75rem .85rem}
 .tl-item{display:grid;grid-template-columns:52px 22px 1fr auto;gap:.45rem;align-items:flex-start;padding:.45rem .6rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.16);border-left:3px solid var(--dusk);margin-bottom:4px;background:rgba(255,255,255,.92);transition:all .2s;position:relative;overflow:hidden}
 .del-btn{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(160,148,132,.25);background:transparent;color:var(--tx3);font-size:.55rem;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.tl-item:hover .del-btn,.todo-item:hover .del-btn,.habit-row:hover .del-btn,.chap-row:hover .del-btn,.vid-ep-row:hover .del-btn{display:flex}
+.tl-item:hover .del-btn,.todo-item:hover .del-btn,.habit-row:hover .del-btn,.chap-row:hover .del-btn,.vid-ep-row:hover .del-btn,.dl-item:hover .del-btn{display:flex}
 .del-btn:hover{background:var(--clay-l);border-color:rgba(122,82,72,.28);color:var(--clay-d)}
 @media(hover:none){.del-btn{display:flex!important}}
 .undo-btn{width:28px;height:28px;border-radius:50%;font-size:.8rem;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--brd);color:var(--tx3);background:rgba(255,255,255,.6);cursor:pointer;transition:all .18s;flex-shrink:0;opacity:.35;pointer-events:none}
@@ -675,9 +675,10 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   </div>
 </div>
 
-<!-- ADD DEADLINE PANEL (exam / assignment) -->
+<!-- ADD/EDIT DEADLINE PANEL (exam / assignment) -->
 <div id="addDeadlinePanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(184,144,128,.3);border-radius:16px;padding:1.25rem;width:min(360px,94vw);z-index:400;box-shadow:0 16px 48px rgba(184,144,128,.2)">
-  <div style="font-size:.88rem;font-weight:700;margin-bottom:.85rem;background:linear-gradient(120deg,#785040,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🎯 新增考試 / 作業</div>
+  <div id="dlPanelTitle" style="font-size:.88rem;font-weight:700;margin-bottom:.85rem;background:linear-gradient(120deg,#785040,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🎯 新增考試 / 作業</div>
+  <input type="hidden" id="dlEditId" value="">
   <div style="margin-bottom:.6rem">
     <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">類型</label>
     <div style="display:flex;gap:.4rem">
@@ -694,7 +695,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   </div>
   <div style="margin-bottom:.7rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">備註（選填）</label><input class="add-inp" id="dlNotes" placeholder="e.g. 帶計算機、開放式教材" style="width:100%;border-radius:8px"></div>
   <div style="display:flex;gap:.4rem">
-    <button onclick="doAddDeadline()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#B89A88,#9898B0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 新增</button>
+    <button onclick="doSaveDeadline()" id="dlSaveBtn" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#B89A88,#9898B0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 新增</button>
     <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(184,144,128,.25);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
   </div>
 </div>
@@ -1394,10 +1395,27 @@ function dlDaysLeft(dl){
   return Math.ceil((dueMs-todayMs)/86400000);
 }
 function openAddDeadline(){
+  $('dlEditId').value='';
+  $('dlPanelTitle').textContent='🎯 新增考試 / 作業';
+  $('dlSaveBtn').textContent='✦ 新增';
   $('dlName').value='';$('dlDate').value='';$('dlTime').value='';$('dlNotes').value='';
   setDlType('exam');
   const sel=$('dlSubjSel');
   if(sel)sel.innerHTML='<option value="">── 不指定 ──</option>'+subjects.map(sj=>`<option value="${sj.id}">${sj.emoji} ${sj.name}</option>`).join('');
+  $('addDeadlinePanel').style.display='block';$('overlay').style.display='block';
+}
+function openEditDeadline(id){
+  const dl=deadlines.find(d=>d.id===id);if(!dl)return;
+  $('dlEditId').value=id;
+  $('dlPanelTitle').textContent='✎ 編輯考試 / 作業';
+  $('dlSaveBtn').textContent='✦ 儲存';
+  $('dlName').value=dl.name;$('dlDate').value=dl.dueDate;$('dlTime').value=dl.dueTime||'';$('dlNotes').value=dl.notes||'';
+  setDlType(dl.type||'exam');
+  const sel=$('dlSubjSel');
+  if(sel){
+    sel.innerHTML='<option value="">── 不指定 ──</option>'+subjects.map(sj=>`<option value="${sj.id}">${sj.emoji} ${sj.name}</option>`).join('');
+    sel.value=dl.subjectId||'';
+  }
   $('addDeadlinePanel').style.display='block';$('overlay').style.display='block';
 }
 function setDlType(t){
@@ -1406,23 +1424,37 @@ function setDlType(t){
   if(eb){eb.style.background=t==='exam'?'linear-gradient(135deg,#B89A88,#9898B0)':'rgba(255,255,255,.8)';eb.style.color=t==='exam'?'#fff':'var(--clay-d)';eb.style.fontWeight=t==='exam'?'700':'600';}
   if(ab){ab.style.background=t==='assignment'?'linear-gradient(135deg,#9898B0,#7868A0)':'rgba(255,255,255,.8)';ab.style.color=t==='assignment'?'#fff':'var(--dusk-d)';ab.style.fontWeight=t==='assignment'?'700':'600';}
 }
-function doAddDeadline(){
+function doSaveDeadline(){
   const name=$('dlName').value.trim();
   const date=$('dlDate').value;
   if(!name){showToast('請填寫名稱');return;}
   if(!date){showToast('請選擇截止日期');return;}
+  const editId=$('dlEditId').value;
   snapshot();
-  deadlines.push({
-    id:genId(),
-    type:$('dlType').value||'exam',
-    name,
-    subjectId:$('dlSubjSel').value||'',
-    dueDate:date,
-    dueTime:$('dlTime').value||'',
-    notes:$('dlNotes').value.trim(),
-    done:false
-  });
-  persist();closeOverlays();renderDeadlines();showToast('🎯 已新增！');
+  if(editId){
+    const dl=deadlines.find(d=>d.id===editId);
+    if(dl){
+      dl.type=$('dlType').value||'exam';
+      dl.name=name;
+      dl.subjectId=$('dlSubjSel').value||'';
+      dl.dueDate=date;
+      dl.dueTime=$('dlTime').value||'';
+      dl.notes=$('dlNotes').value.trim();
+    }
+    persist();closeOverlays();renderDeadlines();showToast('✦ 已更新！');
+  } else {
+    deadlines.push({
+      id:genId(),
+      type:$('dlType').value||'exam',
+      name,
+      subjectId:$('dlSubjSel').value||'',
+      dueDate:date,
+      dueTime:$('dlTime').value||'',
+      notes:$('dlNotes').value.trim(),
+      done:false
+    });
+    persist();closeOverlays();renderDeadlines();showToast('🎯 已新增！');
+  }
 }
 function toggleDlDone(id,evt){
   const dl=deadlines.find(d=>d.id===id);if(!dl)return;
@@ -1455,6 +1487,7 @@ function renderDeadlines(){
         <div class="dl-meta">${dl.dueDate}${dl.dueTime?' '+dl.dueTime:''}${dl.notes?' · '+dl.notes:''}</div>
       </div>
       <div class="dl-days ${urgent?'urgent':'normal'}">${dayLabel}</div>
+      <button onclick="event.stopPropagation();openEditDeadline('${dl.id}')" style="width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(184,144,128,.3);background:rgba(255,255,255,.7);color:var(--clay-d);font-size:.5rem;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0" class="del-btn">✎</button>
       <button class="del-btn" onclick="event.stopPropagation();delDeadline('${dl.id}')">✕</button>
     </div>`;
   }).join('');
@@ -2087,7 +2120,7 @@ window.renderExamAlert=renderExamAlert;window.renderTodayStudyCard=renderTodaySt
 window.markStudyTaskDone=markStudyTaskDone;window.updatePomoChapSel=updatePomoChapSel;
 window.pomoStop=pomoStop;
 window.renderWeekPlan=renderWeekPlan;window.shiftWeek=shiftWeek;window.addWeekSched=addWeekSched;window.switchWRTab=switchWRTab;window.renderWeekHabitSummary=renderWeekHabitSummary;
-window.openAddDeadline=openAddDeadline;window.setDlType=setDlType;window.doAddDeadline=doAddDeadline;
+window.openAddDeadline=openAddDeadline;window.openEditDeadline=openEditDeadline;window.setDlType=setDlType;window.doSaveDeadline=doSaveDeadline;
 window.toggleDlDone=toggleDlDone;window.delDeadline=delDeadline;window.renderDeadlines=renderDeadlines;
 
 /* ── BOOT ── */
