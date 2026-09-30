@@ -777,8 +777,8 @@ function getTW(){return new Date(new Date().toLocaleString('en-US',{timeZone:'As
 function pad(n){return String(n).padStart(2,'0')}
 function dayKey(d){return`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
 function todayKey(){return dayKey(getTW())}
-function load(k,d){try{const v=localStorage.getItem('xm3_'+k);return v?JSON.parse(v):d}catch{return d}}
-function save(k,v){try{localStorage.setItem('xm3_'+k,JSON.stringify(v))}catch{}}
+function load(k,d){try{const v=localStorage.getItem('xm3_'+k);if(!v)return d;const parsed=JSON.parse(v);return(parsed===null||parsed===undefined)?d:parsed}catch{return d}}
+function save(k,v){try{if(v===null||v===undefined)return;localStorage.setItem('xm3_'+k,JSON.stringify(v))}catch{}}
 function showToast(msg,t=2200){const el=$('toast');if(!el)return;el.textContent=msg;el.style.opacity='1';el.style.transform='translateY(0)';setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(8px)'},t)}
 function sparkle(x,y){['✦','✧','⋆','·','✦'].forEach((e,i)=>{const el=document.createElement('span');el.className='spark';el.textContent=e;const a=(i/5)*360+Math.random()*20,r=32+Math.random()*38;el.style.cssText=`left:${x+Math.cos(a*Math.PI/180)*r}px;top:${y+Math.sin(a*Math.PI/180)*r}px`;document.body.appendChild(el);setTimeout(()=>el.remove(),650)})}
 
@@ -2299,7 +2299,7 @@ window.__getCurrentData = function(){
                  pomoLogs:'pomoLogs',vidCourses:'vidCourses',deadlines:'deadlines'};
       let changed=false;
       Object.keys(map).forEach(k=>{
-        if(d[k]!==undefined){
+        if(d[k]!==undefined&&d[k]!==null){
           const fresh=JSON.stringify(d[k]);
           if(localStorage.getItem('xm3_'+map[k])!==fresh){
             localStorage.setItem('xm3_'+map[k],fresh);
@@ -2311,7 +2311,7 @@ window.__getCurrentData = function(){
       if(changed && window.__applyCloudData){
         const parsed={};
         Object.keys(map).forEach(k=>{
-          try{ parsed[k]=JSON.parse(localStorage.getItem('xm3_'+map[k])||'null'); }catch(e){}
+          try{ const p=JSON.parse(localStorage.getItem('xm3_'+map[k])||'null'); if(p!==null&&p!==undefined)parsed[k]=p; }catch(e){}
         });
         window.__applyCloudData(parsed);
       }
