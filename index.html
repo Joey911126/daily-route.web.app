@@ -196,6 +196,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .dl-item.dl-done .dl-check{background:linear-gradient(135deg,#B89A88,#9898B0);border-color:transparent;color:#fff}
 .dl-badge{font-size:.5rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0}
 .dl-badge.exam{background:#F7C9CF;color:#9B3F51}
+.dl-badge.exam.quiz{background:#FCE9EC;color:#B0606F}
 .dl-badge.assignment{background:#CBD6F4;color:#44558F}
 .dl-badge.report{background:#EBF7F1;color:#3E7A5C}
 .dl-badge.report.mine{background:#A9DEC3;color:#2F6B4D}
@@ -260,6 +261,62 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .week-add-btn:hover{border-color:rgba(140,140,168,.4);color:var(--dusk-d);background:rgba(140,140,168,.06)}
 .week-study-chip{padding:.22rem .4rem;border-radius:7px;border:1.5px solid rgba(143,166,142,.25);background:rgba(143,166,142,.08);margin-bottom:3px;font-size:.6rem;color:var(--sage-d);font-weight:500}
 
+
+/* ═══ DESKTOP / TABLET LAYOUT ═══ */
+@media(min-width:768px){
+  html{font-size:16.5px}
+}
+@media(min-width:1024px){
+  html{font-size:18px}
+  .app{padding-left:96px}
+  header{padding:0 2rem}
+  .hdr-inner{max-width:1320px;height:64px;gap:1rem}
+  .logo-mark{width:36px;height:36px;font-size:1.05rem}
+  .hdr-clock{font-size:.8rem;padding:.2rem .7rem}
+  .icon-btn,.undo-btn{width:34px;height:34px;font-size:.95rem}
+  main{max-width:1320px;padding:1.6rem 2rem 2.5rem;padding-bottom:2.5rem!important}
+  /* bottom bar → left sidebar */
+  .bottom-nav{top:0;bottom:0;left:0;right:auto;width:96px;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:.35rem;padding:1.1rem .5rem;border-top:none;border-right:1px solid rgba(160,148,132,.2);box-shadow:2px 0 18px rgba(160,130,210,.08)}
+  .bn-btn{flex:none;padding:.8rem .2rem;gap:5px;font-size:.62rem;border-radius:12px}
+  .bn-btn .bn-ico{font-size:1.4rem}
+  .bn-btn:hover{background:rgba(140,140,168,.08)}
+  .bn-btn.active{background:rgba(140,140,168,.12)}
+  .bn-btn::after{top:22%;bottom:22%;left:0;right:auto;width:3px;height:auto;border-radius:0 3px 3px 0;background:linear-gradient(180deg,#C0A89A,#9898B0,#8FA898)}
+  .toast{bottom:2rem;right:2rem;font-size:.8rem}
+  /* roomier cards & grids */
+  .grid{gap:1.1rem}
+  .banner{padding:1.1rem 1.6rem;gap:1.6rem;margin-bottom:1.1rem}
+  .dt-day{font-size:2.8rem}
+  .pomo-wrap{padding:.7rem 1.1rem;gap:1rem;margin-bottom:1.1rem}
+  .pomo-ring{width:60px;height:60px}.pomo-ring svg{width:60px;height:60px}
+  .card-hdr{padding:.8rem 1.1rem .65rem}
+  .card-body{padding:1rem 1.1rem}
+  .card-title{font-size:.7rem}
+  .card-act{font-size:.72rem}
+  .tl-item,.chap-row,.dl-item{padding:.55rem .75rem}
+  .todo-text{font-size:.82rem}
+  .add-inp{font-size:.8rem;padding:.4rem .8rem}
+  .add-btn-s{font-size:.78rem;padding:.4rem .95rem}
+  .note-area{font-size:.82rem;min-height:110px}
+  .chap-title{font-size:.8rem}.chap-pages{font-size:.62rem}
+  .subj-name{font-size:.92rem}.subj-meta{font-size:.64rem}
+  .dl-name{font-size:.82rem}.dl-meta{font-size:.62rem}.dl-notes{font-size:.7rem}
+  .dl-badge{font-size:.58rem}
+  .study-task-card{padding:.55rem .75rem}.stc-name{font-size:.82rem}.stc-pages{font-size:.64rem}
+  .week-col{min-width:150px}
+  .week-evt{font-size:.7rem;padding:.35rem .5rem}
+  .week-day-num{font-size:1.3rem}
+  .cal-cell{min-height:104px!important;padding:5px!important}
+  /* study / deadline summary cards: one row of six */
+  .study-stats{grid-template-columns:repeat(6,1fr)!important;gap:.8rem!important}
+  /* dialogs a bit wider */
+  div[id$="Panel"]{width:min(500px,92vw)!important}
+}
+@media(min-width:1500px){
+  html{font-size:19px}
+  main,.hdr-inner{max-width:1480px}
+  .cal-cell{min-height:118px!important}
+}
 </style>
 </head>
 <body>
@@ -439,7 +496,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 
   <!-- STUDY TAB -->
   <div id="tab-study" style="display:none">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.75rem">
+    <div class="study-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.75rem">
       <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">科目數</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stSubjCount">0</div></div>
       <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">章節完成</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stChapDone">0</div></div>
       <div class="vid-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--vid-d);letter-spacing:.1em;margin-bottom:.2rem">影片課程</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;color:var(--vid-d);white-space:nowrap" id="stVidCourses">0／0</div></div>
@@ -450,9 +507,9 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 
     <!-- TAB SWITCHER inside study -->
     <div style="display:flex;gap:.4rem;margin-bottom:.75rem">
-      <button id="studyTabBook" onclick="switchStudyTab('book')" style="flex:1;padding:.38rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.25);background:linear-gradient(135deg,#C0A89A,#9898B0);color:#fff;font-size:.72rem;font-weight:700;font-family:inherit;cursor:pointer">📖 讀書計劃</button>
-      <button id="studyTabVid" onclick="switchStudyTab('vid')" style="flex:1;padding:.38rem;border-radius:10px;border:1.5px solid rgba(123,101,196,.25);background:rgba(255,255,255,.8);color:var(--vid-d);font-size:.72rem;font-weight:600;font-family:inherit;cursor:pointer">🎬 教學影片</button>
-      <button id="studyTabDl" onclick="switchStudyTab('dl')" style="flex:1;padding:.38rem;border-radius:10px;border:1.5px solid rgba(184,144,128,.28);background:rgba(255,255,255,.8);color:var(--clay-d);font-size:.72rem;font-weight:600;font-family:inherit;cursor:pointer">🎯 考試/作業<span id="dlTabBadge"></span></button>
+      <button id="studyTabBook" onclick="switchStudyTab('book')" style="flex:1;padding:.38rem .15rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.25);background:linear-gradient(135deg,#C0A89A,#9898B0);color:#fff;font-size:.66rem;font-weight:700;font-family:inherit;cursor:pointer">📖 讀書計劃</button>
+      <button id="studyTabVid" onclick="switchStudyTab('vid')" style="flex:1;padding:.38rem .15rem;border-radius:10px;border:1.5px solid rgba(123,101,196,.25);background:rgba(255,255,255,.8);color:var(--vid-d);font-size:.66rem;font-weight:600;font-family:inherit;cursor:pointer">🎬 教學影片</button>
+      <button id="studyTabDl" onclick="switchStudyTab('dl')" style="flex:1;padding:.38rem .15rem;border-radius:10px;border:1.5px solid rgba(184,144,128,.28);background:rgba(255,255,255,.8);color:var(--clay-d);font-size:.66rem;font-weight:600;font-family:inherit;cursor:pointer">🎯 考試／作業／報告<span id="dlTabBadge"></span></button>
     </div>
 
     <!-- BOOK PLAN SECTION -->
@@ -849,7 +906,6 @@ function initData(){
       {id:'e5',num:'3-1',name:'古典制約',duration:20,done:false},
     ]},
   ];
-  if(!notes[tk])notes[tk]='';
 }
 
 function persist(){
@@ -857,9 +913,10 @@ function persist(){
   save('hlogs',habitLogs);save('notes',notes);save('subjects',subjects);
   save('studyLogs',studyLogs);save('pomoLogs',pomoLogs);
   save('vidCourses',vidCourses);save('deadlines',deadlines);
-  // Cloud sync
-  if(window.__cloud&&window.__cloud.ready&&window.__cloud.save){
-    try{window.__cloud.save({schedules,todos,habits,habitLogs,notes,subjects,studyLogs,pomoLogs,vidCourses,deadlines});}
+  // Cloud sync: stamp collections that really changed, then ask the sync manager to push
+  if(stampAll())save('emeta',emeta);
+  if(window.__cloud&&window.__cloud.save){
+    try{window.__cloud.save();}
     catch(e){console.warn('cloud save error',e);}
   }
 }
@@ -1220,7 +1277,7 @@ function doAddHabit(){const name=$('hName').value.trim();if(!name){showToast('�
 /* ── NOTES ── */
 function updateNote(){const e=$('noteCnt');if(e)e.textContent=($('noteArea').value||'').length+' 字';}
 function saveNote(){notes[todayKey()]=$('noteArea').value;persist();showToast('📝 筆記已儲存');}
-function loadNote(){const e=$('noteArea');if(e){e.value=notes[todayKey()]||'';updateNote();}}
+function loadNote(){const e=$('noteArea');if(e&&document.activeElement!==e){e.value=notes[todayKey()]||'';updateNote();}}
 
 /* ── STUDY ── */
 function isChapDone(c){return c.currentPage>=c.pageEnd;}
@@ -1285,7 +1342,7 @@ function renderStudyAlt(){
     const isT=k===tk,sel=k===studyCalSel;
     const chips=its.slice(0,3).map(x=>{const wk=(x.c.name.match(/^W(\d+)/)||[])[1];const fin=isChapDone(x.c);return`<div style="font-size:.5rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:${x.sj.color}55;color:var(--tx2);border-left:3px solid ${x.sj.color};${fin?'opacity:.45;text-decoration:line-through':''}">${courseAbbr(x.sj.name)}${wk?' W'+wk:''}</div>`;}).join('');
     const more=its.length>3?`<div style="font-size:.46rem;color:var(--tx3);margin-top:1px">+${its.length-3}</div>`:'';
-    cells+=`<div onclick="studyCalSelect('${k}')" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
+    cells+=`<div onclick="studyCalSelect('${k}')" class="cal-cell" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
   }
   const sd=new Date(studyCalSel+'T00:00:00'),dayItems=(by[studyCalSel]||[]).slice().sort((a,b)=>a.si-b.si);
   alt.innerHTML=`<div class="card"><div class="card-body">
@@ -1497,6 +1554,7 @@ function dlSyncViewUI(){
   if(sm)sm.style.display=cal?'none':'';
   [[bl,!cal],[bc,cal]].forEach(([b,on])=>{if(!b)return;b.style.background=on?'linear-gradient(135deg,#B89A88,#9898B0)':'rgba(255,255,255,.7)';b.style.color=on?'#fff':'var(--clay-d)';b.style.fontWeight=on?'700':'600';});
 }
+function dlIsQuiz(d){return d.type==='exam'&&/小考/.test(d.name||'');}
 function dlIsMine(d){return d.type==='report'&&((d.id||'').startsWith('c115_my_')||(d.name||'').includes('我的報告'));}
 function setDlView(v){dlView=v;save('dlView',v);renderDeadlines();}
 function dlCalShift(n){
@@ -1522,9 +1580,9 @@ function renderDlCal(calEl,itemHtml){
   for(let d=1;d<=dim;d++){
     const k=`${y}-${pad(m+1)}-${pad(d)}`,items=(by[k]||[]).slice().sort((a,b)=>(a.done?1:0)-(b.done?1:0));
     const isT=k===tk,sel=k===dlCalSel;
-    const chips=items.slice(0,3).map(x=>{const[bg,fg]=(x.type==='report'&&!dlIsMine(x))?['#EBF7F1','#3E7A5C']:(COL[x.type]||COL.assignment);return`<div style="font-size:.5rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:${bg};color:${fg};${(x.type==='report'&&!dlIsMine(x))?'border:1px solid #CFEBDD;':''}${x.done?'opacity:.45;text-decoration:line-through':''}">${ICON[x.type]||'📝'}${abbr(x.name)}</div>`;}).join('');
+    const chips=items.slice(0,3).map(x=>{const[bg,fg]=dlIsQuiz(x)?['#FCE9EC','#B0606F']:(x.type==='report'&&!dlIsMine(x))?['#EBF7F1','#3E7A5C']:(COL[x.type]||COL.assignment);return`<div style="font-size:.5rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:${bg};color:${fg};${dlIsQuiz(x)?'border:1px solid #F5D3D8;':(x.type==='report'&&!dlIsMine(x))?'border:1px solid #CFEBDD;':''}${x.done?'opacity:.45;text-decoration:line-through':''}">${ICON[x.type]||'📝'}${abbr(x.name)}</div>`;}).join('');
     const more=items.length>3?`<div style="font-size:.46rem;color:var(--tx3);margin-top:1px">+${items.length-3}</div>`:'';
-    cells+=`<div onclick="dlCalSelect('${k}')" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
+    cells+=`<div onclick="dlCalSelect('${k}')" class="cal-cell" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
   }
   const sd=new Date(dlCalSel+'T00:00:00');
   const dayItems=(by[dlCalSel]||[]).slice().sort((a,b)=>(a.done?1:0)-(b.done?1:0));
@@ -1539,7 +1597,7 @@ function renderDlCal(calEl,itemHtml){
     </div>
     <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-bottom:3px">${WD.map(w=>`<div style="text-align:center;font-size:.55rem;color:var(--tx3)">${w}</div>`).join('')}</div>
     <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">${cells}</div>
-    <div style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.55rem;color:var(--tx3);margin-top:.5rem">${[['#F7C9CF','🎯考試'],['#CBD6F4','📝作業'],['#A9DEC3','📊我的報告'],['#EBF7F1','📊其他報告']].map(([c,l])=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c};vertical-align:-1px;${c==='#EBF7F1'?'border:1px solid #B5DCC8':''}"></span> ${l}</span>`).join('')}<span style="color:#C04040">● 今天</span></div>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.55rem;color:var(--tx3);margin-top:.5rem">${[['#F7C9CF','🎯期中／期末考'],['#FCE9EC','🎯小考'],['#CBD6F4','📝作業'],['#A9DEC3','📊我的報告'],['#EBF7F1','📊其他報告']].map(([c,l])=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c};vertical-align:-1px;${c==='#EBF7F1'?'border:1px solid #B5DCC8':c==='#FCE9EC'?'border:1px solid #F5D3D8':''}"></span> ${l}</span>`).join('')}<span style="color:#C04040">● 今天</span></div>
   </div></div>
   <div style="margin-top:.65rem">
     <div class="dl-block-hdr" style="background:rgba(140,140,168,.1);color:var(--dusk-d)"><span>${sd.getMonth()+1}/${sd.getDate()}（週${'日一二三四五六'[sd.getDay()]}）${dlCalSel===tk?' · 今天':''}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">${dayItems.length} 項</span></div>
@@ -1642,7 +1700,7 @@ function renderDeadlines(){
     const dayLabel=dl.done?'已完成':days<0?`已過期 ${Math.abs(days)} 天`:days===0?'今天！':`剩 ${days} 天`;
     return`<div class="dl-item${urgent?' dl-urgent':''}${dl.done?' dl-done':''}" onclick="toggleDlDone('${dl.id}',event)">
       <div class="dl-check">${dl.done?'✓':''}</div>
-      <span class="dl-badge ${dl.type}${dlIsMine(dl)?' mine':''}">${dl.type==='exam'?'🎯 考試':dl.type==='report'?'📊 報告':'📝 作業'}</span>
+      <span class="dl-badge ${dl.type}${dlIsMine(dl)?' mine':''}${dlIsQuiz(dl)?' quiz':''}">${dl.type==='exam'?(dlIsQuiz(dl)?'🎯 小考':'🎯 考試'):dl.type==='report'?'📊 報告':'📝 作業'}</span>
       <div style="flex:1;min-width:0">
         <div class="dl-name">${dl.name}${sj?` <span style="font-size:.56rem;color:var(--tx3);font-weight:400">· ${sj.emoji}${sj.name}</span>`:''}</div>
         <div class="dl-meta">${dl.dueDate}${dl.dueTime?' '+dl.dueTime:''}</div>${dl.notes?`<div class="dl-notes">${String(dl.notes).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`:''}
@@ -2258,6 +2316,127 @@ function doAutoSchedule(){
   showToast(`⚡ 已排入 ${added} 個時段！`);
 }
 
+/* ── CLOUD SYNC BRIDGE (runs inside the app scope so it can really read/replace the data) ──
+   Merge is per ENTRY (todo / schedule / chapter / episode / habit-day / note-day …), newest edit wins,
+   deletions are remembered as tombstones — so phone and PC edits no longer overwrite each other. */
+const SYNC_KEYS=['schedules','todos','habits','habitLogs','notes','subjects','studyLogs','pomoLogs','vidCourses','deadlines'];
+const SYNC_T={schedules:'a',todos:'a',habits:'a',subjects:'a',vidCourses:'a',deadlines:'a',pomoLogs:'a',notes:1,habitLogs:2,studyLogs:2};
+const CHILD={subjects:'chapters',vidCourses:'episodes'};
+function getAll(){return{schedules,todos,habits,habitLogs,notes,subjects,studyLogs,pomoLogs,vidCourses,deadlines};}
+function setAll(k,v){switch(k){
+  case'schedules':schedules=v;break;case'todos':todos=v;break;case'habits':habits=v;break;case'habitLogs':habitLogs=v;break;
+  case'notes':notes=v;break;case'subjects':subjects=v;break;case'studyLogs':studyLogs=v;break;case'pomoLogs':pomoLogs=v;break;
+  case'vidCourses':vidCourses=v;break;case'deadlines':deadlines=v;break;}}
+let emeta=load('emeta',{});
+let seedMode=false;
+let clockOff=load('clockOff',0);
+const nowTs=()=>Date.now()+clockOff;
+const lastSer={};
+function canon(v){
+  if(v===undefined)return'u';
+  if(v===null||typeof v!=='object')return JSON.stringify(v);
+  if(Array.isArray(v))return'['+v.map(canon).join(',')+']';
+  return'{'+Object.keys(v).filter(k=>v[k]!==undefined).sort().map(k=>JSON.stringify(k)+':'+canon(v[k])).join(',')+'}';
+}
+function flatten(key,val){
+  const t=SYNC_T[key],m={};
+  if(val==null)return m;
+  if(t==='a'){
+    const ck=CHILD[key];
+    (val||[]).forEach(it=>{
+      if(!it||it.id===undefined)return;
+      if(ck){const{[ck]:kids,...rest}=it;m[String(it.id)]=rest;(kids||[]).forEach(c=>{if(c&&c.id!==undefined)m[it.id+'>'+c.id]=c;});}
+      else m[String(it.id)]=it;
+    });
+  }else if(t===1){Object.keys(val).forEach(k=>{m[k]=val[k];});}
+  else{Object.keys(val).forEach(a=>{const o=val[a]||{};Object.keys(o).forEach(b=>{m[a+'|'+b]=o[b];});});}
+  return m;
+}
+function build(key,entries,order){
+  const t=SYNC_T[key];
+  if(t==='a'){
+    const ck=CHILD[key];
+    if(!ck){const out=[];order.forEach(e=>{if(e in entries)out.push(entries[e]);});return out;}
+    const out=[],byId={};
+    order.forEach(e=>{if(e.indexOf('>')<0&&e in entries){const o={...entries[e],[ck]:[]};byId[e]=o;out.push(o);}});
+    order.forEach(e=>{const i=e.indexOf('>');if(i>0&&e in entries){const par=byId[e.slice(0,i)];if(par)par[ck].push(entries[e]);}});
+    return out;
+  }
+  if(t===1)return{...entries};
+  const o={};
+  Object.keys(entries).forEach(e=>{const i=e.indexOf('|'),a=e.slice(0,i);(o[a]=o[a]||{})[e.slice(i+1)]=entries[e];});
+  return o;
+}
+function rebase(){
+  const a=getAll();
+  SYNC_KEYS.forEach(k=>{const f=flatten(k,a[k]),c={};Object.keys(f).forEach(e=>{c[e]=canon(f[e]);});lastSer[k]=c;});
+}
+function initSyncBaseline(){rebase();}
+function stampAll(){
+  const now=nowTs(),a=getAll();let changed=false;
+  SYNC_KEYS.forEach(k=>{
+    const f=flatten(k,a[k]),prev=lastSer[k],cur={};
+    const mk=emeta[k]=emeta[k]||{};
+    Object.keys(f).forEach(e=>{
+      const sr=canon(f[e]);cur[e]=sr;
+      if(!prev)return;
+      if(!(e in prev)){
+        if(seedMode){if(mk[e]&&mk[e].d)delete mk[e];}   // built-in seed data: not a user edit
+        else{mk[e]={u:now};changed=true;}
+      }else if(prev[e]!==sr){mk[e]={u:now};changed=true;}
+    });
+    if(prev)Object.keys(prev).forEach(e=>{if(!(e in cur)){mk[e]={u:now,d:1};changed=true;}});
+    lastSer[k]=cur;
+  });
+  return changed;
+}
+function mergeRemote(rdata,rmeta){
+  const cur=getAll(),out={},om={};let diffLocal=false,diffRemote=false;
+  const lim=nowTs()-30*864e5;
+  SYNC_KEYS.forEach(k=>{
+    const lf=flatten(k,cur[k]),rf=flatten(k,rdata[k]),lm=emeta[k]||{},rm=(rmeta&&rmeta[k])||{};
+    const order=[],seen=new Set();
+    [Object.keys(lf),Object.keys(rf),Object.keys(lm),Object.keys(rm)].forEach(arr=>arr.forEach(e=>{if(!seen.has(e)){seen.add(e);order.push(e);}}));
+    const res={},mm={};
+    order.forEach(e=>{
+      const inL=e in lf,inR=e in rf;
+      const lu=(lm[e]&&lm[e].u)||0,ru=(rm[e]&&rm[e].u)||0;
+      const lD=!!(lm[e]&&lm[e].d)&&!inL,rD=!!(rm[e]&&rm[e].d)&&!inR;
+      let take;
+      if(inL&&inR)take=lu>ru?'l':'r';
+      else if(inL)take=(rD&&ru>lu)?'x':'l';
+      else if(inR)take=(lD&&lu>ru)?'x':'r';
+      else take='x';
+      if(take==='l'){res[e]=lf[e];if(lm[e]&&!lm[e].d)mm[e]=lm[e];}
+      else if(take==='r'){res[e]=rf[e];if(rm[e]&&!rm[e].d)mm[e]=rm[e];}
+      else{const t=(lD&&lu>=ru)?lm[e]:(rD?rm[e]:(lD?lm[e]:null));if(t&&t.u>lim)mm[e]=t;}
+    });
+    out[k]=build(k,res,order);om[k]=mm;
+    if(canon(out[k])!==canon(cur[k]))diffLocal=true;
+    if(canon(out[k])!==canon(rdata[k]))diffRemote=true;
+  });
+  if(canon(om)!==canon(rmeta||{}))diffRemote=true;
+  return{data:out,meta:om,diffLocal,diffRemote};
+}
+function saveLocalAll(){
+  save('scheds',schedules);save('todos',todos);save('habits',habits);
+  save('hlogs',habitLogs);save('notes',notes);save('subjects',subjects);
+  save('studyLogs',studyLogs);save('pomoLogs',pomoLogs);
+  save('vidCourses',vidCourses);save('deadlines',deadlines);
+}
+window.__getCurrentData=()=>getAll();
+window.__mergeRemote=mergeRemote;
+window.__nowTs=nowTs;
+window.__setClockOff=o=>{clockOff=o;save('clockOff',o);};
+window.__commitMeta=m=>{Object.keys(m).forEach(k=>{emeta[k]=m[k];});save('emeta',emeta);};
+window.__applyMerged=function(data,meta){
+  SYNC_KEYS.forEach(k=>{if(data[k]!==undefined)setAll(k,data[k]);});
+  Object.keys(meta).forEach(k=>{emeta[k]=meta[k];});
+  save('emeta',emeta);saveLocalAll();rebase();
+  try{renderAll();updateStats();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();updateDlStats();}catch(e){console.warn('re-render after sync failed',e);}
+};
+window.showToast=showToast;
+
 /* ── EXPOSE GLOBALS ── */
 window.switchTab=switchTab;window.switchStudyTab=switchStudyTab;
 window.openFocus=openFocus;window.closeFocus=closeFocus;
@@ -2325,15 +2504,25 @@ const COURSE_SEED=[
  {id:'c115_my_thy2',type:'report',name:'諮商理論｜我的報告：林涵的辯證行為諮商學派（報告9）',dueDate:'2026-11-25',notes:'第12週 第三波認知行為'},
  {id:'c115_my_eth2',type:'report',name:'諮商倫理｜我的報告：網路諮商與網路社交之倫理（報告11）',dueDate:'2026-12-03',notes:'第13週\n同日：小考10'},
  {id:'c115_my_res',type:'report',name:'研究法｜我的報告：質性研究二',dueDate:'2026-12-22',notes:'第16週 Qualitative Design II（CH16+17）\n原定12/15，因混合研究提前至12/8而順延'},
+ {id:'c115_eth_q4',type:'exam',name:'諮商倫理｜多重關係倫理議題（一）小考',dueDate:'2026-10-15',notes:'1. 諮商與心理治療倫理：CHAPTER 07 與當事人、學生、受督者和研究參與者的性接觸\n2. 諮商專業倫理：第七章 多重關係與專業界線\n（第6週｜同日：分組報告4）'},
+ {id:'c115_eth_q5',type:'exam',name:'諮商倫理｜多重關係倫理議題（二）小考',dueDate:'2026-10-22',notes:'1. 諮商與心理治療倫理：CHAPTER 08 非性的多重關係與界線議題\n2. 諮商專業倫理：第七章 多重關係與專業界線\n（第7週｜同日：分組報告5）'},
+ {id:'c115_eth_q6',type:'exam',name:'諮商倫理｜個案紀錄與保存的倫理議題小考',dueDate:'2026-10-29',notes:'2. 諮商專業倫理：第八章 個案紀錄與檔案管理\n3. 專業助人工作倫理：第05章 當事人權利與諮商師責任\n（第8週｜同日：分組報告6）'},
+ {id:'c115_eth_q7',type:'exam',name:'諮商倫理｜心理衡鑑與研究的倫理議題小考',dueDate:'2026-11-12',notes:'1. 諮商與心理治療倫理：CHAPTER 07 與當事人、學生、受督者和研究參與者的性接觸\n　　CHAPTER 10 心理衡鑑之倫理\n　　CHAPTER 15 諮商師與治療師身為教師與研究者\n2. 諮商專業倫理：第十章 心理衡鑑的倫理議題\n（第10週｜同日：分組報告8）'},
+ {id:'c115_eth_q8',type:'exam',name:'諮商倫理｜在學校場域執業的倫理議題（未成年者）小考',dueDate:'2026-11-19',notes:'1. 諮商與心理治療倫理：CHAPTER 13 專業的學校諮商師\n2. 諮商專業倫理：第十一章 在學校執業的倫理議題\n（第11週｜同日：分組報告9）'},
+ {id:'c115_eth_q9',type:'exam',name:'諮商倫理｜在社區執業的倫理議題小考',dueDate:'2026-11-26',notes:'1. 諮商與心理治療倫理：CHAPTER 12 社區、大學、成癮與司法情境中的倫理\n2. 諮商專業倫理：第十二章 在社區執業的倫理議題\n（第12週｜同日：分組報告10）'},
+ {id:'c115_eth_q10',type:'exam',name:'諮商倫理｜網路諮商與心理師網路社群媒體使用之倫理議題小考',dueDate:'2026-12-03',notes:'2. 諮商專業倫理：第十三章 網路諮商與網路社交的倫理議題\n3. 專業助人工作倫理：第05章 當事人權利與諮商師責任\n（第13週｜同日：分組報告11）'},
+ {id:'c115_eth_q11',type:'exam',name:'諮商倫理｜督導關係中的倫理議題小考',dueDate:'2026-12-10',notes:'1. 諮商與心理治療倫理：CHAPTER 14 督導與諮詢的倫理\n（第14週｜同日：分組報告12）'},
+ {id:'c115_eth_q12',type:'exam',name:'諮商倫理｜心理師的廣告、文宣的倫理議題小考',dueDate:'2026-12-17',notes:'其他：心理師法與施行細則\n（第15週｜同日：分組報告13）'},
+ {id:'c115_eth_q13',type:'exam',name:'諮商倫理｜執業疏失之倫理申訴議題小考',dueDate:'2026-12-24',notes:'1. 諮商與心理治療倫理：CHAPTER 11 自身與同事之責任\n2. 諮商專業倫理：第十四章 執業疏失與倫理申訴\n3. 專業助人工作倫理：第05章 當事人權利與諮商師責任\n（第16週｜同日：分組報告14）'},
 ];
 const WEEK_SEED=[
  {id:'sj115_com',name:'社區心理學',emoji:'🏘',color:'#8FA898',base:8,weeks:['課程介紹','社區心理學導論（Orford 第2章）','發展歷史＋自選論文','俗民誌、行動研究法與實驗研究法（Orford 第3章）','在脈絡下的個體（Darling 2007）＋自選論文','多元、平等、包容＋自選論文','空間、環境與幸福感（Orford 第5章）★我的報告','期中報告','壓力與因應（Kloos 第8章）','成癮（Chou 2005）＋自選論文','預防及促進（WHO、Romano & Hage）','預防方案＋自選論文','賦能與民參（Zimmerman 2000）＋自選論文','社會行動（Orford 第10章）','方案發展與評估（Kloos 第13章）','幸福感（van Agteren 2021）＋自選論文','期末課程回顧（彈性週）','繳交期末報告（彈性週）']},
  {id:'sj115_thy',name:'諮商理論',emoji:'🧩',color:'#9898B0',base:9,weeks:['課程說明、暑期閱讀分組報告','導論：諮商專業人員基本理念（第一篇第1–3章）','精神分析（Corey 第4章）｜報告1','榮格分析心理學｜報告2','阿德勒（Corey 第5章）｜報告3','個人中心（Corey 第7章）｜報告4、個案概念化 ★我的報告','存在主義（Corey 第6章）｜報告5','完形（Corey 第8章）｜報告6、個案概念化作業1','期中考（紙筆）','行為治療（Corey 第9章）｜報告7','認知行為／REBT（Corey 第10章）｜報告8','第三波認知行為（林涵辯證行為）｜報告9 ★我的報告','家庭治療（Corey 第14章）｜報告10','後現代（Corey 第13章）｜報告11','正向心理學｜報告12','女性主義（Corey 第12章）｜報告13、個案概念化作業2','溝通分析','期末考（紙筆）']},
- {id:'sj115_eth',name:'諮商專業倫理',emoji:'⚖️',color:'#B89A88',base:10,weeks:['專業倫理課程簡介','倫理導論、專業自我覺察（Ch1,2,4）','知後同意（Ch6）｜報告1、小考1、反思作業1','價值觀與多元文化（Ch3）｜報告2、小考2','保密（Ch5）｜報告3、小考3、知情同意說明書','多重關係（一）（Ch7）｜報告4、小考4','多重關係（二）（Ch8）｜報告5、小考5、案例分析1','個案紀錄與保存｜報告6、小考6、反思作業2','團體、伴侶家庭諮商（Ch9）｜報告7、期中考 ★我的報告','心理衡鑑與研究倫理（Ch10,15）｜報告8、小考7','學校場域倫理（Ch13）｜報告9、小考8','社區執業倫理（Ch12）｜報告10、小考9、反思作業3','網路諮商與AI倫理｜報告11、小考10 ★我的報告','督導倫理（Ch14）｜報告12、小考11、案例分析2','廣告文宣與心理師法｜報告13、小考12','執業疏失與申訴（Ch11）｜報告14、小考13','AI倫理｜反思作業4','期末考＋書面報告與投稿證明']},
+ {id:'sj115_eth',name:'諮商專業倫理',emoji:'⚖️',color:'#B89A88',base:10,weeks:['專業倫理課程簡介','諮商專業倫理導論、心理專業人員之專業自我覺察（Ch1,2,4）','關於告知個案的權益｜報告1、小考1、反思作業1','價值觀與多元文化的倫理議題｜報告2、小考2','專業保密的倫理議題｜報告3、小考3、知情同意說明書','多重關係倫理議題（一）｜報告4、小考4','多重關係倫理議題（二）｜報告5、小考5、案例分析1','個案紀錄與保存的倫理議題｜報告6、小考6、反思作業2','團體諮商與伴侶家庭諮商的倫理議題｜報告7、期中考 ★我的報告','心理衡鑑與研究的倫理議題｜報告8、小考7','在學校場域執業的倫理議題（未成年者）｜報告9、小考8','在社區執業的倫理議題｜報告10、小考9、反思作業3','網路諮商與心理師網路社群媒體使用之倫理議題｜報告11、小考10 ★我的報告','督導關係中的倫理議題｜報告12、小考11、案例分析2','心理師的廣告、文宣的倫理議題｜報告13、小考12','執業疏失之倫理申訴議題｜報告14、小考13','在諮商專業中使用AI的倫理議題｜反思作業4','期末考＋書面報告與投稿證明']},
  {id:'sj115_res',name:'教育與心理研究法',emoji:'🔬',color:'#9AAAB8',base:8,weeks:['Introduction（CH1）','Research Resource（圖書館）','Research Problem & Planning（CH2）','Foundation（CH3,4）','學生報告：TOPIC','Measurement（CH5,6）','學生報告：計畫書 CH1','學生報告：計畫書 CH1','Experiment Design I,II（CH9+10）','Causal-Comparative／Ex Post Facto（CH11）','Correlation Design（CH12）','學生報告：計畫書 CH2','學生報告：計畫書 CH2','Mixed Method（CH21）（調整提前）','Qualitative Design I（CH14+15）（順延）','Qualitative Design II（CH16+17）★我的報告（順延）','計畫書 CH3 撰寫＋文獻閱讀（彈性週）','計畫書完稿＋文獻完成（彈性週）']},
 ];
 function seedCourseDeadlines(manual){
-  const flagKey='seed_c115_v6';
+  const flagKey='seed_c115_v8';
   if(!manual&&load(flagKey,false))return;
   let added=0,fixed=0,addedWk=0,renamed=0;
   COURSE_SEED.forEach(x=>{
@@ -2341,6 +2530,7 @@ function seedCourseDeadlines(manual){
     if(ex){
       if(ex.notes&&ex.notes.includes('暫放')){ex.dueDate=x.dueDate;ex.notes=x.notes;fixed++;}
       if(REPORT_IDS.includes(x.id)&&ex.type==='assignment'){ex.type='report';fixed++;}
+      if(/^c115_eth_q/.test(x.id)&&(ex.name!==x.name||ex.notes!==x.notes)){ex.name=x.name;ex.notes=x.notes;fixed++;}
       return;
     }
     deadlines.push({subjectId:'',dueTime:'',done:false,...x,type:REPORT_IDS.includes(x.id)?'report':x.type});added++;
@@ -2360,12 +2550,12 @@ function seedCourseDeadlines(manual){
   });
   save(flagKey,true);
   if(added||fixed||addedWk||renamed)persist();
-  if(manual){renderDeadlines();renderStudy();showToast((added||fixed||addedWk||renamed)?`📥 已匯入：考試/作業 ${added} 筆${fixed?`（修正 ${fixed} 筆日期）`:''}、每週進度 ${addedWk} 週`:'課程時程已全部在清單中');}
+  if(manual){renderDeadlines();renderStudy();showToast((added||fixed||addedWk||renamed)?`📥 已匯入：考試/作業 ${added} 筆${fixed?`（更新 ${fixed} 筆）`:''}、每週進度 ${addedWk} 週`:'課程時程已全部在清單中');}
 }
 window.seedCourseDeadlines=seedCourseDeadlines;
 
 /* ── BOOT ── */
-initData();seedCourseDeadlines(false);buildNavTabs();updateClock();setInterval(updateClock,15000);
+initData();initSyncBaseline();seedMode=true;seedCourseDeadlines(false);seedMode=false;buildNavTabs();updateClock();setInterval(updateClock,15000);
 renderAll();renderPomo();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();updateDlStats();switchWRTab('week');
 // Auto-sync the subscribed public calendar (if set) on load, then every 30 minutes
 if(icsSubUrl){syncIcsSubscription(false);}
@@ -2404,47 +2594,7 @@ window.googleSignIn = googleSignIn;
 window.googleSignOut = googleSignOut;
 window.renderUserBar = renderUserBar;
 
-// Bridge for core app to push data to cloud
-window.__applyCloudData = function(d){
-  // Write to localStorage so core app variables get updated on next read
-  const map={schedules:'scheds',todos:'todos',habits:'habits',habitLogs:'hlogs',
-             notes:'notes',subjects:'subjects',studyLogs:'studyLogs',
-             pomoLogs:'pomoLogs',vidCourses:'vidCourses',deadlines:'deadlines'};
-  Object.keys(map).forEach(k=>{
-    if(d[k]!==undefined) localStorage.setItem('xm3_'+map[k], JSON.stringify(d[k]));
-  });
-  // Re-initialize core app variables and re-render without page reload
-  if(typeof schedules!=='undefined'&&d.schedules) schedules=d.schedules;
-  if(typeof todos!=='undefined'&&d.todos) todos=d.todos;
-  if(typeof habits!=='undefined'&&d.habits) habits=d.habits;
-  if(typeof habitLogs!=='undefined'&&d.habitLogs) habitLogs=d.habitLogs;
-  if(typeof notes!=='undefined'&&d.notes) notes=d.notes;
-  if(typeof subjects!=='undefined'&&d.subjects) subjects=d.subjects;
-  if(typeof studyLogs!=='undefined'&&d.studyLogs) studyLogs=d.studyLogs;
-  if(typeof pomoLogs!=='undefined'&&d.pomoLogs) pomoLogs=d.pomoLogs;
-  if(typeof vidCourses!=='undefined'&&d.vidCourses) vidCourses=d.vidCourses;
-  if(typeof deadlines!=='undefined'&&d.deadlines) deadlines=d.deadlines;
-  // Re-render current view
-  if(typeof renderAll==='function') renderAll();
-  if(typeof updateStats==='function') updateStats();
-  if(typeof renderExamAlert==='function') renderExamAlert();
-  if(typeof renderTodayStudyCard==='function') renderTodayStudyCard();
-  if(typeof updateDlStats==='function') updateDlStats();
-};
-window.__getCurrentData = function(){
-  return {
-    schedules: typeof schedules!=='undefined'?schedules:[],
-    todos: typeof todos!=='undefined'?todos:[],
-    habits: typeof habits!=='undefined'?habits:[],
-    habitLogs: typeof habitLogs!=='undefined'?habitLogs:{},
-    notes: typeof notes!=='undefined'?notes:{},
-    subjects: typeof subjects!=='undefined'?subjects:[],
-    studyLogs: typeof studyLogs!=='undefined'?studyLogs:{},
-    pomoLogs: typeof pomoLogs!=='undefined'?pomoLogs:[],
-    vidCourses: typeof vidCourses!=='undefined'?vidCourses:[],
-    deadlines: typeof deadlines!=='undefined'?deadlines:[],
-  };
-};
+// (data bridge lives inside the app scope: window.__mergeRemote / __applyMerged / __getCurrentData)
 
 </script>
 
@@ -2485,23 +2635,25 @@ window.__getCurrentData = function(){
   async function getToken(){
     if(_tok && Date.now()<_exp) return _tok;
     if(!_rtok) return null;
+    let r;
     try{
-      const r = await fetch(
+      r = await fetch(
         `https://securetoken.googleapis.com/v1/token?key=${FB_KEY}`,
         { method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({grant_type:'refresh_token', refresh_token:_rtok}) }
       );
-      const d = await r.json();
-      if(d.id_token){
-        _tok=d.id_token; _rtok=d.refresh_token;
-        _exp=Date.now()+(parseInt(d.expires_in)||3600)*1000-60000;
-        localStorage.setItem(K.tok,_tok);
-        localStorage.setItem(K.rtok,_rtok);
-        localStorage.setItem(K.exp,String(_exp));
-        return _tok;
-      }
-    } catch(e){ console.warn('refresh failed',e); }
-    clearToks(); return null;
+    } catch(e){ throw new Error('network'); }          // offline / blip: keep the login, retry later
+    let d={}; try{ d=await r.json(); }catch(e){}
+    if(d.id_token){
+      _tok=d.id_token; _rtok=d.refresh_token;
+      _exp=Date.now()+(parseInt(d.expires_in)||3600)*1000-60000;
+      localStorage.setItem(K.tok,_tok);
+      localStorage.setItem(K.rtok,_rtok);
+      localStorage.setItem(K.exp,String(_exp));
+      return _tok;
+    }
+    if(r.status>=500||r.status===429) throw new Error('token http '+r.status);
+    clearToks(); return null;                          // refresh token really rejected → sign in again
   }
 
   // ── Firestore REST ──
@@ -2513,7 +2665,7 @@ window.__getCurrentData = function(){
     if(typeof v==='number')     return Number.isInteger(v)?{integerValue:String(v)}:{doubleValue:v};
     if(typeof v==='string')     return {stringValue:v};
     if(Array.isArray(v))        return {arrayValue:{values:v.map(enc)}};
-    if(typeof v==='object')     return {mapValue:{fields:Object.fromEntries(Object.entries(v).map(([k,vv])=>[k,enc(vv)]))}};
+    if(typeof v==='object')     return {mapValue:{fields:Object.fromEntries(Object.entries(v).filter(([,vv])=>vv!==undefined).map(([k,vv])=>[k,enc(vv)]))}};
     return {stringValue:String(v)};
   }
   function dec(v){
@@ -2531,77 +2683,113 @@ window.__getCurrentData = function(){
 
   async function fsGet(uid,tok){
     const r=await fetch(`${FS_BASE}/users/${uid}/data/main`,
-      {headers:{Authorization:`Bearer ${tok}`}});
+      {headers:{Authorization:`Bearer ${tok}`},cache:'no-store'});
     if(r.status===404) return null;
     if(!r.ok) throw new Error('fsGet '+r.status);
     const d=await r.json();
-    return decFields(d.fields);
+    return {data:decFields(d.fields),updateTime:d.updateTime||null};
   }
-  async function fsPut(uid,tok,data){
-    const r=await fetch(`${FS_BASE}/users/${uid}/data/main`,{
+  async function fsPut(uid,tok,data,updateTime){
+    const pre=updateTime?`?currentDocument.updateTime=${encodeURIComponent(updateTime)}`:'?currentDocument.exists=false';
+    const r=await fetch(`${FS_BASE}/users/${uid}/data/main${pre}`,{
       method:'PATCH',
       headers:{Authorization:`Bearer ${tok}`,'Content-Type':'application/json'},
       body:JSON.stringify({fields:Object.fromEntries(Object.entries(data).map(([k,v])=>[k,enc(v)]))})
     });
-    if(!r.ok) throw new Error('fsPut '+r.status);
+    if(!r.ok){
+      const t=await r.text();
+      const e=new Error('fsPut '+r.status);
+      if(r.status===409||r.status===412||/FAILED_PRECONDITION|ABORTED|ALREADY_EXISTS/.test(t))e.conflict=true;
+      throw e;
+    }
+    try{return await r.json();}catch(e){return null;}
   }
 
   // ── Sync pill ──
   function pill(s){
     const el=document.getElementById('syncPill'); if(!el)return;
     const m={
-      ok:     ['☁ 已同步',  '#EAF0EA','#4A6449','rgba(143,180,143,.5)'],
+      ok:     ['☁ 已同步'+(_lastOk?' '+hhmm(_lastOk):''),  '#EAF0EA','#4A6449','rgba(143,180,143,.5)'],
       syncing:['↻ 同步中',  '#EAEAF2','#4A4A6A','rgba(140,140,168,.4)'],
-      err:    ['⚠ 同步失敗','#F2EAE6','#7A5248','rgba(180,120,100,.4)']
+      offline:['⚠ 離線・連線後自動同步','#F2EAE6','#7A5248','rgba(180,120,100,.4)'],
+      err:    ['⚠ 同步失敗・點擊重試','#F2EAE6','#7A5248','rgba(180,120,100,.4)']
     };
     if(m[s]){
       const[t,bg,c,b]=m[s];
       el.style.cssText=`display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;`+
         `border-radius:14px;font-size:.6rem;border:1.5px solid ${b};background:${bg};color:${c};`+
-        `white-space:nowrap;flex-shrink:0`;
-      el.textContent=t;
+        `white-space:nowrap;flex-shrink:0;cursor:pointer`;
+      el.textContent=t;el.title='點擊立即同步';el.onclick=()=>syncNow();
     } else { el.style.display='none'; }
   }
 
-  // ── Cloud load ──
-  async function cloudLoad(){
-    const tok=await getToken(); if(!tok||!_user) return;
-    try{
-      const d=await fsGet(_user.uid,tok); if(!d) return;
-      const map={schedules:'scheds',todos:'todos',habits:'habits',habitLogs:'hlogs',
-                 notes:'notes',subjects:'subjects',studyLogs:'studyLogs',
-                 pomoLogs:'pomoLogs',vidCourses:'vidCourses',deadlines:'deadlines'};
-      let changed=false;
-      Object.keys(map).forEach(k=>{
-        if(d[k]!==undefined&&d[k]!==null){
-          const fresh=JSON.stringify(d[k]);
-          if(localStorage.getItem('xm3_'+map[k])!==fresh){
-            localStorage.setItem('xm3_'+map[k],fresh);
-            changed=true;
-          }
-        }
-      });
-      // Apply data directly without reload to avoid infinite loop
-      if(changed && window.__applyCloudData){
-        const parsed={};
-        Object.keys(map).forEach(k=>{
-          try{ const p=JSON.parse(localStorage.getItem('xm3_'+map[k])||'null'); if(p!==null&&p!==undefined)parsed[k]=p; }catch(e){}
-        });
-        window.__applyCloudData(parsed);
-      }
-    } catch(e){ console.warn('cloudLoad failed',e); pill('err'); }
+  // ── Sync manager: pull → merge per collection (newer wins) → push with optimistic lock ──
+  const KEYS=['schedules','todos','habits','habitLogs','notes','subjects','studyLogs','pomoLogs','vidCourses','deadlines'];
+  let _busy=false,_again=false,_retryT=null,_retryN=0,_pollT=null,_lastOk=0;
+  function hhmm(t){try{return new Date(t).toLocaleTimeString('zh-TW',{hour12:false,hour:'2-digit',minute:'2-digit'});}catch(e){return'';}}
+  function scheduleRetry(ms){clearTimeout(_retryT);_retryT=setTimeout(()=>syncNow(),ms);}
+  function authLost(){
+    pill('err');
+    const el=document.getElementById('syncPill');if(el)el.textContent='⚠ 登入失效・請重新登入';
+    if(typeof renderUserBar==='function')renderUserBar(null);
+    window.showToast&&window.showToast('雲端登入已失效，請重新登入 Google');
   }
-
-  // ── Cloud save ──
-  window.__cloud.save=async function(data){
-    const tok=await getToken(); if(!tok||!_user) return;
-    clearTimeout(_saveTimer); pill('syncing');
-    _saveTimer=setTimeout(async()=>{
-      try{
-        await fsPut(_user.uid,tok,Object.assign({},data,{updatedAt:Date.now()}));
-        pill('ok');
-      } catch(e){ console.warn('cloudSave failed',e); pill('err'); }
-    },1500);
+  async function syncNow(){
+    if(!_user||!window.__mergeRemote)return;
+    if(_busy){_again=true;return;}
+    if(navigator.onLine===false){pill('offline');return;}
+    _busy=true;
+    try{
+      for(let attempt=0;attempt<4;attempt++){
+        const tok=await getToken(); if(!tok){authLost();return;}
+        pill('syncing');
+        const r=await fsGet(_user.uid,tok);
+        let rdata={},rmeta={};
+        if(r){rdata=r.data||{};try{rmeta=JSON.parse(rdata.meta_json||'{}')||{};}catch(e){rmeta={};}}
+        // entry-level merge: nothing the other device did is thrown away
+        const m=window.__mergeRemote(rdata,rmeta);
+        if(m.diffLocal)window.__applyMerged(m.data,m.meta);else window.__commitMeta(m.meta);
+        if(!r||m.diffRemote){
+          try{
+            const res=await fsPut(_user.uid,tok,Object.assign({},m.data,{meta_json:JSON.stringify(m.meta),updatedAt:Date.now()}),r?r.updateTime:null);
+            if(res&&res.updateTime){const off=Date.parse(res.updateTime)-Date.now();window.__setClockOff(Math.abs(off)>1500?off:0);}
+          }catch(e){ if(e.conflict)continue; throw e; }
+        }
+        _lastOk=Date.now();_retryN=0;pill('ok');return;
+      }
+      throw new Error('sync conflict loop');
+    }catch(e){
+      console.warn('sync failed',e);
+      if(/401|403/.test(String(e&&e.message)))_exp=0;   // force a fresh token next time
+      pill('err');
+      scheduleRetry(Math.min(60000,5000*Math.pow(2,_retryN++)));
+    }finally{
+      _busy=false;
+      if(_again){_again=false;setTimeout(()=>syncNow(),300);}
+    }
+  }
+    function startSyncLoop(){
+    if(_pollT)return;
+    _pollT=setInterval(()=>{if(document.visibilityState==='visible')syncNow();},15000);
+    document.addEventListener('visibilitychange',()=>{
+      if(document.visibilityState==='visible')syncNow();
+      else if(_saveTimer){clearTimeout(_saveTimer);_saveTimer=null;syncNow();}
+    });
+    window.addEventListener('online',()=>syncNow());
+    window.addEventListener('pageshow',()=>syncNow());
+    window.addEventListener('focus',()=>syncNow());
+  }
+  window.__cloud.save=function(){
+    if(!_user)return;
+    clearTimeout(_saveTimer);pill('syncing');
+    _saveTimer=setTimeout(()=>{_saveTimer=null;syncNow();},1200);
+  };
+  window.__cloud.sync=()=>syncNow();
+  window.__fbSignOut=function(){
+    clearToks();clearTimeout(_saveTimer);_saveTimer=null;
+    window.__cloud.ready=true;pill('none');
+    if(typeof renderUserBar==='function')renderUserBar(null);
+    showToast&&showToast('已登出（本機資料仍保留）');
   };
 
   // ── Google Sign-In via GSI renderButton (most reliable in iframe/artifact env) ──
@@ -2654,8 +2842,7 @@ window.__getCurrentData = function(){
       saveToks(d.idToken, d.refreshToken, d.expiresIn, user);
       window.__cloud.ready = true;
       if(typeof renderUserBar === 'function') renderUserBar(user);
-      await cloudLoad();
-      pill('ok');
+      await syncNow();startSyncLoop();
       showToast && showToast('☁ 已登入並同步！');
     } catch(e){
       console.warn('Google sign-in error', e);
@@ -2773,13 +2960,13 @@ window.__getCurrentData = function(){
   // ── 自動恢復登入狀態（避免每次都要重新登入）──
   (async function restoreSession(){
     if(_user && _rtok){
-      const tok = await getToken();
+      let tok=null;
+      try{ tok = await getToken(); }catch(e){ tok=_tok||'pending'; }   // network blip: stay signed in, sync loop will retry
       if(tok){
         window.__cloud.ready = true;
         if(typeof renderUserBar === 'function') renderUserBar(_user);
         pill('syncing');
-        await cloudLoad();
-        pill('ok');
+        await syncNow();startSyncLoop();
         return;
       }
     }
