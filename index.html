@@ -135,7 +135,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .chap-done-check{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(160,148,132,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.5rem;transition:all .18s;margin-top:2px}
 .chap-row.chap-finished .chap-done-check{background:linear-gradient(135deg,#8FA898,#9898B0);border-color:transparent;color:#fff}
 .chap-row.chap-finished .chap-title{text-decoration:line-through;color:var(--tx3)}
-.chap-title{font-size:.74rem;font-weight:600;color:var(--tx);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chap-title{font-size:.74rem;font-weight:600;color:var(--tx);flex:1;min-width:0;white-space:normal;word-break:break-word;line-height:1.4}
 .chap-pages{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--tx3);flex-shrink:0;white-space:nowrap}
 .chap-mini-bar{width:40px;height:4px;border-radius:4px;background:rgba(197,184,232,.18);overflow:hidden;flex-shrink:0;margin-top:6px}
 .chap-mini-fill{height:100%;border-radius:4px;transition:width .4s ease}
@@ -197,8 +197,15 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .dl-badge{font-size:.5rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0}
 .dl-badge.exam{background:var(--clay-l);color:var(--clay-d)}
 .dl-badge.assignment{background:var(--dusk-l);color:var(--dusk-d)}
+.dl-badge.report{background:var(--mist-l);color:var(--mist-d)}
+.dl-block-hdr{display:flex;align-items:center;justify-content:space-between;margin:.7rem 0 .4rem;padding:.3rem .6rem;border-radius:9px;font-size:.68rem;font-weight:700;letter-spacing:.04em}
+.dl-block-hdr:first-child{margin-top:0}
+.dl-block-hdr.exam{background:var(--clay-l);color:var(--clay-d)}
+.dl-block-hdr.assignment{background:var(--dusk-l);color:var(--dusk-d)}
+.dl-block-hdr.report{background:var(--mist-l);color:var(--mist-d)}
 .dl-name{font-size:.75rem;font-weight:600;color:var(--tx)}
 .dl-meta{font-size:.56rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace}
+.dl-notes{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:.62rem;line-height:1.6;margin-top:3px;color:var(--tx2)}
 .dl-days{font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:700;flex-shrink:0;text-align:right;white-space:nowrap}
 .dl-days.urgent{color:#C04040}
 .dl-days.normal{color:var(--clay-d)}
@@ -493,12 +500,13 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     <!-- DEADLINE SECTION (exams / assignments) -->
     <div id="studySectionDl" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem">
-        <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--clay-d);letter-spacing:.08em;text-transform:uppercase">🎯 考試與作業截止</div>
+        <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--clay-d);letter-spacing:.08em;text-transform:uppercase">🎯 考試、作業與報告截止</div>
         <div style="display:flex;gap:.35rem">
           <select id="dlSortMode" onchange="renderDeadlines()" style="font-size:.6rem;padding:.2rem .4rem;border:1.5px solid rgba(184,144,128,.28);border-radius:12px;background:rgba(255,255,255,.7);color:var(--clay-d);cursor:pointer;font-family:inherit">
+            <option value="type">依類型分區</option>
             <option value="due">依時間排序</option>
-            <option value="type">依類型排序</option>
           </select>
+          <button class="add-btn-s" onclick="seedCourseDeadlines(true)" style="font-size:.64rem;padding:.22rem .62rem">📥 匯入課程</button>
           <button class="add-btn-s" onclick="openAddDeadline()" style="font-size:.64rem;padding:.22rem .62rem;background:var(--clay-l);color:var(--clay-d);border-color:rgba(184,144,128,.3)">＋ 新增</button>
         </div>
       </div>
@@ -677,13 +685,14 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 
 <!-- ADD/EDIT DEADLINE PANEL (exam / assignment) -->
 <div id="addDeadlinePanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(184,144,128,.3);border-radius:16px;padding:1.25rem;width:min(360px,94vw);z-index:400;box-shadow:0 16px 48px rgba(184,144,128,.2)">
-  <div id="dlPanelTitle" style="font-size:.88rem;font-weight:700;margin-bottom:.85rem;background:linear-gradient(120deg,#785040,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🎯 新增考試 / 作業</div>
+  <div id="dlPanelTitle" style="font-size:.88rem;font-weight:700;margin-bottom:.85rem;background:linear-gradient(120deg,#785040,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🎯 新增考試 / 作業 / 報告</div>
   <input type="hidden" id="dlEditId" value="">
   <div style="margin-bottom:.6rem">
     <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">類型</label>
     <div style="display:flex;gap:.4rem">
       <button type="button" id="dlTypeExamBtn" onclick="setDlType('exam')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(184,144,128,.3);background:linear-gradient(135deg,#B89A88,#9898B0);color:#fff;font-size:.7rem;font-weight:700;font-family:inherit;cursor:pointer">🎯 考試</button>
       <button type="button" id="dlTypeAssignBtn" onclick="setDlType('assignment')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(140,140,168,.25);background:rgba(255,255,255,.8);color:var(--dusk-d);font-size:.7rem;font-weight:600;font-family:inherit;cursor:pointer">📝 作業</button>
+      <button type="button" id="dlTypeReportBtn" onclick="setDlType('report')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(140,160,184,.3);background:rgba(255,255,255,.8);color:var(--mist-d);font-size:.7rem;font-weight:600;font-family:inherit;cursor:pointer">📊 報告</button>
     </div>
     <input type="hidden" id="dlType" value="exam">
   </div>
@@ -693,7 +702,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     <div class="modal-half"><label>截止日期</label><input type="date" class="add-inp" id="dlDate" style="border-radius:8px"></div>
     <div class="modal-half"><label>時間（選填）</label><input type="time" class="add-inp" id="dlTime" style="border-radius:8px"></div>
   </div>
-  <div style="margin-bottom:.7rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">備註（選填）</label><input class="add-inp" id="dlNotes" placeholder="e.g. 帶計算機、開放式教材" style="width:100%;border-radius:8px"></div>
+  <div style="margin-bottom:.7rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">備註（選填）</label><textarea class="add-inp" id="dlNotes" rows="4" placeholder="e.g. 帶計算機、開放式教材（可按 Enter 換行）" style="width:100%;border-radius:8px;resize:vertical;line-height:1.6;font-family:inherit"></textarea></div>
   <div style="display:flex;gap:.4rem">
     <button onclick="doSaveDeadline()" id="dlSaveBtn" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#B89A88,#9898B0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 新增</button>
     <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(184,144,128,.25);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
@@ -1204,8 +1213,8 @@ function loadNote(){const e=$('noteArea');if(e){e.value=notes[todayKey()]||'';up
 
 /* ── STUDY ── */
 function isChapDone(c){return c.currentPage>=c.pageEnd;}
-function chapTotal(c){return Math.max(c.pageEnd-c.pageStart+1,1);}
-function chapRead(c){return Math.max(c.currentPage-c.pageStart,0);}
+function chapTotal(c){return c.single?1:Math.max(c.pageEnd-c.pageStart+1,1);}
+function chapRead(c){return c.single?(isChapDone(c)?1:0):Math.max(c.currentPage-c.pageStart,0);}
 function chapPct(c){return Math.min(100,Math.round(chapRead(c)/chapTotal(c)*100));}
 
 function renderStudy(){
@@ -1221,7 +1230,7 @@ function renderStudy(){
         <div class="chap-done-check" onclick="toggleChapDone('${sj.id}','${c.id}',event)">${fin?'✓':''}</div>
         <div style="flex:1;min-width:0">
           <div class="chap-title">${c.name}</div>
-          <div class="chap-pages">p.${c.pageStart}–${c.pageEnd} · ${p}%</div>
+          <div class="chap-pages">${c.single?'📅 '+c.date+(fin?' · 已完成':''):'p.'+c.pageStart+'–'+c.pageEnd+' · '+p+'%'}</div>
         </div>
         <div class="chap-mini-bar"><div class="chap-mini-fill" style="width:${p}%;background:${sj.color}"></div></div>
         <button class="del-btn" onclick="delChapter('${sj.id}','${c.id}')">✕</button>
@@ -1233,7 +1242,7 @@ function renderStudy(){
         <div style="width:10px;flex-shrink:0;background:${sj.color};border-radius:2px;align-self:stretch;margin:0 2px"></div>
         <div style="flex:1;min-width:0">
           <div class="subj-name">${sj.emoji} ${sj.name}</div>
-          <div class="subj-meta">${done}/${chaps.length}章 · ${rp}/${tp}頁${(()=>{if(!sj.examDate)return'';const today=getTW();const todayMs=new Date(today.getFullYear(),today.getMonth(),today.getDate()).getTime();const examMs=new Date(sj.examDate+'T00:00:00').getTime();const days=Math.ceil((examMs-todayMs)/86400000);const rem=chaps.reduce((s,c)=>s+Math.max(c.pageEnd-c.currentPage,0),0);return` · <span style="color:${days<=3?'#C04040':'var(--clay-d)'};font-weight:700">🎯${days<=0?'已過期':days===0?'今天!':'倒數'+days+'天'}</span>${rem>0?' · 剩'+rem+'頁':''}`;})()}</div>
+          <div class="subj-meta">${chaps.length&&chaps.every(c=>c.single)?done+'/'+chaps.length+' 週':done+'/'+chaps.length+'章 · '+rp+'/'+tp+'頁'}${(()=>{if(!sj.examDate)return'';const today=getTW();const todayMs=new Date(today.getFullYear(),today.getMonth(),today.getDate()).getTime();const examMs=new Date(sj.examDate+'T00:00:00').getTime();const days=Math.ceil((examMs-todayMs)/86400000);const rem=chaps.reduce((s,c)=>s+Math.max(c.pageEnd-c.currentPage,0),0);return` · <span style="color:${days<=3?'#C04040':'var(--clay-d)'};font-weight:700">🎯${days<=0?'已過期':days===0?'今天!':'倒數'+days+'天'}</span>${rem>0?' · 剩'+rem+'頁':''}`;})()}</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:.3rem;flex-shrink:0;align-items:flex-end">
           <div class="subj-prog-wrap"><div class="subj-prog-bar"><div class="subj-prog-fill" style="width:${pct}%;background:${sj.color}"></div></div><div class="subj-prog-pct">${pct}%</div></div>
@@ -1255,7 +1264,7 @@ function renderStudy(){
   updateStudyStats();renderStudyProgressAll();renderReviewReminders();
 }
 
-function renderStudyProgressAll(){const el=$('studyProgressAll');if(!el)return;if(!subjects.length){el.innerHTML='<div class="empty">尚無科目</div>';return;}el.innerHTML=subjects.map(sj=>{const chaps=sj.chapters||[];const tp=chaps.reduce((s,c)=>s+chapTotal(c),0),rp=chaps.reduce((s,c)=>s+chapRead(c),0);const pct=tp?Math.round(rp/tp*100):0;return`<div style="margin-bottom:.72rem"><div style="display:flex;justify-content:space-between;margin-bottom:.2rem"><div style="font-size:.75rem;font-weight:600">${sj.emoji} ${sj.name}</div><div style="font-size:.56rem;color:var(--tx3)">${rp}/${tp}頁 · ${pct}%</div></div><div style="height:6px;border-radius:6px;background:rgba(197,184,232,.15);overflow:hidden"><div style="height:100%;width:${pct}%;background:${sj.color};border-radius:6px"></div></div></div>`;}).join('');}
+function renderStudyProgressAll(){const el=$('studyProgressAll');if(!el)return;if(!subjects.length){el.innerHTML='<div class="empty">尚無科目</div>';return;}el.innerHTML=subjects.map(sj=>{const chaps=sj.chapters||[];const tp=chaps.reduce((s,c)=>s+chapTotal(c),0),rp=chaps.reduce((s,c)=>s+chapRead(c),0);const pct=tp?Math.round(rp/tp*100):0;return`<div style="margin-bottom:.72rem"><div style="display:flex;justify-content:space-between;margin-bottom:.2rem"><div style="font-size:.75rem;font-weight:600">${sj.emoji} ${sj.name}</div><div style="font-size:.56rem;color:var(--tx3)">${chaps.length&&chaps.every(c=>c.single)?rp+'/'+tp+' 週':rp+'/'+tp+'頁'} · ${pct}%</div></div><div style="height:6px;border-radius:6px;background:rgba(197,184,232,.15);overflow:hidden"><div style="height:100%;width:${pct}%;background:${sj.color};border-radius:6px"></div></div></div>`;}).join('');}
 
 function updateStudyStats(){
   const allC=subjects.flatMap(sj=>sj.chapters||[]);
@@ -1280,7 +1289,7 @@ function toggleChapDone(sjId,chapId,evt){
   snapshot();
   const wasDone=isChapDone(c);
   if(wasDone){c.currentPage=c.pageStart;c.reviews=[];}
-  else{c.currentPage=c.pageEnd;c.reviews=[1,3,7].map(d=>{const dt=new Date(getTW());dt.setDate(dt.getDate()+d);return{date:dayKey(dt),interval:d,done:false};});}
+  else{c.currentPage=c.pageEnd;c.reviews=c.single?[]:[1,3,7].map(d=>{const dt=new Date(getTW());dt.setDate(dt.getDate()+d);return{date:dayKey(dt),interval:d,done:false};});}
   persist();
   if(!wasDone&&evt)sparkle(evt.clientX,evt.clientY);
   renderStudy();showToast(!wasDone?'🎉 章節完成！':'↩ 已重置章節');
@@ -1396,7 +1405,7 @@ function dlDaysLeft(dl){
 }
 function openAddDeadline(){
   $('dlEditId').value='';
-  $('dlPanelTitle').textContent='🎯 新增考試 / 作業';
+  $('dlPanelTitle').textContent='🎯 新增考試 / 作業 / 報告';
   $('dlSaveBtn').textContent='✦ 新增';
   $('dlName').value='';$('dlDate').value='';$('dlTime').value='';$('dlNotes').value='';
   setDlType('exam');
@@ -1407,7 +1416,7 @@ function openAddDeadline(){
 function openEditDeadline(id){
   const dl=deadlines.find(d=>d.id===id);if(!dl)return;
   $('dlEditId').value=id;
-  $('dlPanelTitle').textContent='✎ 編輯考試 / 作業';
+  $('dlPanelTitle').textContent='✎ 編輯考試 / 作業 / 報告';
   $('dlSaveBtn').textContent='✦ 儲存';
   $('dlName').value=dl.name;$('dlDate').value=dl.dueDate;$('dlTime').value=dl.dueTime||'';$('dlNotes').value=dl.notes||'';
   setDlType(dl.type||'exam');
@@ -1420,8 +1429,9 @@ function openEditDeadline(id){
 }
 function setDlType(t){
   $('dlType').value=t;
-  const eb=$('dlTypeExamBtn'),ab=$('dlTypeAssignBtn');
+  const eb=$('dlTypeExamBtn'),ab=$('dlTypeAssignBtn'),rb=$('dlTypeReportBtn');
   if(eb){eb.style.background=t==='exam'?'linear-gradient(135deg,#B89A88,#9898B0)':'rgba(255,255,255,.8)';eb.style.color=t==='exam'?'#fff':'var(--clay-d)';eb.style.fontWeight=t==='exam'?'700':'600';}
+  if(rb){rb.style.background=t==='report'?'linear-gradient(135deg,#9AAAB8,#7888A8)':'rgba(255,255,255,.8)';rb.style.color=t==='report'?'#fff':'var(--mist-d)';rb.style.fontWeight=t==='report'?'700':'600';}
   if(ab){ab.style.background=t==='assignment'?'linear-gradient(135deg,#9898B0,#7868A0)':'rgba(255,255,255,.8)';ab.style.color=t==='assignment'?'#fff':'var(--dusk-d)';ab.style.fontWeight=t==='assignment'?'700':'600';}
 }
 function doSaveDeadline(){
@@ -1472,25 +1482,34 @@ function renderDeadlines(){
   if(empty)empty.style.display='none';
   const mode=($('dlSortMode')||{value:'due'}).value;
   let list=[...deadlines];
-  if(mode==='type')list.sort((a,b)=>a.type===b.type?dlDaysLeft(a)-dlDaysLeft(b):(a.type==='exam'?-1:1));
+  const TORD={exam:0,assignment:1,report:2};
+  if(mode==='type')list.sort((a,b)=>a.type!==b.type?(TORD[a.type]??9)-(TORD[b.type]??9):(a.done!==b.done?(a.done?1:-1):dlDaysLeft(a)-dlDaysLeft(b)));
   else list.sort((a,b)=>{if(a.done!==b.done)return a.done?1:-1;return dlDaysLeft(a)-dlDaysLeft(b);});
-  el.innerHTML=list.map(dl=>{
+  const itemHtml=dl=>{
     const days=dlDaysLeft(dl);
     const urgent=!dl.done&&days<=3;
     const sj=dl.subjectId?subjects.find(s=>s.id===dl.subjectId):null;
     const dayLabel=dl.done?'已完成':days<0?`已過期 ${Math.abs(days)} 天`:days===0?'今天！':`剩 ${days} 天`;
     return`<div class="dl-item${urgent?' dl-urgent':''}${dl.done?' dl-done':''}" onclick="toggleDlDone('${dl.id}',event)">
       <div class="dl-check">${dl.done?'✓':''}</div>
-      <span class="dl-badge ${dl.type}">${dl.type==='exam'?'🎯 考試':'📝 作業'}</span>
+      <span class="dl-badge ${dl.type}">${dl.type==='exam'?'🎯 考試':dl.type==='report'?'📊 報告':'📝 作業'}</span>
       <div style="flex:1;min-width:0">
         <div class="dl-name">${dl.name}${sj?` <span style="font-size:.56rem;color:var(--tx3);font-weight:400">· ${sj.emoji}${sj.name}</span>`:''}</div>
-        <div class="dl-meta">${dl.dueDate}${dl.dueTime?' '+dl.dueTime:''}${dl.notes?' · '+dl.notes:''}</div>
+        <div class="dl-meta">${dl.dueDate}${dl.dueTime?' '+dl.dueTime:''}</div>${dl.notes?`<div class="dl-notes">${String(dl.notes).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`:''}
       </div>
       <div class="dl-days ${urgent?'urgent':'normal'}">${dayLabel}</div>
       <button onclick="event.stopPropagation();openEditDeadline('${dl.id}')" style="width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(184,144,128,.3);background:rgba(255,255,255,.7);color:var(--clay-d);font-size:.5rem;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0" class="del-btn">✎</button>
       <button class="del-btn" onclick="event.stopPropagation();delDeadline('${dl.id}')">✕</button>
     </div>`;
-  }).join('');
+  };
+  if(mode==='type'){
+    const BL=[['exam','🎯 考試'],['assignment','📝 作業'],['report','📊 報告']];
+    el.innerHTML=BL.map(([t,label])=>{
+      const items=list.filter(d=>d.type===t);
+      const pend=items.filter(d=>!d.done).length;
+      return`<div class="dl-block-hdr ${t}"><span>${label}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">待完成 ${pend} / ${items.length}</span></div>`+(items.length?items.map(itemHtml).join(''):`<div class="empty" style="padding:.6rem;font-size:.68rem">尚無${label.slice(2)}，點右上「＋ 新增」</div>`);
+    }).join('');
+  }else el.innerHTML=list.map(itemHtml).join('');
   updateDlStats();
 }
 function updateDlStats(){
@@ -1654,10 +1673,11 @@ function getTodayStudyTasks(){
     const days=sj.examDate?Math.ceil((new Date(sj.examDate+'T00:00:00').getTime()-todayMs)/86400000):999;
     const pendingChaps=(sj.chapters||[]).filter(c=>!isChapDone(c));
     if(!pendingChaps.length)return;
-    const c=pendingChaps[0]; // first unfinished chapter
+    let c=pendingChaps[0]; // first unfinished chapter
+    if(pendingChaps.some(x=>x.single)){c=pendingChaps.find(x=>x.date&&x.date>=todayKey())||pendingChaps[0];}
     const rem=c.pageEnd-c.currentPage;
     const perDay=sj.examDate&&days>0?Math.ceil((sj.chapters||[]).reduce((s,ch)=>s+Math.max(ch.pageEnd-ch.currentPage,0),0)/days):Math.min(20,rem);
-    const target=Math.max(Math.min(perDay,rem),5);
+    const target=c.single?1:Math.max(Math.min(perDay,rem),5);
     tasks.push({sj,c,target,rem,days,doneToday:!!(studyLogs[todayKey()]||{})[c.id]});
   });
   return tasks.sort((a,b)=>a.days-b.days);
@@ -1681,9 +1701,9 @@ function renderTodayStudyCard(){
       <span class="stc-subj" style="background:${col}22;color:${col};border:1px solid ${col}44">${t.sj.emoji}</span>
       <div style="flex:1;min-width:0">
         <div class="stc-name">${t.sj.name} · ${t.c.name}</div>
-        <div class="stc-pages">今日目標 ${t.target} 頁（p.${t.c.currentPage}–${Math.min(t.c.currentPage+t.target,t.c.pageEnd)}）· 剩 ${t.rem} 頁 ${urgentBadge}</div>
+        <div class="stc-pages">${t.c.single?'📅 '+t.c.date+(t.c.date===todayKey()?' · 今天上課':''):'今日目標 '+t.target+' 頁（p.'+t.c.currentPage+'–'+Math.min(t.c.currentPage+t.target,t.c.pageEnd)+'）· 剩 '+t.rem+' 頁'} ${urgentBadge}</div>
       </div>
-      <div class="stc-pct">${chapPct(t.c)}%</div>
+      <div class="stc-pct">${t.c.single?'':chapPct(t.c)+'%'}</div>
     </div>`;
   }).join('');
 }
@@ -1702,7 +1722,7 @@ function markStudyTaskDone(sjId,chapId,pages,evt){
   }
   c.currentPage=newPage;
   if(isChapDone(c)){
-    c.reviews=[1,3,7].map(d=>{const dt=new Date(getTW());dt.setDate(dt.getDate()+d);return{date:dayKey(dt),interval:d,done:false};});
+    c.reviews=c.single?[]:[1,3,7].map(d=>{const dt=new Date(getTW());dt.setDate(dt.getDate()+d);return{date:dayKey(dt),interval:d,done:false};});
     if(evt)sparkle(evt.clientX,evt.clientY);
     showToast('🎉 章節完成！');
   } else {
@@ -1719,7 +1739,7 @@ function markStudyTaskDone(sjId,chapId,pages,evt){
 function updatePomoChapSel(){
   const sel=$('pomoChapSel'); if(!sel)return;
   const pending=[];
-  subjects.forEach(sj=>(sj.chapters||[]).filter(c=>!isChapDone(c)).forEach(c=>{
+  subjects.forEach(sj=>(sj.chapters||[]).filter(c=>!isChapDone(c)&&!c.single).forEach(c=>{
     pending.push({sj,c});
   }));
   sel.innerHTML='<option value="">📌 綁定讀書章節（選填）</option>'+
@@ -2038,7 +2058,7 @@ function openAutoSchedule(){
   $('asDate').value=dayKey(getTW());
   const list=$('asSubjList');
   if(list){
-    const active=subjects.filter(sj=>(sj.chapters||[]).some(c=>!isChapDone(c)));
+    const active=subjects.filter(sj=>(sj.chapters||[]).some(c=>!isChapDone(c)&&!c.single));
     if(!active.length){list.innerHTML='<div style="font-size:.65rem;color:var(--tx3)">所有章節已完成</div>';}
     else{list.innerHTML=active.map(sj=>`<label style="display:flex;align-items:center;gap:.45rem;padding:.25rem;cursor:pointer;font-size:.75rem"><input type="checkbox" data-sjid="${sj.id}" checked style="width:14px;height:14px;accent-color:var(--sage-d)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${sj.color}"></span>${sj.name}</label>`).join('');}
   }
@@ -2051,7 +2071,7 @@ function doAutoSchedule(){
   const selIds=[...(($('asSubjList')||{querySelectorAll:()=>[]}).querySelectorAll('input[type=checkbox]:checked'))].map(b=>b.dataset.sjid);
   const queues=subjects
     .filter(sj=>!selIds.length||selIds.includes(sj.id))
-    .map(sj=>({sj,mpp:sj.minsPerPage||6,chaps:(sj.chapters||[]).filter(c=>!isChapDone(c)).map(c=>({c,rem:c.pageEnd-c.currentPage}))}))
+    .map(sj=>({sj,mpp:sj.minsPerPage||6,chaps:(sj.chapters||[]).filter(c=>!isChapDone(c)&&!c.single).map(c=>({c,rem:c.pageEnd-c.currentPage}))}))
     .filter(q=>q.chaps.length>0);
   if(!queues.length){showToast('所有章節已完成！');closeOverlays();return;}
   snapshot();
@@ -2123,8 +2143,78 @@ window.renderWeekPlan=renderWeekPlan;window.shiftWeek=shiftWeek;window.addWeekSc
 window.openAddDeadline=openAddDeadline;window.openEditDeadline=openEditDeadline;window.setDlType=setDlType;window.doSaveDeadline=doSaveDeadline;
 window.toggleDlDone=toggleDlDone;window.delDeadline=delDeadline;window.renderDeadlines=renderDeadlines;
 
+/* ── 115-1 課程時程（考試／作業）匯入 ── */
+const REPORT_IDS=['c115_com_mid','c115_com_fin','c115_eth_rpt','c115_res_w5','c115_res_w7','c115_res_w8','c115_res_w12','c115_res_w13','c115_res_w17','c115_res_w18','c115_my_thy1','c115_my_com','c115_my_eth1','c115_my_thy2','c115_my_eth2','c115_my_res'];
+const COURSE_SEED=[
+ {id:'c115_eth_a1',type:'assignment',name:'諮商倫理｜草擬個案知情同意說明書',dueDate:'2026-10-08',notes:'第5週 保密議題\n同日：分組報告3、小考3'},
+ {id:'c115_eth_a2',type:'assignment',name:'諮商倫理｜案例分析1',dueDate:'2026-10-22',notes:'兩頁左右\n同日：分組報告5、小考5'},
+ {id:'c115_eth_a3',type:'assignment',name:'諮商倫理｜反思作業2',dueDate:'2026-10-29',notes:'一頁學習心得\n同日：分組報告6、小考6'},
+ {id:'c115_eth_mid',type:'exam',name:'諮商倫理｜期中考',dueDate:'2026-11-05',notes:'第9週\n同日：分組報告7'},
+ {id:'c115_eth_a4',type:'assignment',name:'諮商倫理｜反思作業3',dueDate:'2026-11-26',notes:'一頁學習心得\n同日：分組報告10、小考9'},
+ {id:'c115_eth_a5',type:'assignment',name:'諮商倫理｜案例分析2',dueDate:'2026-12-10',notes:'兩頁左右\n同日：分組報告12、小考11'},
+ {id:'c115_eth_a6',type:'assignment',name:'諮商倫理｜反思作業4',dueDate:'2026-12-31',notes:'一頁學習心得'},
+ {id:'c115_eth_fin',type:'exam',name:'諮商倫理｜期末考（紙筆）',dueDate:'2027-01-07',notes:'第18週'},
+ {id:'c115_eth_rpt',type:'assignment',name:'諮商倫理｜書面報告＋投稿證明',dueDate:'2027-01-07',notes:'5,000～8,000 字諮商倫理專題\n學期結束前須投稿至輔導與諮商月刊或相關期刊'},
+ {id:'c115_thy_a1',type:'assignment',name:'諮商理論｜個案概念化分組作業1',dueDate:'2026-10-28',notes:'第8週\n同日：分組報告6'},
+ {id:'c115_thy_mid',type:'exam',name:'諮商理論｜期中考（紙筆）',dueDate:'2026-11-04',notes:'第9週'},
+ {id:'c115_thy_a2',type:'assignment',name:'諮商理論｜個案概念化分組作業2',dueDate:'2026-12-23',notes:'第16週\n同日：分組報告13'},
+ {id:'c115_thy_fin',type:'exam',name:'諮商理論｜期末考（紙筆）',dueDate:'2027-01-06',notes:'第18週'},
+ {id:'c115_com_mid',type:'assignment',name:'社區心理學｜期中報告',dueDate:'2026-10-27',notes:'第8週\n成績欄寫期中考30%，進度表寫期中報告，建議向老師確認'},
+ {id:'c115_com_fin',type:'assignment',name:'社區心理學｜繳交期末報告',dueDate:'2027-01-05',notes:'第18週（彈性教學週）'},
+ {id:'c115_res_w5',type:'assignment',name:'研究法｜學生報告：TOPIC',dueDate:'2026-10-06',notes:'第5週\n每週二上課'},
+ {id:'c115_res_w7',type:'assignment',name:'研究法｜計畫書 CH1',dueDate:'2026-10-20',notes:'第7週\n每週二上課'},
+ {id:'c115_res_w8',type:'assignment',name:'研究法｜計畫書 CH1 口頭報告',dueDate:'2026-10-27',notes:'第8週\n每週二上課'},
+ {id:'c115_res_w12',type:'assignment',name:'研究法｜計畫書 CH2 報告（一）',dueDate:'2026-11-24',notes:'第12週\n每週二上課'},
+ {id:'c115_res_w13',type:'assignment',name:'研究法｜計畫書 CH2 報告（二）',dueDate:'2026-12-01',notes:'第13週\n每週二上課'},
+ {id:'c115_res_w17',type:'assignment',name:'研究法｜計畫書 CH3 撰寫＋文獻閱讀',dueDate:'2026-12-29',notes:'第17週（彈性週）\n每週二上課'},
+ {id:'c115_res_w18',type:'assignment',name:'研究法｜計畫書完稿＋文獻完成',dueDate:'2027-01-05',notes:'第18週（彈性週）\n每週二上課'},
+ {id:'c115_my_thy1',type:'report',name:'諮商理論｜我的報告：個人中心（報告4）',dueDate:'2026-10-14',notes:'第6週 Corey 第7章\n同日：個案概念化'},
+ {id:'c115_my_com',type:'report',name:'社區心理學｜我的報告：空間、環境與幸福感',dueDate:'2026-10-20',notes:'第7週 Orford 第5章'},
+ {id:'c115_my_eth1',type:'report',name:'諮商倫理｜我的報告：團體、伴侶及家庭諮商之倫理（報告7）',dueDate:'2026-11-05',notes:'第9週 Ch9\n同日：期中考'},
+ {id:'c115_my_thy2',type:'report',name:'諮商理論｜我的報告：林涵的辯證行為諮商學派（報告9）',dueDate:'2026-11-25',notes:'第12週 第三波認知行為'},
+ {id:'c115_my_eth2',type:'report',name:'諮商倫理｜我的報告：網路諮商與網路社交之倫理（報告11）',dueDate:'2026-12-03',notes:'第13週\n同日：小考10'},
+ {id:'c115_my_res',type:'report',name:'研究法｜我的報告：質性研究二',dueDate:'2026-12-22',notes:'第16週 Qualitative Design II（CH16+17）\n原定12/15，因混合研究提前至12/8而順延'},
+];
+const WEEK_SEED=[
+ {id:'sj115_com',name:'社區心理學',emoji:'🏘',color:'#8FA898',base:8,weeks:['課程介紹','社區心理學導論（Orford 第2章）','發展歷史＋自選論文','俗民誌、行動研究法與實驗研究法（Orford 第3章）','在脈絡下的個體（Darling 2007）＋自選論文','多元、平等、包容＋自選論文','空間、環境與幸福感（Orford 第5章）★我的報告','期中報告','壓力與因應（Kloos 第8章）','成癮（Chou 2005）＋自選論文','預防及促進（WHO、Romano & Hage）','預防方案＋自選論文','賦能與民參（Zimmerman 2000）＋自選論文','社會行動（Orford 第10章）','方案發展與評估（Kloos 第13章）','幸福感（van Agteren 2021）＋自選論文','期末課程回顧（彈性週）','繳交期末報告（彈性週）']},
+ {id:'sj115_thy',name:'諮商理論',emoji:'🧩',color:'#9898B0',base:9,weeks:['課程說明、暑期閱讀分組報告','導論：諮商專業人員基本理念（第一篇第1–3章）','精神分析（Corey 第4章）｜報告1','榮格分析心理學｜報告2','阿德勒（Corey 第5章）｜報告3','個人中心（Corey 第7章）｜報告4、個案概念化 ★我的報告','存在主義（Corey 第6章）｜報告5','完形（Corey 第8章）｜報告6、個案概念化作業1','期中考（紙筆）','行為治療（Corey 第9章）｜報告7','認知行為／REBT（Corey 第10章）｜報告8','第三波認知行為（林涵辯證行為）｜報告9 ★我的報告','家庭治療（Corey 第14章）｜報告10','後現代（Corey 第13章）｜報告11','正向心理學｜報告12','女性主義（Corey 第12章）｜報告13、個案概念化作業2','溝通分析','期末考（紙筆）']},
+ {id:'sj115_eth',name:'諮商專業倫理',emoji:'⚖️',color:'#B89A88',base:10,weeks:['專業倫理課程簡介','倫理導論、專業自我覺察（Ch1,2,4）','知後同意（Ch6）｜報告1、小考1、反思作業1','價值觀與多元文化（Ch3）｜報告2、小考2','保密（Ch5）｜報告3、小考3、知情同意說明書','多重關係（一）（Ch7）｜報告4、小考4','多重關係（二）（Ch8）｜報告5、小考5、案例分析1','個案紀錄與保存｜報告6、小考6、反思作業2','團體、伴侶家庭諮商（Ch9）｜報告7、期中考 ★我的報告','心理衡鑑與研究倫理（Ch10,15）｜報告8、小考7','學校場域倫理（Ch13）｜報告9、小考8','社區執業倫理（Ch12）｜報告10、小考9、反思作業3','網路諮商與AI倫理｜報告11、小考10 ★我的報告','督導倫理（Ch14）｜報告12、小考11、案例分析2','廣告文宣與心理師法｜報告13、小考12','執業疏失與申訴（Ch11）｜報告14、小考13','AI倫理｜反思作業4','期末考＋書面報告與投稿證明']},
+ {id:'sj115_res',name:'教育與心理研究法',emoji:'🔬',color:'#9AAAB8',base:8,weeks:['Introduction（CH1）','Research Resource（圖書館）','Research Problem & Planning（CH2）','Foundation（CH3,4）','學生報告：TOPIC','Measurement（CH5,6）','學生報告：計畫書 CH1','學生報告：計畫書 CH1','Experiment Design I,II（CH9+10）','Causal-Comparative／Ex Post Facto（CH11）','Correlation Design（CH12）','學生報告：計畫書 CH2','學生報告：計畫書 CH2','Mixed Method（CH21）（調整提前）','Qualitative Design I（CH14+15）（順延）','Qualitative Design II（CH16+17）★我的報告（順延）','計畫書 CH3 撰寫＋文獻閱讀（彈性週）','計畫書完稿＋文獻完成（彈性週）']},
+];
+function seedCourseDeadlines(manual){
+  const flagKey='seed_c115_v6';
+  if(!manual&&load(flagKey,false))return;
+  let added=0,fixed=0,addedWk=0,renamed=0;
+  COURSE_SEED.forEach(x=>{
+    const ex=deadlines.find(d=>d.id===x.id);
+    if(ex){
+      if(ex.notes&&ex.notes.includes('暫放')){ex.dueDate=x.dueDate;ex.notes=x.notes;fixed++;}
+      if(REPORT_IDS.includes(x.id)&&ex.type==='assignment'){ex.type='report';fixed++;}
+      return;
+    }
+    deadlines.push({subjectId:'',dueTime:'',done:false,...x,type:REPORT_IDS.includes(x.id)?'report':x.type});added++;
+  });
+  WEEK_SEED.forEach(w=>{
+    let sj=subjects.find(s=>s.id===w.id);
+    if(!sj){sj={id:w.id,name:w.name,emoji:w.emoji,color:w.color,examDate:null,minsPerPage:6,chapters:[]};subjects.push(sj);}
+    if(!sj.chapters)sj.chapters=[];
+    w.weeks.forEach((t,i)=>{
+      const cid=w.id+'_w'+(i+1);
+      const exC=sj.chapters.find(c=>c.id===cid);
+      if(exC){const nn=`W${i+1}｜${t}`;if(exC.name!==nn){exC.name=nn;renamed++;}return;}
+      const d=new Date(2026,8,w.base);d.setDate(d.getDate()+7*i);
+      sj.chapters.push({id:cid,name:`W${i+1}｜${t}`,pageStart:0,pageEnd:1,currentPage:0,single:true,date:dayKey(d),notes:'',reviews:[]});
+      addedWk++;
+    });
+  });
+  save(flagKey,true);
+  if(added||fixed||addedWk||renamed)persist();
+  if(manual){renderDeadlines();renderStudy();showToast((added||fixed||addedWk||renamed)?`📥 已匯入：考試/作業 ${added} 筆${fixed?`（修正 ${fixed} 筆日期）`:''}、每週進度 ${addedWk} 週`:'課程時程已全部在清單中');}
+}
+window.seedCourseDeadlines=seedCourseDeadlines;
+
 /* ── BOOT ── */
-initData();buildNavTabs();updateClock();setInterval(updateClock,15000);
+initData();seedCourseDeadlines(false);buildNavTabs();updateClock();setInterval(updateClock,15000);
 renderAll();renderPomo();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();updateDlStats();switchWRTab('week');
 // Auto-sync the subscribed public calendar (if set) on load, then every 30 minutes
 if(icsSubUrl){syncIcsSubscription(false);}
