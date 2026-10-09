@@ -195,14 +195,15 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .dl-check{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(184,144,128,.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.55rem;cursor:pointer;transition:all .18s}
 .dl-item.dl-done .dl-check{background:linear-gradient(135deg,#B89A88,#9898B0);border-color:transparent;color:#fff}
 .dl-badge{font-size:.5rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0}
-.dl-badge.exam{background:var(--clay-l);color:var(--clay-d)}
-.dl-badge.assignment{background:var(--dusk-l);color:var(--dusk-d)}
-.dl-badge.report{background:var(--mist-l);color:var(--mist-d)}
+.dl-badge.exam{background:#F7C9CF;color:#9B3F51}
+.dl-badge.assignment{background:#CBD6F4;color:#44558F}
+.dl-badge.report{background:#EBF7F1;color:#3E7A5C}
+.dl-badge.report.mine{background:#A9DEC3;color:#2F6B4D}
 .dl-block-hdr{display:flex;align-items:center;justify-content:space-between;margin:.7rem 0 .4rem;padding:.3rem .6rem;border-radius:9px;font-size:.68rem;font-weight:700;letter-spacing:.04em}
 .dl-block-hdr:first-child{margin-top:0}
-.dl-block-hdr.exam{background:var(--clay-l);color:var(--clay-d)}
-.dl-block-hdr.assignment{background:var(--dusk-l);color:var(--dusk-d)}
-.dl-block-hdr.report{background:var(--mist-l);color:var(--mist-d)}
+.dl-block-hdr.exam{background:#FBE1E4;color:#9B3F51}
+.dl-block-hdr.assignment{background:#E1E8F8;color:#44558F}
+.dl-block-hdr.report{background:#E6F6EE;color:#2F6B4D}
 .dl-name{font-size:.75rem;font-weight:600;color:var(--tx)}
 .dl-meta{font-size:.56rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace}
 .dl-notes{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:.62rem;line-height:1.6;margin-top:3px;color:var(--tx2)}
@@ -467,6 +468,13 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
             </div>
             </div>
           </div>
+          <div style="display:flex;gap:.3rem;flex-wrap:wrap;align-items:center">
+            <button id="svSubj" onclick="setStudyView('subj')" style="font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit">☰ 依科目</button>
+            <button id="svTime" onclick="setStudyView('time')" style="font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit">🕒 依時間</button>
+            <button id="svCal" onclick="setStudyView('cal')" style="font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit">📅 月曆</button>
+            <button id="svHide" onclick="toggleStudyHideDone()" style="display:none;font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit;margin-left:auto"></button>
+          </div>
+          <div id="studyAlt" style="display:none"></div>
           <div id="studySubjectList" style="display:flex;flex-direction:column;gap:.65rem"></div>
         </div>
         <div class="col-n" style="display:flex;flex-direction:column;gap:.65rem">
@@ -502,6 +510,8 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem">
         <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--clay-d);letter-spacing:.08em;text-transform:uppercase">🎯 考試、作業與報告截止</div>
         <div style="display:flex;gap:.35rem">
+          <button id="dlViewList" onclick="setDlView('list')" style="font-size:.6rem;padding:.2rem .5rem;border-radius:12px;border:1.5px solid rgba(184,144,128,.28);cursor:pointer;font-family:inherit">☰ 清單</button>
+          <button id="dlViewCal" onclick="setDlView('cal')" style="font-size:.6rem;padding:.2rem .5rem;border-radius:12px;border:1.5px solid rgba(184,144,128,.28);cursor:pointer;font-family:inherit">📅 月曆</button>
           <select id="dlSortMode" onchange="renderDeadlines()" style="font-size:.6rem;padding:.2rem .4rem;border:1.5px solid rgba(184,144,128,.28);border-radius:12px;background:rgba(255,255,255,.7);color:var(--clay-d);cursor:pointer;font-family:inherit">
             <option value="type">依類型分區</option>
             <option value="due">依時間排序</option>
@@ -510,6 +520,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
           <button class="add-btn-s" onclick="openAddDeadline()" style="font-size:.64rem;padding:.22rem .62rem;background:var(--clay-l);color:var(--clay-d);border-color:rgba(184,144,128,.3)">＋ 新增</button>
         </div>
       </div>
+      <div id="deadlineCal" style="display:none"></div>
       <div id="deadlineList"></div>
       <div id="dlEmptyState" class="empty" style="display:none;padding:2rem;border:1.5px dashed rgba(184,144,128,.22);border-radius:12px;background:rgba(184,144,128,.04)">
         🎯<br>尚無考試或作業截止日<br>
@@ -690,7 +701,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   <div style="margin-bottom:.6rem">
     <label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">類型</label>
     <div style="display:flex;gap:.4rem">
-      <button type="button" id="dlTypeExamBtn" onclick="setDlType('exam')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(184,144,128,.3);background:linear-gradient(135deg,#B89A88,#9898B0);color:#fff;font-size:.7rem;font-weight:700;font-family:inherit;cursor:pointer">🎯 考試</button>
+      <button type="button" id="dlTypeExamBtn" onclick="setDlType('exam')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(184,144,128,.3);background:#F7C9CF;color:#9B3F51;font-size:.7rem;font-weight:700;font-family:inherit;cursor:pointer">🎯 考試</button>
       <button type="button" id="dlTypeAssignBtn" onclick="setDlType('assignment')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(140,140,168,.25);background:rgba(255,255,255,.8);color:var(--dusk-d);font-size:.7rem;font-weight:600;font-family:inherit;cursor:pointer">📝 作業</button>
       <button type="button" id="dlTypeReportBtn" onclick="setDlType('report')" style="flex:1;padding:.3rem;border-radius:9px;border:1.5px solid rgba(140,160,184,.3);background:rgba(255,255,255,.8);color:var(--mist-d);font-size:.7rem;font-weight:600;font-family:inherit;cursor:pointer">📊 報告</button>
     </div>
@@ -1217,8 +1228,88 @@ function chapTotal(c){return c.single?1:Math.max(c.pageEnd-c.pageStart+1,1);}
 function chapRead(c){return c.single?(isChapDone(c)?1:0):Math.max(c.currentPage-c.pageStart,0);}
 function chapPct(c){return Math.min(100,Math.round(chapRead(c)/chapTotal(c)*100));}
 
+let studyView=load('studyView','subj'),studyHideDone=load('studyHideDone',false),studyCalMonth=null,studyCalSel=null;
+function courseAbbr(n){return n.startsWith('社區')?'社區':n.startsWith('諮商理論')?'理論':(n.startsWith('諮商專業倫理')||n.startsWith('諮商倫理'))?'倫理':n.startsWith('教育與心理研究')||n.startsWith('研究')?'研究':n.slice(0,2);}
+function studySyncViewUI(){
+  const v=studyView,el=$('studySubjectList'),alt=$('studyAlt'),hb=$('svHide');
+  if(el)el.style.display=v==='subj'?'flex':'none';
+  if(alt)alt.style.display=v==='subj'?'none':'';
+  [['svSubj','subj'],['svTime','time'],['svCal','cal']].forEach(([id,k])=>{const b=$(id);if(!b)return;const on=v===k;b.style.background=on?'linear-gradient(135deg,#C0A89A,#9898B0)':'rgba(255,255,255,.7)';b.style.color=on?'#fff':'var(--tx3)';b.style.fontWeight=on?'700':'600';});
+  if(hb){hb.style.display=v==='time'?'':'none';hb.textContent=studyHideDone?'☑ 隱藏已完成':'☐ 隱藏已完成';hb.style.background=studyHideDone?'var(--sage-l)':'rgba(255,255,255,.7)';hb.style.color=studyHideDone?'var(--sage-d)':'var(--tx3)';}
+}
+function setStudyView(v){studyView=v;save('studyView',v);renderStudy();}
+function toggleStudyHideDone(){studyHideDone=!studyHideDone;save('studyHideDone',studyHideDone);renderStudy();}
+function studyCalShift(n){
+  const t=getTW();
+  if(n===0){studyCalMonth=new Date(t.getFullYear(),t.getMonth(),1);studyCalSel=dayKey(t);}
+  else{const b=studyCalMonth||new Date(t.getFullYear(),t.getMonth(),1);studyCalMonth=new Date(b.getFullYear(),b.getMonth()+n,1);}
+  renderStudy();
+}
+function studyCalSelect(k){studyCalSel=k;renderStudy();}
+function studyRowHtml(sj,c,tk){
+  const fin=isChapDone(c),p=chapPct(c);
+  const late=!fin&&c.date&&c.date<tk;
+  const sub=c.single?`${sj.emoji} ${sj.name} · 📅 ${c.date}${fin?' · 已完成':late?' · ⚠ 逾期':''}`:`${sj.emoji} ${sj.name} · p.${c.pageStart}–${c.pageEnd} · ${p}%${c.date?' · 📅 '+c.date:''}`;
+  return`<div class="chap-row${fin?' chap-finished':''}" style="border-left:3px solid ${sj.color}"><div class="chap-done-check" onclick="toggleChapDone('${sj.id}','${c.id}',event)">${fin?'✓':''}</div><div style="flex:1;min-width:0"><div class="chap-title">${c.name}</div><div class="chap-pages"${late?' style="color:#C04040"':''}>${sub}</div></div></div>`;
+}
+function renderStudyAlt(){
+  const alt=$('studyAlt');if(!alt)return;
+  const today=getTW(),tk=dayKey(today);
+  const WDN='日一二三四五六';
+  const items=[];subjects.forEach((sj,si)=>(sj.chapters||[]).forEach(c=>items.push({sj,c,si})));
+  if(!items.length){alt.innerHTML='<div class="empty" style="padding:2rem">📖<br>尚未建立科目</div>';return;}
+  if(studyView==='time'){
+    let list=items.filter(x=>!(studyHideDone&&isChapDone(x.c)));
+    const dated=list.filter(x=>x.c.date).sort((a,b)=>a.c.date.localeCompare(b.c.date)||a.si-b.si);
+    const undated=list.filter(x=>!x.c.date);
+    const groups={};dated.forEach(x=>{(groups[x.c.date]=groups[x.c.date]||[]).push(x);});
+    let html=Object.keys(groups).map(k=>{
+      const d=new Date(k+'T00:00:00'),isT=k===tk,past=k<tk;
+      return`<div class="dl-block-hdr" style="background:${isT?'#FBE1E4':'rgba(140,140,168,.1)'};color:${isT?'#9B3F51':'var(--dusk-d)'};${past?'opacity:.75':''}"><span>${d.getMonth()+1}/${d.getDate()}（週${WDN[d.getDay()]}）${isT?' · 今天':''}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">${groups[k].length} 項</span></div>`+groups[k].map(x=>studyRowHtml(x.sj,x.c,tk)).join('');
+    }).join('');
+    if(undated.length)html+=`<div class="dl-block-hdr" style="background:rgba(160,148,132,.12);color:var(--tx3)"><span>未排定日期（依頁數進度）</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">${undated.length} 項</span></div>`+undated.map(x=>studyRowHtml(x.sj,x.c,tk)).join('');
+    alt.innerHTML=html||'<div class="empty" style="padding:1.5rem">沒有符合的項目</div>';
+    return;
+  }
+  // calendar
+  if(!studyCalMonth)studyCalMonth=new Date(today.getFullYear(),today.getMonth(),1);
+  if(!studyCalSel)studyCalSel=tk;
+  const y=studyCalMonth.getFullYear(),m=studyCalMonth.getMonth();
+  const off=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
+  const by={};items.forEach(x=>{if(x.c.date)(by[x.c.date]=by[x.c.date]||[]).push(x);});
+  const noDate=items.filter(x=>!x.c.date).length;
+  let cells='';
+  for(let i=0;i<off;i++)cells+='<div></div>';
+  for(let d=1;d<=dim;d++){
+    const k=`${y}-${pad(m+1)}-${pad(d)}`,its=(by[k]||[]).slice().sort((a,b)=>a.si-b.si);
+    const isT=k===tk,sel=k===studyCalSel;
+    const chips=its.slice(0,3).map(x=>{const wk=(x.c.name.match(/^W(\d+)/)||[])[1];const fin=isChapDone(x.c);return`<div style="font-size:.5rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:${x.sj.color}55;color:var(--tx2);border-left:3px solid ${x.sj.color};${fin?'opacity:.45;text-decoration:line-through':''}">${courseAbbr(x.sj.name)}${wk?' W'+wk:''}</div>`;}).join('');
+    const more=its.length>3?`<div style="font-size:.46rem;color:var(--tx3);margin-top:1px">+${its.length-3}</div>`:'';
+    cells+=`<div onclick="studyCalSelect('${k}')" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
+  }
+  const sd=new Date(studyCalSel+'T00:00:00'),dayItems=(by[studyCalSel]||[]).slice().sort((a,b)=>a.si-b.si);
+  alt.innerHTML=`<div class="card"><div class="card-body">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+      <div style="font-size:.78rem;font-weight:700;color:var(--tx)">${y} 年 ${m+1} 月</div>
+      <div style="display:flex;gap:.3rem;align-items:center">
+        <button onclick="studyCalShift(-1)" style="width:26px;height:26px;border-radius:50%;border:1.5px solid var(--brd);background:rgba(255,255,255,.6);color:var(--tx3);cursor:pointer">‹</button>
+        <button onclick="studyCalShift(0)" style="font-size:.58rem;padding:.15rem .5rem;border-radius:9px;border:1.5px solid rgba(140,140,168,.3);background:var(--dusk-l);color:var(--dusk-d);cursor:pointer;font-family:inherit">今天</button>
+        <button onclick="studyCalShift(1)" style="width:26px;height:26px;border-radius:50%;border:1.5px solid var(--brd);background:rgba(255,255,255,.6);color:var(--tx3);cursor:pointer">›</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-bottom:3px">${['日','一','二','三','四','五','六'].map(w=>`<div style="text-align:center;font-size:.55rem;color:var(--tx3)">${w}</div>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">${cells}</div>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.55rem;color:var(--tx3);margin-top:.5rem">${subjects.map(sj=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${sj.color}88;border-left:3px solid ${sj.color};vertical-align:-1px"></span> ${courseAbbr(sj.name)}</span>`).join('')}<span style="color:#C04040">● 今天</span>${noDate?`<span>· 另有 ${noDate} 項未排日期（見「依時間」）</span>`:''}</div>
+  </div></div>
+  <div style="margin-top:.65rem">
+    <div class="dl-block-hdr" style="background:rgba(140,140,168,.1);color:var(--dusk-d)"><span>${sd.getMonth()+1}/${sd.getDate()}（週${WDN[sd.getDay()]}）${studyCalSel===tk?' · 今天':''}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">${dayItems.length} 項</span></div>
+    ${dayItems.length?dayItems.map(x=>studyRowHtml(x.sj,x.c,tk)).join(''):'<div class="empty" style="padding:.7rem;font-size:.68rem">這天沒有讀書項目</div>'}
+  </div>`;
+}
 function renderStudy(){
   const el=$('studySubjectList');if(!el)return;
+  studySyncViewUI();
+  if(studyView!=='subj'){renderStudyAlt();updateStudyStats();renderStudyProgressAll();renderReviewReminders();return;}
   if(!subjects.length){el.innerHTML=`<div class="empty" style="padding:2rem">📖<br>尚未建立科目</div>`;updateStudyStats();renderStudyProgressAll();renderReviewReminders();return;}
   el.innerHTML=subjects.map(sj=>{
     const chaps=sj.chapters||[],done=chaps.filter(isChapDone).length;
@@ -1397,6 +1488,64 @@ function doAddEpisode(){
 /* ─────────────────────────────────────
    EXAM / ASSIGNMENT DEADLINES
 ───────────────────────────────────── */
+let dlView=load('dlView','list'),dlCalMonth=null,dlCalSel=null;
+function dlSyncViewUI(){
+  const cal=dlView==='cal';
+  const el=$('deadlineList'),ce=$('deadlineCal'),sm=$('dlSortMode'),bl=$('dlViewList'),bc=$('dlViewCal');
+  if(el)el.style.display=cal?'none':'';
+  if(ce)ce.style.display=cal?'':'none';
+  if(sm)sm.style.display=cal?'none':'';
+  [[bl,!cal],[bc,cal]].forEach(([b,on])=>{if(!b)return;b.style.background=on?'linear-gradient(135deg,#B89A88,#9898B0)':'rgba(255,255,255,.7)';b.style.color=on?'#fff':'var(--clay-d)';b.style.fontWeight=on?'700':'600';});
+}
+function dlIsMine(d){return d.type==='report'&&((d.id||'').startsWith('c115_my_')||(d.name||'').includes('我的報告'));}
+function setDlView(v){dlView=v;save('dlView',v);renderDeadlines();}
+function dlCalShift(n){
+  const t=getTW();
+  if(n===0){dlCalMonth=new Date(t.getFullYear(),t.getMonth(),1);dlCalSel=dayKey(t);}
+  else{const b=dlCalMonth||new Date(t.getFullYear(),t.getMonth(),1);dlCalMonth=new Date(b.getFullYear(),b.getMonth()+n,1);}
+  renderDeadlines();
+}
+function dlCalSelect(k){dlCalSel=k;renderDeadlines();}
+function renderDlCal(calEl,itemHtml){
+  const today=getTW(),tk=dayKey(today);
+  if(!dlCalMonth)dlCalMonth=new Date(today.getFullYear(),today.getMonth(),1);
+  if(!dlCalSel)dlCalSel=tk;
+  const y=dlCalMonth.getFullYear(),m=dlCalMonth.getMonth();
+  const off=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
+  const by={};deadlines.forEach(d=>{(by[d.dueDate]=by[d.dueDate]||[]).push(d);});
+  const ICON={exam:'🎯',assignment:'📝',report:'📊'};
+  const COL={exam:['#F7C9CF','#9B3F51'],assignment:['#CBD6F4','#44558F'],report:['#A9DEC3','#2F6B4D']};
+  const abbr=n=>n.startsWith('社區')?'社區':n.startsWith('諮商理論')?'理論':n.startsWith('諮商倫理')||n.startsWith('諮商專業倫理')?'倫理':n.startsWith('研究')?'研究':n.slice(0,2);
+  const WD=['日','一','二','三','四','五','六'];
+  let cells='';
+  for(let i=0;i<off;i++)cells+='<div></div>';
+  for(let d=1;d<=dim;d++){
+    const k=`${y}-${pad(m+1)}-${pad(d)}`,items=(by[k]||[]).slice().sort((a,b)=>(a.done?1:0)-(b.done?1:0));
+    const isT=k===tk,sel=k===dlCalSel;
+    const chips=items.slice(0,3).map(x=>{const[bg,fg]=(x.type==='report'&&!dlIsMine(x))?['#EBF7F1','#3E7A5C']:(COL[x.type]||COL.assignment);return`<div style="font-size:.5rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:${bg};color:${fg};${(x.type==='report'&&!dlIsMine(x))?'border:1px solid #CFEBDD;':''}${x.done?'opacity:.45;text-decoration:line-through':''}">${ICON[x.type]||'📝'}${abbr(x.name)}</div>`;}).join('');
+    const more=items.length>3?`<div style="font-size:.46rem;color:var(--tx3);margin-top:1px">+${items.length-3}</div>`:'';
+    cells+=`<div onclick="dlCalSelect('${k}')" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
+  }
+  const sd=new Date(dlCalSel+'T00:00:00');
+  const dayItems=(by[dlCalSel]||[]).slice().sort((a,b)=>(a.done?1:0)-(b.done?1:0));
+  calEl.innerHTML=`<div class="card"><div class="card-body">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+      <div style="font-size:.78rem;font-weight:700;color:var(--tx)">${y} 年 ${m+1} 月</div>
+      <div style="display:flex;gap:.3rem;align-items:center">
+        <button onclick="dlCalShift(-1)" style="width:26px;height:26px;border-radius:50%;border:1.5px solid var(--brd);background:rgba(255,255,255,.6);color:var(--tx3);cursor:pointer">‹</button>
+        <button onclick="dlCalShift(0)" style="font-size:.58rem;padding:.15rem .5rem;border-radius:9px;border:1.5px solid rgba(140,140,168,.3);background:var(--dusk-l);color:var(--dusk-d);cursor:pointer;font-family:inherit">今天</button>
+        <button onclick="dlCalShift(1)" style="width:26px;height:26px;border-radius:50%;border:1.5px solid var(--brd);background:rgba(255,255,255,.6);color:var(--tx3);cursor:pointer">›</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-bottom:3px">${WD.map(w=>`<div style="text-align:center;font-size:.55rem;color:var(--tx3)">${w}</div>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">${cells}</div>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.55rem;color:var(--tx3);margin-top:.5rem">${[['#F7C9CF','🎯考試'],['#CBD6F4','📝作業'],['#A9DEC3','📊我的報告'],['#EBF7F1','📊其他報告']].map(([c,l])=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c};vertical-align:-1px;${c==='#EBF7F1'?'border:1px solid #B5DCC8':''}"></span> ${l}</span>`).join('')}<span style="color:#C04040">● 今天</span></div>
+  </div></div>
+  <div style="margin-top:.65rem">
+    <div class="dl-block-hdr" style="background:rgba(140,140,168,.1);color:var(--dusk-d)"><span>${sd.getMonth()+1}/${sd.getDate()}（週${'日一二三四五六'[sd.getDay()]}）${dlCalSel===tk?' · 今天':''}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">${dayItems.length} 項</span></div>
+    ${dayItems.length?dayItems.map(itemHtml).join(''):'<div class="empty" style="padding:.7rem;font-size:.68rem">這天沒有考試、作業或報告</div>'}
+  </div>`;
+}
 function dlDaysLeft(dl){
   const today=getTW();
   const todayMs=new Date(today.getFullYear(),today.getMonth(),today.getDate()).getTime();
@@ -1430,9 +1579,9 @@ function openEditDeadline(id){
 function setDlType(t){
   $('dlType').value=t;
   const eb=$('dlTypeExamBtn'),ab=$('dlTypeAssignBtn'),rb=$('dlTypeReportBtn');
-  if(eb){eb.style.background=t==='exam'?'linear-gradient(135deg,#B89A88,#9898B0)':'rgba(255,255,255,.8)';eb.style.color=t==='exam'?'#fff':'var(--clay-d)';eb.style.fontWeight=t==='exam'?'700':'600';}
-  if(rb){rb.style.background=t==='report'?'linear-gradient(135deg,#9AAAB8,#7888A8)':'rgba(255,255,255,.8)';rb.style.color=t==='report'?'#fff':'var(--mist-d)';rb.style.fontWeight=t==='report'?'700':'600';}
-  if(ab){ab.style.background=t==='assignment'?'linear-gradient(135deg,#9898B0,#7868A0)':'rgba(255,255,255,.8)';ab.style.color=t==='assignment'?'#fff':'var(--dusk-d)';ab.style.fontWeight=t==='assignment'?'700':'600';}
+  if(eb){eb.style.background=t==='exam'?'#F7C9CF':'rgba(255,255,255,.8)';eb.style.color='#9B3F51';eb.style.fontWeight=t==='exam'?'700':'600';}
+  if(rb){rb.style.background=t==='report'?'#A9DEC3':'rgba(255,255,255,.8)';rb.style.color='#2F6B4D';rb.style.fontWeight=t==='report'?'700':'600';}
+  if(ab){ab.style.background=t==='assignment'?'#CBD6F4':'rgba(255,255,255,.8)';ab.style.color='#44558F';ab.style.fontWeight=t==='assignment'?'700':'600';}
 }
 function doSaveDeadline(){
   const name=$('dlName').value.trim();
@@ -1478,7 +1627,8 @@ function delDeadline(id){
 function renderDeadlines(){
   const el=$('deadlineList'),empty=$('dlEmptyState');
   if(!el)return;
-  if(!deadlines.length){el.innerHTML='';if(empty)empty.style.display='block';updateDlStats();return;}
+  dlSyncViewUI();
+  if(!deadlines.length){el.innerHTML='';{const c=$('deadlineCal');if(c)c.innerHTML='';}if(empty)empty.style.display='block';updateDlStats();return;}
   if(empty)empty.style.display='none';
   const mode=($('dlSortMode')||{value:'due'}).value;
   let list=[...deadlines];
@@ -1492,7 +1642,7 @@ function renderDeadlines(){
     const dayLabel=dl.done?'已完成':days<0?`已過期 ${Math.abs(days)} 天`:days===0?'今天！':`剩 ${days} 天`;
     return`<div class="dl-item${urgent?' dl-urgent':''}${dl.done?' dl-done':''}" onclick="toggleDlDone('${dl.id}',event)">
       <div class="dl-check">${dl.done?'✓':''}</div>
-      <span class="dl-badge ${dl.type}">${dl.type==='exam'?'🎯 考試':dl.type==='report'?'📊 報告':'📝 作業'}</span>
+      <span class="dl-badge ${dl.type}${dlIsMine(dl)?' mine':''}">${dl.type==='exam'?'🎯 考試':dl.type==='report'?'📊 報告':'📝 作業'}</span>
       <div style="flex:1;min-width:0">
         <div class="dl-name">${dl.name}${sj?` <span style="font-size:.56rem;color:var(--tx3);font-weight:400">· ${sj.emoji}${sj.name}</span>`:''}</div>
         <div class="dl-meta">${dl.dueDate}${dl.dueTime?' '+dl.dueTime:''}</div>${dl.notes?`<div class="dl-notes">${String(dl.notes).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`:''}
@@ -1502,6 +1652,7 @@ function renderDeadlines(){
       <button class="del-btn" onclick="event.stopPropagation();delDeadline('${dl.id}')">✕</button>
     </div>`;
   };
+  if(dlView==='cal'){const ce=$('deadlineCal');if(ce)renderDlCal(ce,itemHtml);updateDlStats();return;}
   if(mode==='type'){
     const BL=[['exam','🎯 考試'],['assignment','📝 作業'],['report','📊 報告']];
     el.innerHTML=BL.map(([t,label])=>{
@@ -1800,7 +1951,7 @@ function getWeekDays(offset=0){
   const today=getTW();
   const dow=today.getDay(); // 0=Sun
   const monday=new Date(today);
-  monday.setDate(today.getDate()-dow+1+(offset*7)); // Mon-based week
+  monday.setDate(today.getDate()-dow+(offset*7)); // Sun-based week
   const days=[];
   for(let i=0;i<7;i++){
     const d=new Date(monday);
@@ -1818,7 +1969,7 @@ function shiftWeek(dir){
 function renderWeekPlan(){
   const days=getWeekDays(weekOffset);
   const tk=todayKey();
-  const DN=['週一','週二','週三','週四','週五','週六','週日'];
+  const DN=['週日','週一','週二','週三','週四','週五','週六'];
   const today=getTW();
 
   // Range label
@@ -2125,7 +2276,7 @@ window.renderTodos=renderTodos;window.toggleTodo=toggleTodo;window.delTodo=delTo
 window.updateNote=updateNote;window.saveNote=saveNote;
 window.showAddSubject=showAddSubject;window.doAddSubject=doAddSubject;window.selectColor=selectColor;window.delSubject=delSubject;
 window.openAddChapter=openAddChapter;window.doAddChapter=doAddChapter;window.delChapter=delChapter;
-window.toggleChapDone=toggleChapDone;window.toggleRevDone=toggleRevDone;
+window.setStudyView=setStudyView;window.toggleStudyHideDone=toggleStudyHideDone;window.studyCalShift=studyCalShift;window.studyCalSelect=studyCalSelect;window.toggleChapDone=toggleChapDone;window.toggleRevDone=toggleRevDone;
 window.setReviewRange=setReviewRange;
 window.undoAction=undoAction;
 // Video
@@ -2141,7 +2292,7 @@ window.markStudyTaskDone=markStudyTaskDone;window.updatePomoChapSel=updatePomoCh
 window.pomoStop=pomoStop;
 window.renderWeekPlan=renderWeekPlan;window.shiftWeek=shiftWeek;window.addWeekSched=addWeekSched;window.switchWRTab=switchWRTab;window.renderWeekHabitSummary=renderWeekHabitSummary;
 window.openAddDeadline=openAddDeadline;window.openEditDeadline=openEditDeadline;window.setDlType=setDlType;window.doSaveDeadline=doSaveDeadline;
-window.toggleDlDone=toggleDlDone;window.delDeadline=delDeadline;window.renderDeadlines=renderDeadlines;
+window.setDlView=setDlView;window.dlCalShift=dlCalShift;window.dlCalSelect=dlCalSelect;window.toggleDlDone=toggleDlDone;window.delDeadline=delDeadline;window.renderDeadlines=renderDeadlines;
 
 /* ── 115-1 課程時程（考試／作業）匯入 ── */
 const REPORT_IDS=['c115_com_mid','c115_com_fin','c115_eth_rpt','c115_res_w5','c115_res_w7','c115_res_w8','c115_res_w12','c115_res_w13','c115_res_w17','c115_res_w18','c115_my_thy1','c115_my_com','c115_my_eth1','c115_my_thy2','c115_my_eth2','c115_my_res'];
