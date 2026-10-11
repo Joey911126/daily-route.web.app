@@ -2,7 +2,10 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
 <title>個人行程管理</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -13,18 +16,18 @@ select{text-align-last:center;}
   --sage:#8FA898;--sage-l:#EBF0EB;--sage-d:#4A6050;
   --clay:#B89A88;--clay-l:#F2EDE8;--clay-d:#785040;
   --dusk:#9898B0;--dusk-l:#EBEBF2;--dusk-d:#484868;
-  --blush:#C0A89A;--blush-l:#F5EDEA;--blush-d:#785048;
-  --stone:#A8A49A;--stone-l:#F0EEE8;--stone-d:#585248;
-  --mist:#9AAAB8;--mist-l:#E8ECF2;--mist-d:#485870;
-  --bg:#F6F3F0;--surf:rgba(255,253,250,.95);
-  --brd:rgba(168,158,145,.22);--brd2:rgba(148,138,125,.30);
+  
+  --stone:#A8A49A;--stone-d:#585248;
+  --mist:#9AAAB8;--mist-d:#485870;
+  
+  --brd:rgba(168,158,145,.22);
   --tx:#2C2820;--tx2:#4C4238;--tx3:#7A7068;
-  --r:12px;--rs:8px;--rxs:6px;
+  
   --sh:0 2px 18px rgba(100,88,76,.09);
   /* Video section colors */
   --vid:#7B65C4;--vid-l:#F0EEFF;--vid-d:#4A3888;
 }
-body{font-family:'Noto Sans TC',system-ui,sans-serif;background:#F7F3EA;color:var(--tx);font-size:14px;min-height:100vh;overflow-x:hidden;}
+body{font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',system-ui,sans-serif;background:#F7F3EA;color:var(--tx);font-size:14px;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:
   radial-gradient(ellipse 38vw 55vh at 0% 18%,rgba(192,96,122,.10) 0%,transparent 100%),
   radial-gradient(ellipse 32vw 40vh at 4% 55%,rgba(192,96,122,.09) 0%,transparent 100%),
@@ -38,10 +41,10 @@ header{background:rgba(248,245,240,.93);border-bottom:1px solid var(--brd);paddi
 .logo{display:flex;align-items:center;gap:.55rem;flex-shrink:0}
 .logo-mark{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#C0A89A,#9898B0);display:flex;align-items:center;justify-content:center;font-size:.9rem;box-shadow:0 0 14px rgba(140,128,112,.3);flex-shrink:0}
 .logo-text{font-size:.95rem;font-weight:700;letter-spacing:.12em;background:linear-gradient(120deg,#785048,#484868,#4A6050);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.logo-sub{font-size:.5rem;color:var(--tx3);letter-spacing:.14em;display:block;margin-top:1px}
+.logo-sub{font-size:.55rem;color:var(--tx3);letter-spacing:.14em;display:block;margin-top:1px}
 .hdr-right{display:flex;align-items:center;gap:.3rem;margin-left:auto;min-width:0;flex-shrink:0}
-.hdr-clock{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--dusk-d);padding:.14rem .48rem;border-radius:14px;background:var(--dusk-l);border:1px solid rgba(140,140,168,.3);min-width:52px;text-align:center;white-space:nowrap;flex-shrink:0}
-.hdr-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--tx3);white-space:nowrap;flex-shrink:0}
+.hdr-clock{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.72rem;color:var(--dusk-d);padding:.14rem .48rem;border-radius:14px;background:var(--dusk-l);border:1px solid rgba(140,140,168,.3);min-width:52px;text-align:center;white-space:nowrap;flex-shrink:0}
+.hdr-date{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.6rem;color:var(--tx3);white-space:nowrap;flex-shrink:0}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(248,244,240,.95);border-top:1px solid rgba(160,148,132,.2);backdrop-filter:blur(20px);display:flex;padding-bottom:env(safe-area-inset-bottom,0);box-shadow:0 -2px 16px rgba(160,130,210,.09);}
 .bn-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:.48rem 0 .38rem;font-size:.55rem;color:var(--tx3);cursor:pointer;border:none;background:transparent;font-family:inherit;transition:color .18s;position:relative;-webkit-tap-highlight-color:transparent;}
 .bn-btn .bn-ico{font-size:1.15rem;line-height:1}
@@ -55,44 +58,43 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .banner::before{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(196,160,152,.09) 0%,rgba(168,160,144,.06) 40%,rgba(143,166,142,.09) 100%)}
 .banner-stripe{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C0A89A,#B89A88,#A8A49A,#8FA898,#9AAAB8,#9898B0)}
 .date-block{position:relative;z-index:1;text-align:center;flex-shrink:0}
-.dt-month{font-family:'Cinzel',serif;font-size:.55rem;color:var(--tx3);letter-spacing:.14em}
+.dt-month{font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--tx3);letter-spacing:.14em}
 .dt-day{font-size:2.2rem;font-weight:800;line-height:1;background:linear-gradient(135deg,#785048,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .dt-wday{font-size:.62rem;color:var(--dusk-d);letter-spacing:.09em}
 .divider{width:1px;height:55px;background:linear-gradient(180deg,transparent,rgba(197,184,232,.4),transparent);flex-shrink:0}
 .stats{display:flex;gap:1rem;flex-wrap:wrap}
 .stat-item{display:flex;flex-direction:column;gap:.15rem}
-.stat-label{font-family:'Cinzel',serif;font-size:.5rem;color:var(--tx3);letter-spacing:.1em}
-.stat-value{font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:600;color:#1E1430}
+.stat-label{font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--tx3);letter-spacing:.1em}
+.stat-value{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:1rem;font-weight:600;color:#1E1430}
 .stat-value span{font-size:.6rem;color:var(--tx3);font-weight:400}
 .quote{flex:2;min-width:150px;border-left:2px solid rgba(197,184,232,.4);padding-left:.9rem}
 .quote-text{font-size:.75rem;color:var(--tx2);line-height:1.75;letter-spacing:.03em}
 .quote-auth{font-size:.55rem;color:var(--tx3);margin-top:.25rem;letter-spacing:.06em}
 .prog-wrap{flex:0 0 140px}
-.prog-label{font-family:'Cinzel',serif;font-size:.5rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.25rem}
+.prog-label{font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.25rem}
 .prog-bar{height:6px;border-radius:6px;background:rgba(200,185,230,.2);overflow:hidden;margin-bottom:.14rem}
 .prog-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#C0A89A,#9898B0,#8FA898);transition:width .6s ease}
-.prog-pct{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--tx3)}
+.prog-pct{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;color:var(--tx3)}
 .pomo-wrap{display:flex;align-items:center;gap:.65rem;padding:.55rem .8rem;border-radius:16px;border:1.5px solid rgba(168,152,192,.22);background:rgba(252,250,255,.95);backdrop-filter:blur(12px);margin-bottom:.85rem}
 .pomo-ring{position:relative;width:48px;height:48px;flex-shrink:0}
 .pomo-ring svg{transform:rotate(-90deg)}
 .pomo-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.pomo-time{font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;background:linear-gradient(135deg,#D4909A,#7868A0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
-.pomo-phase{font-size:.44rem;color:var(--tx3);letter-spacing:.05em;margin-top:1px}
+.pomo-time{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.75rem;font-weight:700;background:linear-gradient(135deg,#D4909A,#7868A0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.pomo-phase{font-size:.55rem;color:var(--tx3);letter-spacing:.05em;margin-top:1px}
 .pomo-btns{display:flex;gap:.35rem;flex:1;align-items:center;flex-wrap:wrap}
 .pomo-btn{padding:.26rem .62rem;border-radius:18px;font-size:.65rem;border:1.5px solid var(--brd);background:rgba(255,255,255,.6);color:var(--tx2);transition:all .18s;cursor:pointer;font-family:inherit}
 .pomo-btn.primary{background:linear-gradient(135deg,#D4A0A8,#A890C0,#7878A8);border-color:transparent;color:#fff;font-weight:600}
-.pomo-count{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#A898B4;margin-left:auto}
+.pomo-count{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.6rem;color:#A898B4;margin-left:auto}
 .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
 .col-w{grid-column:span 2}.col-n{grid-column:span 1}
 .card{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border:1.5px solid rgba(160,148,132,.14);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
 .card-hdr{padding:.6rem .85rem .5rem;border-bottom:1px solid rgba(160,148,132,.15);display:flex;align-items:center;justify-content:space-between}
-.card-title{font-family:'Cinzel',serif;font-size:.62rem;color:var(--tx2);letter-spacing:.09em;text-transform:uppercase;display:flex;align-items:center;gap:.35rem}
+.card-title{font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.62rem;color:var(--tx2);letter-spacing:.09em;text-transform:uppercase;display:flex;align-items:center;gap:.35rem}
 .card-act{font-size:.65rem;color:var(--tx3);padding:.2rem .5rem;border-radius:14px;transition:all .18s;cursor:pointer;border:1px solid transparent;font-family:inherit;background:transparent}
 .card-act:hover{background:var(--dusk-l);color:var(--dusk-d);border-color:rgba(140,140,168,.3)}
 .card-body{padding:.75rem .85rem}
-.tl-item{display:grid;grid-template-columns:52px 22px 1fr auto;gap:.45rem;align-items:flex-start;padding:.45rem .6rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.16);border-left:3px solid var(--dusk);margin-bottom:4px;background:rgba(255,255,255,.92);transition:all .2s;position:relative;overflow:hidden}
 .del-btn{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(160,148,132,.25);background:transparent;color:var(--tx3);font-size:.55rem;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
-.tl-item:hover .del-btn,.todo-item:hover .del-btn,.habit-row:hover .del-btn,.chap-row:hover .del-btn,.vid-ep-row:hover .del-btn,.dl-item:hover .del-btn{display:flex}
+.todo-item:hover .del-btn,.habit-row:hover .del-btn,.chap-row:hover .del-btn,.vid-ep-row:hover .del-btn,.dl-item:hover .del-btn{display:flex}
 .del-btn:hover{background:var(--clay-l);border-color:rgba(122,82,72,.28);color:var(--clay-d)}
 @media(hover:none){.del-btn{display:flex!important}}
 .undo-btn{width:28px;height:28px;border-radius:50%;font-size:.8rem;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--brd);color:var(--tx3);background:rgba(255,255,255,.6);cursor:pointer;transition:all .18s;flex-shrink:0;opacity:.35;pointer-events:none}
@@ -104,8 +106,6 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .todo-item.done .todo-check{background:linear-gradient(135deg,#8FA898,#9898B0);border-color:transparent;color:#fff}
 .todo-item.done .todo-text{text-decoration:line-through;color:var(--tx3)}
 .todo-text{font-size:.75rem;color:#1E1430;flex:1;line-height:1.45}
-.p-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:6px}
-.p-hi{background:var(--clay-d)}.p-mid{background:var(--stone-d)}.p-lo{background:var(--sage-d)}
 .add-row{display:flex;gap:.35rem;margin-top:.5rem;padding-top:.45rem;border-top:1px dashed rgba(197,184,232,.25)}
 .add-inp{flex:1;padding:.32rem .65rem;border-radius:18px;border:1.5px solid rgba(160,148,132,.28);background:rgba(255,255,255,.92);color:var(--tx);font-size:.72rem;transition:all .18s;font-family:inherit;min-width:0;box-sizing:border-box;width:100%;-webkit-appearance:none;appearance:none}
 .add-inp:focus{outline:none;border-color:rgba(140,140,168,.5);box-shadow:0 0 0 3px rgba(140,140,168,.1)}
@@ -125,35 +125,33 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .subj-header{padding:.65rem .85rem;display:flex;align-items:center;gap:.5rem;cursor:pointer;border-bottom:1.5px solid rgba(160,148,132,.1);position:relative;overflow:hidden;flex-wrap:wrap}
 .subj-color-bar{position:absolute;top:0;left:0;right:0;height:3px}
 .subj-name{font-size:.82rem;font-weight:700;color:var(--tx)}
-.subj-meta{font-size:.58rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;display:flex;align-items:center;gap:2px}
+.subj-meta{font-size:.58rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;white-space:nowrap;overflow:hidden;display:flex;align-items:center;gap:2px}
 .subj-prog-wrap{width:80px;max-width:100%;flex-shrink:0;display:flex;align-items:center;gap:.3rem}
 .subj-prog-bar{flex:1;min-width:0;height:5px;border-radius:5px;background:rgba(197,184,232,.18);overflow:hidden}
 .subj-prog-fill{height:100%;border-radius:5px;transition:width .5s ease}
-.subj-prog-pct{font-size:.52rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;text-align:right}
+.subj-prog-pct{font-size:.55rem;color:var(--tx3);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;text-align:right}
 .subj-chapters{padding:.5rem .85rem .65rem}
 .chap-row{display:flex;align-items:flex-start;gap:.4rem;padding:.42rem .5rem;border-radius:8px;border:1.5px solid rgba(160,148,132,.13);background:rgba(250,247,255,.7);margin-bottom:4px;transition:all .16s;position:relative;flex-wrap:wrap}
-.chap-done-check{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(160,148,132,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.5rem;transition:all .18s;margin-top:2px}
+.chap-done-check{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(160,148,132,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.55rem;transition:all .18s;margin-top:2px}
 .chap-row.chap-finished .chap-done-check{background:linear-gradient(135deg,#8FA898,#9898B0);border-color:transparent;color:#fff}
 .chap-row.chap-finished .chap-title{text-decoration:line-through;color:var(--tx3)}
 .chap-title{font-size:.74rem;font-weight:600;color:var(--tx);flex:1;min-width:0;white-space:normal;word-break:break-word;line-height:1.4}
-.chap-pages{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:var(--tx3);flex-shrink:0;white-space:nowrap}
+.chap-pages{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.56rem;color:var(--tx3);flex-shrink:0;white-space:nowrap}
 .chap-mini-bar{width:40px;height:4px;border-radius:4px;background:rgba(197,184,232,.18);overflow:hidden;flex-shrink:0;margin-top:6px}
 .chap-mini-fill{height:100%;border-radius:4px;transition:width .4s ease}
-.chap-actions{display:flex;gap:3px;flex-shrink:0;flex-wrap:wrap;width:100%;padding-left:20px;margin-top:2px}
-.chap-btn{font-size:.54rem;padding:.16rem .36rem;border-radius:7px;border:1.5px solid rgba(160,148,132,.25);background:rgba(255,255,255,.7);color:var(--tx3);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.chap-btn{font-size:.55rem;padding:.16rem .36rem;border-radius:7px;border:1.5px solid rgba(160,148,132,.25);background:rgba(255,255,255,.7);color:var(--tx3);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
 .chap-btn:hover{background:var(--dusk-l);color:var(--dusk-d)}
-.chap-notes-preview{font-size:.58rem;color:var(--tx3);margin-top:1px;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .color-chip{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0}
 .color-chip.selected{border-color:var(--tx);transform:scale(1.18)}
 .study-stat-card{background:rgba(255,255,255,.95);border:1.5px solid rgba(160,148,132,.14);border-radius:12px;padding:.65rem .75rem;text-align:center;box-shadow:var(--sh)}
-.exam-badge{display:inline-flex;align-items:center;gap:3px;font-size:.54rem;padding:2px 7px;border-radius:9px;font-family:'JetBrains Mono',monospace;flex-shrink:0;cursor:pointer;transition:all .15s;white-space:nowrap}
+.exam-badge{display:inline-flex;align-items:center;gap:3px;font-size:.55rem;padding:2px 7px;border-radius:9px;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;flex-shrink:0;cursor:pointer;transition:all .15s;white-space:nowrap}
 .exam-badge.urgent{background:var(--clay-l);color:var(--clay-d);border:1.5px solid rgba(122,82,72,.3)}
 .exam-badge.normal{background:var(--dusk-l);color:var(--dusk-d);border:1.5px solid rgba(74,74,106,.25)}
 .exam-badge.none{background:rgba(160,148,132,.1);color:var(--tx3);border:1.5px dashed rgba(160,148,132,.3)}
 .review-card{display:flex;align-items:center;gap:.5rem;padding:.42rem .55rem;border-radius:9px;margin-bottom:4px;transition:all .16s}
 .review-card.due{background:rgba(184,144,128,.12);border:1.5px solid rgba(122,82,72,.28)}
 .review-card.upcoming{background:rgba(160,148,132,.07);border:1.5px solid rgba(160,148,132,.18)}
-.review-chip{font-size:.5rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono',monospace;flex-shrink:0;font-weight:700}
+.review-chip{font-size:.55rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;flex-shrink:0;font-weight:700}
 .review-chip.r1{background:#F2EAE6;color:#7A5248}
 .review-chip.r3{background:#F0EEE8;color:#5A5448}
 .review-chip.r7{background:#EAEAF2;color:#4A4A6A}
@@ -166,23 +164,23 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .vid-course-hdr{padding:.65rem .85rem;display:flex;align-items:center;gap:.5rem;border-bottom:1.5px solid rgba(123,101,196,.1);position:relative;overflow:hidden;flex-wrap:wrap}
 .vid-color-bar{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#7B65C4,#A890C0,#C0A8C0)}
 .vid-course-name{font-size:.82rem;font-weight:700;color:var(--tx)}
-.vid-course-meta{font-size:.58rem;color:var(--tx3);font-family:'JetBrains Mono',monospace}
+.vid-course-meta{font-size:.58rem;color:var(--tx3);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif}
 .vid-prog-wrap{display:flex;align-items:center;gap:.4rem;flex-shrink:0}
 .vid-prog-bar{width:70px;height:5px;border-radius:5px;background:rgba(123,101,196,.15);overflow:hidden}
 .vid-prog-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#7B65C4,#A890C0);transition:width .5s ease}
-.vid-prog-pct{font-size:.52rem;color:var(--vid-d);font-family:'JetBrains Mono',monospace}
+.vid-prog-pct{font-size:.55rem;color:var(--vid-d);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif}
 .vid-episodes{padding:.5rem .85rem .65rem}
 .vid-ep-row{display:flex;align-items:center;gap:.45rem;padding:.38rem .45rem;border-radius:8px;border:1.5px solid rgba(123,101,196,.1);background:rgba(248,246,255,.6);margin-bottom:4px;transition:all .16s;cursor:pointer}
 .vid-ep-row:hover{background:rgba(243,240,255,.9);border-color:rgba(123,101,196,.25)}
 .vid-ep-row.ep-done{opacity:.55}
 .vid-ep-row.ep-done .vid-ep-name{text-decoration:line-through;color:var(--tx3)}
-.vid-ep-check{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(123,101,196,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.5rem;transition:all .18s}
+.vid-ep-check{width:16px;height:16px;border-radius:50%;border:1.5px solid rgba(123,101,196,.35);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.55rem;transition:all .18s}
 .vid-ep-row.ep-done .vid-ep-check{background:linear-gradient(135deg,#7B65C4,#A890C0);border-color:transparent;color:#fff}
-.vid-ep-num{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--vid-d);font-weight:700;flex-shrink:0;min-width:28px}
+.vid-ep-num{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;color:var(--vid-d);font-weight:700;flex-shrink:0;min-width:28px}
 .vid-ep-name{font-size:.73rem;font-weight:500;color:var(--tx);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.vid-ep-duration{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--tx3);flex-shrink:0}
+.vid-ep-duration{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--tx3);flex-shrink:0}
 .vid-ep-actions{display:flex;gap:3px;flex-shrink:0}
-.vid-ep-btn{font-size:.52rem;padding:.14rem .32rem;border-radius:6px;border:1.5px solid rgba(123,101,196,.2);background:rgba(255,255,255,.7);color:var(--vid-d);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.vid-ep-btn{font-size:.55rem;padding:.14rem .32rem;border-radius:6px;border:1.5px solid rgba(123,101,196,.2);background:rgba(255,255,255,.7);color:var(--vid-d);cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
 .vid-ep-btn:hover{background:var(--vid-l);border-color:rgba(123,101,196,.4)}
 .vid-stat-card{background:rgba(255,255,255,.95);border:1.5px solid rgba(123,101,196,.15);border-radius:12px;padding:.65rem .75rem;text-align:center;box-shadow:0 2px 12px rgba(123,101,196,.07)}
 
@@ -194,7 +192,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .dl-item.dl-done .dl-name{text-decoration:line-through;color:var(--tx3)}
 .dl-check{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(184,144,128,.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.55rem;cursor:pointer;transition:all .18s}
 .dl-item.dl-done .dl-check{background:linear-gradient(135deg,#B89A88,#9898B0);border-color:transparent;color:#fff}
-.dl-badge{font-size:.5rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0}
+.dl-badge{font-size:.55rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-weight:700;flex-shrink:0}
 .dl-badge.exam{background:#F7C9CF;color:#9B3F51}
 .dl-badge.exam.quiz{background:#FCE9EC;color:#B0606F}
 .dl-badge.assignment{background:#CBD6F4;color:#44558F}
@@ -206,12 +204,12 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .dl-block-hdr.assignment{background:#E1E8F8;color:#44558F}
 .dl-block-hdr.report{background:#E6F6EE;color:#2F6B4D}
 .dl-name{font-size:.75rem;font-weight:600;color:var(--tx)}
-.dl-meta{font-size:.56rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono',monospace}
+.dl-meta{font-size:.56rem;color:var(--tx3);margin-top:1px;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif}
 .dl-notes{white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:.62rem;line-height:1.6;margin-top:3px;color:var(--tx2)}
-.dl-days{font-family:'JetBrains Mono',monospace;font-size:.64rem;font-weight:700;flex-shrink:0;text-align:right;white-space:nowrap}
+.dl-days{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.64rem;font-weight:700;flex-shrink:0;text-align:right;white-space:nowrap}
 .dl-days.urgent{color:#C04040}
 .dl-days.normal{color:var(--clay-d)}
-.dl-tab-badge{font-size:.5rem;padding:1px 5px;border-radius:8px;background:#C04040;color:#fff;font-weight:700;margin-left:3px;vertical-align:middle}
+.dl-tab-badge{font-size:.55rem;padding:1px 5px;border-radius:8px;background:#C04040;color:#fff;font-weight:700;margin-left:3px;vertical-align:middle}
 .modal-row{display:flex;gap:.4rem;margin-bottom:.55rem}
 .modal-half{flex:1;min-width:0;overflow:hidden}
 .modal-half label{font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem}
@@ -223,7 +221,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .exam-alert-urgent{border-color:rgba(184,100,88,.4);background:linear-gradient(135deg,rgba(184,100,88,.1),rgba(184,144,128,.08))}
 .exam-alert-dot{width:8px;height:8px;border-radius:50%;background:var(--clay-d);flex-shrink:0;animation:pulse 2s ease-in-out infinite}
 .exam-alert-urgent .exam-alert-dot{background:#C04040}
-.exam-day-badge{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:800;color:var(--clay-d);flex-shrink:0;line-height:1}
+.exam-day-badge{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:1.1rem;font-weight:800;color:var(--clay-d);flex-shrink:0;line-height:1}
 .exam-alert-urgent .exam-day-badge{color:#C04040}
 .exam-alert-name{font-size:.75rem;font-weight:700;color:var(--tx)}
 .exam-alert-sub{font-size:.58rem;color:var(--tx3);margin-top:1px}
@@ -235,10 +233,10 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .study-task-card.done-card .stc-name{text-decoration:line-through;color:var(--tx3)}
 .stc-check{width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(143,166,142,.5);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.55rem;transition:all .18s;margin-top:1px}
 .study-task-card.done-card .stc-check{background:linear-gradient(135deg,#8FA898,#9898B0);border-color:transparent;color:#fff}
-.stc-subj{font-size:.55rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0;margin-top:2px}
+.stc-subj{font-size:.55rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-weight:700;flex-shrink:0;margin-top:2px}
 .stc-name{font-size:.74rem;font-weight:600;color:var(--tx);flex:1;line-height:1.35}
-.stc-pages{font-size:.56rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;margin-top:1px}
-.stc-pct{font-size:.58rem;color:var(--sage-d);font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0}
+.stc-pages{font-size:.56rem;color:var(--tx3);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;margin-top:1px}
+.stc-pct{font-size:.58rem;color:var(--sage-d);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-weight:700;flex-shrink:0}
 
 /* ═══ POMO CHAPTER BIND ═══ */
 .pomo-chap-sel{font-size:.62rem;padding:.22rem .5rem;border-radius:10px;border:1.5px solid rgba(197,184,232,.35);background:rgba(255,255,255,.7);color:var(--tx2);cursor:pointer;font-family:inherit;flex:1;min-width:0;transition:all .15s}
@@ -249,7 +247,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .week-col:last-child{border-right:none}
 .week-col-hdr{text-align:center;margin-bottom:.35rem;padding-bottom:.3rem;border-bottom:1.5px solid rgba(160,148,132,.12)}
 .week-day-name{font-size:.6rem;color:var(--tx3);letter-spacing:.05em}
-.week-day-num{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;line-height:1.1}
+.week-day-num{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:1.1rem;font-weight:700;line-height:1.1}
 .week-day-today .week-day-name{color:var(--clay-d)}
 .week-day-today .week-day-num{background:linear-gradient(135deg,#785048,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .week-evt{padding:.28rem .4rem;border-radius:7px;border-left:3px solid var(--dusk);background:rgba(255,255,255,.9);margin-bottom:3px;font-size:.62rem;font-weight:500;color:var(--tx);border:1.5px solid rgba(160,148,132,.15);border-left:3px solid var(--dusk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;transition:all .15s}
@@ -293,7 +291,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   .card-body{padding:1rem 1.1rem}
   .card-title{font-size:.7rem}
   .card-act{font-size:.72rem}
-  .tl-item,.chap-row,.dl-item{padding:.55rem .75rem}
+  .chap-row,.dl-item{padding:.55rem .75rem}
   .todo-text{font-size:.82rem}
   .add-inp{font-size:.8rem;padding:.4rem .8rem}
   .add-btn-s{font-size:.78rem;padding:.4rem .95rem}
@@ -316,6 +314,47 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   html{font-size:19px}
   main,.hdr-inner{max-width:1480px}
   .cal-cell{min-height:118px!important}
+}
+
+/* ═══ FIXED BARS · NO ZOOM · OVERFLOW GUARDS ═══ */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{touch-action:manipulation}
+header{position:fixed;top:0;left:0;right:0;padding-top:env(safe-area-inset-top,0px)}
+.app{padding-top:calc(54px + env(safe-area-inset-top,0px))}
+.hdr-inner{min-width:0}
+.hdr-right{min-width:0;flex-shrink:1;overflow:hidden}
+.bottom-nav{transform:translateZ(0);-webkit-transform:translateZ(0)}
+main{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))!important}
+.card-hdr{flex-wrap:wrap;gap:.35rem}
+.card-hdr>div{flex-wrap:wrap}
+.todo-text,.dl-name,.dl-notes,.chap-title,.stc-name,.quote-text{word-break:break-word;overflow-wrap:anywhere}
+div[id$="Panel"]{max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+/* iOS zooms the page when a field under 16px is focused – that is what shoved the bars around */
+@media(hover:none) and (pointer:coarse){input,textarea{font-size:16px!important}}
+@media(max-width:560px){
+  header{padding-left:.7rem;padding-right:.7rem}
+  .hdr-inner{gap:.4rem}
+  .hdr-right{gap:.25rem}
+  .logo-text{font-size:.85rem;letter-spacing:.06em}
+  .ub-name{display:none}
+  div[style*="justify-content:space-between"]{flex-wrap:wrap;gap:.4rem}
+  div[style*="justify-content:space-between"]>div[style*="display:flex"]{flex-wrap:wrap}
+}
+@media(min-width:1024px){
+  header{left:96px}
+  .app{padding-top:calc(64px + env(safe-area-inset-top,0px))}
+  main{padding-bottom:2.5rem!important}
+}
+
+/* form controls & dropdown menus don't inherit the page font by default – make them match */
+button,input,select,textarea,optgroup,option{font-family:inherit;letter-spacing:inherit}
+select,option{font-weight:500}
+
+/* calendar cells: never truncate chip text */
+.cal-cell{min-width:0}
+@media(max-width:560px){
+  .ci{display:none}
+  .cal-cell{padding:2px!important}
 }
 </style>
 </head>
@@ -433,7 +472,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
         </div>
         <div class="card-body">
           <textarea class="note-area" id="noteArea" placeholder="今天有什麼想法或感受…" oninput="updateNote()" onblur="saveNote()" style="min-height:60px"></textarea>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.35rem"><span style="font-size:.58rem;color:var(--tx3);font-family:'JetBrains Mono',monospace" id="noteCnt">0 字</span><button style="font-size:.67rem;padding:.24rem .65rem;border-radius:14px;border:1.5px solid rgba(143,166,142,.4);background:var(--sage-l);color:var(--sage-d);cursor:pointer;font-family:inherit;font-weight:600" onclick="saveNote()">儲存 ✦</button></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.35rem"><span style="font-size:.58rem;color:var(--tx3);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif" id="noteCnt">0 字</span><button style="font-size:.67rem;padding:.24rem .65rem;border-radius:14px;border:1.5px solid rgba(143,166,142,.4);background:var(--sage-l);color:var(--sage-d);cursor:pointer;font-family:inherit;font-weight:600" onclick="saveNote()">儲存 ✦</button></div>
         </div>
       </div>
     </div>
@@ -497,12 +536,12 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   <!-- STUDY TAB -->
   <div id="tab-study" style="display:none">
     <div class="study-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.75rem">
-      <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">科目數</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stSubjCount">0</div></div>
-      <div class="study-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">章節完成</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stChapDone">0</div></div>
-      <div class="vid-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--vid-d);letter-spacing:.1em;margin-bottom:.2rem">影片課程</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.05rem;font-weight:700;color:var(--vid-d);white-space:nowrap" id="stVidCourses">0／0</div></div>
-      <div class="dl-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--clay-d);letter-spacing:.1em;margin-bottom:.2rem">待考</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--clay-d)" id="stDlExamPending">0</div></div>
-      <div class="dl-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:var(--dusk-d);letter-spacing:.1em;margin-bottom:.2rem">待繳</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--dusk-d)" id="stDlAssignPending">0</div></div>
-      <div class="dl-stat-card"><div style="font-family:'Cinzel',serif;font-size:.48rem;color:#C04040;letter-spacing:.1em;margin-bottom:.2rem">3天內</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;color:#C04040" id="stDlUrgent">0</div></div>
+      <div class="study-stat-card"><div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">科目數</div><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stSubjCount">0</div></div>
+      <div class="study-stat-card"><div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--tx3);letter-spacing:.1em;margin-bottom:.2rem">章節完成</div><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:1.3rem;font-weight:700;color:var(--tx)" id="stChapDone">0</div></div>
+      <div class="vid-stat-card"><div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--vid-d);letter-spacing:.1em;margin-bottom:.2rem">影片課程</div><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:1.05rem;font-weight:700;color:var(--vid-d);white-space:nowrap" id="stVidCourses">0／0</div></div>
+      <div class="dl-stat-card"><div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--clay-d);letter-spacing:.1em;margin-bottom:.2rem">待考</div><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:1.3rem;font-weight:700;color:var(--clay-d)" id="stDlExamPending">0</div></div>
+      <div class="dl-stat-card"><div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--dusk-d);letter-spacing:.1em;margin-bottom:.2rem">待繳</div><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:1.3rem;font-weight:700;color:var(--dusk-d)" id="stDlAssignPending">0</div></div>
+      <div class="dl-stat-card"><div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:#C04040;letter-spacing:.1em;margin-bottom:.2rem">3天內</div><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:1.3rem;font-weight:700;color:#C04040" id="stDlUrgent">0</div></div>
     </div>
 
     <!-- TAB SWITCHER inside study -->
@@ -517,7 +556,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
       <div class="grid">
         <div class="col-w" style="display:flex;flex-direction:column;gap:.65rem">
           <div style="display:flex;align-items:center;justify-content:space-between">
-            <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase">📖 讀書計劃</div>
+            <div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.65rem;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase">📖 讀書計劃</div>
             <div style="display:flex;gap:.35rem">
               <div style="display:flex;gap:.3rem">
               <button class="add-btn-s" onclick="openAutoSchedule()" style="font-size:.64rem;padding:.22rem .62rem;background:linear-gradient(135deg,rgba(143,166,142,.2),rgba(144,144,168,.15));color:var(--sage-d);border-color:rgba(143,166,142,.4)">⚡ 一鍵排程</button>
@@ -550,7 +589,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     <!-- VIDEO SECTION -->
     <div id="studySectionVid" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem">
-        <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--vid-d);letter-spacing:.08em;text-transform:uppercase">🎬 教學影片課程</div>
+        <div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.65rem;color:var(--vid-d);letter-spacing:.08em;text-transform:uppercase">🎬 教學影片課程</div>
         <div style="display:flex;gap:.35rem">
           <button class="add-btn-s" onclick="showAddCourse()" style="font-size:.64rem;padding:.22rem .62rem;background:var(--vid-l);color:var(--vid-d);border-color:rgba(123,101,196,.3)">＋ 手動新增</button>
         </div>
@@ -565,7 +604,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     <!-- DEADLINE SECTION (exams / assignments) -->
     <div id="studySectionDl" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem">
-        <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--clay-d);letter-spacing:.08em;text-transform:uppercase">🎯 考試、作業與報告截止</div>
+        <div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.65rem;color:var(--clay-d);letter-spacing:.08em;text-transform:uppercase">🎯 考試、作業與報告截止</div>
         <div style="display:flex;gap:.35rem">
           <button id="dlViewList" onclick="setDlView('list')" style="font-size:.6rem;padding:.2rem .5rem;border-radius:12px;border:1.5px solid rgba(184,144,128,.28);cursor:pointer;font-family:inherit">☰ 清單</button>
           <button id="dlViewCal" onclick="setDlView('cal')" style="font-size:.6rem;padding:.2rem .5rem;border-radius:12px;border:1.5px solid rgba(184,144,128,.28);cursor:pointer;font-family:inherit">📅 月曆</button>
@@ -599,7 +638,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     <div id="wrSectionWeek">
       <!-- Header: week nav + summary chips on same row -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;flex-wrap:wrap;gap:.35rem">
-        <div style="font-family:'Cinzel',serif;font-size:.65rem;color:var(--tx2);letter-spacing:.07em" id="weekRangeLabel"></div>
+        <div style="font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.65rem;color:var(--tx2);letter-spacing:.07em" id="weekRangeLabel"></div>
         <div style="display:flex;gap:.3rem;align-items:center">
           <div style="display:flex;gap:.3rem;flex-wrap:wrap" id="weekSummaryChips"></div>
           <button onclick="shiftWeek(-1)" style="width:26px;height:26px;border-radius:50%;border:1.5px solid var(--brd);background:rgba(255,255,255,.6);color:var(--tx3);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">‹</button>
@@ -632,7 +671,7 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
     <div id="wrSectionReview" style="display:none">
       <!-- Range selector -->
       <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.65rem;padding:.55rem .75rem;background:rgba(255,255,255,.95);border:1.5px solid rgba(160,148,132,.14);border-radius:12px">
-        <span style="font-size:.6rem;color:var(--tx3);font-family:'Cinzel',serif;letter-spacing:.06em;white-space:nowrap">回顧範圍</span>
+        <span style="font-size:.6rem;color:var(--tx3);font-family:'Cinzel','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;letter-spacing:.06em;white-space:nowrap">回顧範圍</span>
         <div style="display:flex;gap:.28rem;flex-wrap:wrap">
           <button onclick="setReviewRange(7)"  id="rr7"  class="rr-btn">近 7 天</button>
           <button onclick="setReviewRange(28)" id="rr28" class="rr-btn rr-active">近 28 天</button>
@@ -958,17 +997,17 @@ function renderSchedules(){
   const now=getTW(),nm=now.getHours()*60+now.getMinutes();
   const SH=6,EH=23,PPM=1.1;
   let html=`<div style="position:relative;padding-left:42px">`;
-  for(let h=SH;h<EH;h++){const yp=(h-SH)*60*PPM,ic=h===now.getHours();html+=`<div style="position:absolute;left:0;top:${yp}px;width:38px;text-align:right;padding-right:6px"><span style="font-family:'JetBrains Mono',monospace;font-size:.5rem;color:${ic?'var(--clay-d)':'var(--tx3)'};font-weight:${ic?700:400}">${pad(h)}:00</span></div><div style="position:absolute;left:42px;right:0;top:${yp}px;height:1px;background:rgba(160,148,132,${ic?'.28':'.12'})"></div>`;}
+  for(let h=SH;h<EH;h++){const yp=(h-SH)*60*PPM,ic=h===now.getHours();html+=`<div style="position:absolute;left:0;top:${yp}px;width:38px;text-align:right;padding-right:6px"><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:${ic?'var(--clay-d)':'var(--tx3)'};font-weight:${ic?700:400}">${pad(h)}:00</span></div><div style="position:absolute;left:42px;right:0;top:${yp}px;height:1px;background:rgba(160,148,132,${ic?'.28':'.12'})"></div>`;}
   html+=`<div style="height:${(EH-SH)*60*PPM}px"></div>`;
   const nh=now.getHours(),nm2=now.getMinutes();
-  if(nh>=SH&&nh<EH){const np=((nh-SH)*60+nm2)*PPM;html+=`<div style="position:absolute;left:42px;right:0;top:${np}px;z-index:10;display:flex;align-items:center;gap:4px;pointer-events:none"><div style="width:7px;height:7px;border-radius:50%;background:var(--clay-d);flex-shrink:0;margin-left:-3px"></div><div style="flex:1;height:1.5px;background:linear-gradient(90deg,var(--clay-d),transparent)"></div><span style="font-family:'JetBrains Mono',monospace;font-size:.48rem;color:var(--clay-d);flex-shrink:0">${pad(nh)}:${pad(nm2)}</span></div>`;}
+  if(nh>=SH&&nh<EH){const np=((nh-SH)*60+nm2)*PPM;html+=`<div style="position:absolute;left:42px;right:0;top:${np}px;z-index:10;display:flex;align-items:center;gap:4px;pointer-events:none"><div style="width:7px;height:7px;border-radius:50%;background:var(--clay-d);flex-shrink:0;margin-left:-3px"></div><div style="flex:1;height:1.5px;background:linear-gradient(90deg,var(--clay-d),transparent)"></div><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:var(--clay-d);flex-shrink:0">${pad(nh)}:${pad(nm2)}</span></div>`;}
   items.forEach(s=>{
     const sm=toMins(s.start),em=s.end?toMins(s.end):sm+60;
     if(sm/60<SH||sm/60>=EH)return;
     const top=(sm-SH*60)*PPM,height=Math.max((em-sm)*PPM,22);
     const past=em<nm,isNow=sm<=nm&&nm<=em,pct=isNow?Math.round((nm-sm)/(em-sm)*100):0;
     const bl=isNow?'var(--clay-d)':s.priority==='high'?'var(--clay-d)':'var(--dusk)';
-    html+=`<div style="position:absolute;left:42px;right:4px;top:${top}px;height:${height}px;background:rgba(255,255,255,.92);border:1.5px solid rgba(160,148,132,.22);border-left:3px solid ${bl};border-radius:6px;padding:2px 22px 2px 6px;overflow:hidden;${past?'opacity:.4':''}"><div style="display:flex;align-items:center;gap:4px"><span style="font-size:.7rem">${schedIcon(s.name)}</span><span style="font-size:.72rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}${s.recurId?` <span style="font-size:.46rem;color:var(--dusk-d);vertical-align:middle">🔁</span>`:''}${isNow?` <span style="font-size:.48rem;padding:1px 5px;border-radius:6px;background:linear-gradient(90deg,var(--clay-d),var(--dusk-d));color:#fff;font-weight:700;vertical-align:middle">NOW</span>`:''}</span></div>${height>28&&s.end?`<div style="font-size:.55rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;margin-left:18px">${s.start}–${s.end}</div>`:''}${isNow?`<div style="position:absolute;bottom:0;left:0;height:2px;width:${pct}%;background:linear-gradient(90deg,var(--clay-d),var(--dusk))"></div>`:''}<button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')" style="position:absolute;top:3px;right:3px">✕</button><button onclick="event.stopPropagation();openEditSched('${s.id}')" style="position:absolute;top:3px;right:22px;width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(160,148,132,.25);background:rgba(255,255,255,.7);color:var(--tx3);font-size:.5rem;cursor:pointer;display:none;align-items:center;justify-content:center" class="del-btn">✎</button></div>`;
+    html+=`<div style="position:absolute;left:42px;right:4px;top:${top}px;height:${height}px;background:rgba(255,255,255,.92);border:1.5px solid rgba(160,148,132,.22);border-left:3px solid ${bl};border-radius:6px;padding:2px 22px 2px 6px;overflow:hidden;${past?'opacity:.4':''}"><div style="display:flex;align-items:center;gap:4px"><span style="font-size:.7rem">${schedIcon(s.name)}</span><span style="font-size:.72rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}${s.recurId?` <span style="font-size:.55rem;color:var(--dusk-d);vertical-align:middle">🔁</span>`:''}${isNow?` <span style="font-size:.55rem;padding:1px 5px;border-radius:6px;background:linear-gradient(90deg,var(--clay-d),var(--dusk-d));color:#fff;font-weight:700;vertical-align:middle">NOW</span>`:''}</span></div>${height>28&&s.end?`<div style="font-size:.55rem;color:var(--tx3);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;margin-left:18px">${s.start}–${s.end}</div>`:''}${isNow?`<div style="position:absolute;bottom:0;left:0;height:2px;width:${pct}%;background:linear-gradient(90deg,var(--clay-d),var(--dusk))"></div>`:''}<button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')" style="position:absolute;top:3px;right:3px">✕</button><button onclick="event.stopPropagation();openEditSched('${s.id}')" style="position:absolute;top:3px;right:22px;width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(160,148,132,.25);background:rgba(255,255,255,.7);color:var(--tx3);font-size:.55rem;cursor:pointer;display:none;align-items:center;justify-content:center" class="del-btn">✎</button></div>`;
   });
   html+=`</div>`;el.innerHTML=html;
 }
@@ -1008,46 +1047,7 @@ function delSched(id){
   if(curTab==='review')renderWeekPlan();
 }
 
-/* ── EXPORT TO iOS CALENDAR (.ics) ── */
-function icsEscape(s){return String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');}
 function icsAddHour(t){const [h,m]=(t||'09:00').split(':').map(Number);return `${pad((h+1)%24)}:${pad(m||0)}`;}
-function schedToICSDate(dateStr,timeStr){
-  const [y,mo,d]=dateStr.split('-');
-  const [hh,mm]=(timeStr||'00:00').split(':');
-  return `${y}${mo}${d}T${pad(+hh)}${pad(+mm)}00`;
-}
-function buildICS(events){
-  const dtstamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
-  let ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//PersonalSchedule//ZH-TW//EN\r\nCALSCALE:GREGORIAN\r\n';
-  events.forEach(ev=>{
-    const dtStart=schedToICSDate(ev.date,ev.start||'09:00');
-    const dtEnd=schedToICSDate(ev.date,ev.end||icsAddHour(ev.start||'09:00'));
-    ics+=`BEGIN:VEVENT\r\nUID:${ev.id}@personal-schedule\r\nDTSTAMP:${dtstamp}\r\nDTSTART:${dtStart}\r\nDTEND:${dtEnd}\r\nSUMMARY:${icsEscape(ev.name)}\r\nEND:VEVENT\r\n`;
-  });
-  ics+='END:VCALENDAR\r\n';
-  return ics;
-}
-function downloadICS(ics,filename){
-  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.target='_blank';a.rel='noopener';
-  // No download attribute on purpose: lets iOS Safari hand off to the Calendar app's "Add Events" sheet
-  document.body.appendChild(a);a.click();document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url),4000);
-}
-function exportScheduleICS(){
-  if(!schedules.length){showToast('尚無行程可匯出');return;}
-  downloadICS(buildICS(schedules),'我的行程.ics');
-  showToast('📤 已匯出，請在跳出的畫面選擇加入 iOS 行事曆');
-}
-function exportTodayICS(){
-  const tk=todayKey();
-  const items=schedules.filter(s=>s.date===tk);
-  if(!items.length){showToast('今日尚無行程');return;}
-  downloadICS(buildICS(items),'今日行程.ics');
-  showToast('📤 已匯出今日行程');
-}
 
 /* ── IMPORT FROM iOS CALENDAR (.ics) ── */
 function icsUnescape(s){return String(s||'').replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\');}
@@ -1213,7 +1213,7 @@ async function syncIcsSubscription(manual){
 }
 
 /* ── TODOS ── */
-const PCOL={high:{dot:'p-hi',label:'高',style:'background:#F2EAE6;color:#7A5248'},mid:{dot:'p-mid',label:'中',style:'background:#F0EEE8;color:#5A5448'},low:{dot:'p-lo',label:'低',style:'background:#EAF0EA;color:#4A6449'}};
+const PCOL={high:{label:'高',style:'background:#F2EAE6;color:#7A5248'},mid:{label:'中',style:'background:#F0EEE8;color:#5A5448'},low:{label:'低',style:'background:#EAF0EA;color:#4A6449'}};
 function todoHTML(t,full=false){const pc=PCOL[t.priority]||PCOL.mid;return`<div class="todo-item${t.done?' done':''}" onclick="toggleTodo('${t.id}',event)"><div class="todo-check">${t.done?'✓':''}</div><div class="todo-text">${t.text}</div>${full?`<span style="font-size:.55rem;padding:2px 6px;border-radius:8px;${pc.style};flex-shrink:0">${pc.label}</span>`:''}<button class="del-btn" onclick="event.stopPropagation();delTodo('${t.id}')">✕</button></div>`;}
 function renderQuickTodos(){
   const el=$('quickTodos');if(!el)return;
@@ -1226,7 +1226,7 @@ function renderQuickTodos(){
   // Show priority badge inline
   el.innerHTML=top.map(t=>{
     const pc=PCOL[t.priority]||PCOL.mid;
-    const badge=t.priority==='high'?`<span style="font-size:.52rem;padding:1px 6px;border-radius:7px;${pc.style};flex-shrink:0">${pc.label}</span>`:'';
+    const badge=t.priority==='high'?`<span style="font-size:.55rem;padding:1px 6px;border-radius:7px;${pc.style};flex-shrink:0">${pc.label}</span>`:'';
     return`<div class="todo-item${t.done?' done':''}" onclick="toggleTodo('${t.id}',event)">
       <div class="todo-check">${t.done?'✓':''}</div>
       <div class="todo-text">${t.text}</div>
@@ -1261,12 +1261,12 @@ function renderHabits(){
     const logs=habitLogs[h.id]||{},streak=calcStreak(h.id);
     const cols=['linear-gradient(135deg,#C0A89A,#9898B0)','linear-gradient(135deg,#8FA898,#9AAAB8)','linear-gradient(135deg,#B89A88,#A8A49A)','linear-gradient(135deg,#9AAAB8,#8FA898)'];
     const col=cols[hi%cols.length];
-    const dots=last7.map(dk=>{const done=!!logs[dk];return`<div style="width:13px;height:13px;border-radius:50%;border:1.5px solid rgba(160,148,132,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.45rem;background:${done?col:'transparent'};border-color:${done?'transparent':'rgba(160,148,132,.3)'};color:${done?'#fff':'transparent'}" onclick="toggleHabit('${h.id}','${dk}',event)">${done?'✓':''}</div>`;}).join('');
-    return`<div class="habit-row"><div style="font-size:.9rem;width:26px;text-align:center;flex-shrink:0">${h.emoji}</div><div style="flex:1;min-width:0"><div style="font-size:.75rem;font-weight:500">${h.name}</div></div><div style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--clay-d);flex-shrink:0">🔥 ${streak}</div><div style="display:flex;gap:3px;flex-shrink:0">${dots}</div><button class="del-btn" onclick="delHabit('${h.id}')">✕</button></div>`;
+    const dots=last7.map(dk=>{const done=!!logs[dk];return`<div style="width:13px;height:13px;border-radius:50%;border:1.5px solid rgba(160,148,132,.3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.55rem;background:${done?col:'transparent'};border-color:${done?'transparent':'rgba(160,148,132,.3)'};color:${done?'#fff':'transparent'}" onclick="toggleHabit('${h.id}','${dk}',event)">${done?'✓':''}</div>`;}).join('');
+    return`<div class="habit-row"><div style="font-size:.9rem;width:26px;text-align:center;flex-shrink:0">${h.emoji}</div><div style="flex:1;min-width:0"><div style="font-size:.75rem;font-weight:500">${h.name}</div></div><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.6rem;color:var(--clay-d);flex-shrink:0">🔥 ${streak}</div><div style="display:flex;gap:3px;flex-shrink:0">${dots}</div><button class="del-btn" onclick="delHabit('${h.id}')">✕</button></div>`;
   }).join('');
   renderHabitStats();
 }
-function renderHabitStats(){const el=$('habitStats');if(!el)return;if(!habits.length){el.innerHTML='<div class="empty">尚無習慣資料</div>';return;}const today=getTW();el.innerHTML=habits.map((h,hi)=>{const logs=habitLogs[h.id]||{};let d7=0;for(let i=0;i<7;i++){const d=new Date(today);d.setDate(d.getDate()-i);if(logs[dayKey(d)])d7++;}const pct=Math.round(d7/7*100),s=calcStreak(h.id);const cols=['linear-gradient(135deg,#C0A89A,#9898B0)','linear-gradient(135deg,#8FA898,#9AAAB8)','linear-gradient(135deg,#B89A88,#A8A49A)'];return`<div style="margin-bottom:.8rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.2rem"><div style="font-size:.75rem;font-weight:600">${h.emoji} ${h.name}</div><div style="font-size:.6rem;color:var(--clay-d);font-family:'JetBrains Mono',monospace">🔥${s}</div></div><div style="height:5px;border-radius:5px;background:rgba(197,184,232,.15);overflow:hidden"><div style="height:100%;width:${pct}%;background:${cols[hi%cols.length]};border-radius:5px"></div></div><div style="font-size:.55rem;color:var(--tx3);margin-top:.15rem">本週 ${d7}/7 天 · ${pct}%</div></div>`;}).join('');}
+function renderHabitStats(){const el=$('habitStats');if(!el)return;if(!habits.length){el.innerHTML='<div class="empty">尚無習慣資料</div>';return;}const today=getTW();el.innerHTML=habits.map((h,hi)=>{const logs=habitLogs[h.id]||{};let d7=0;for(let i=0;i<7;i++){const d=new Date(today);d.setDate(d.getDate()-i);if(logs[dayKey(d)])d7++;}const pct=Math.round(d7/7*100),s=calcStreak(h.id);const cols=['linear-gradient(135deg,#C0A89A,#9898B0)','linear-gradient(135deg,#8FA898,#9AAAB8)','linear-gradient(135deg,#B89A88,#A8A49A)'];return`<div style="margin-bottom:.8rem"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.2rem"><div style="font-size:.75rem;font-weight:600">${h.emoji} ${h.name}</div><div style="font-size:.6rem;color:var(--clay-d);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif">🔥${s}</div></div><div style="height:5px;border-radius:5px;background:rgba(197,184,232,.15);overflow:hidden"><div style="height:100%;width:${pct}%;background:${cols[hi%cols.length]};border-radius:5px"></div></div><div style="font-size:.55rem;color:var(--tx3);margin-top:.15rem">本週 ${d7}/7 天 · ${pct}%</div></div>`;}).join('');}
 function renderTodayHabits(){const tk=todayKey(),el=$('todayHabits');if(!el)return;if(!habits.length){el.innerHTML=`<div class="empty" style="padding:.8rem">🌱 點上方「習慣管理」建立習慣</div>`;return;}el.innerHTML=habits.map((h,hi)=>{const done=!!(habitLogs[h.id]||{})[tk];const cols=['linear-gradient(135deg,#C0A89A,#9898B0)','linear-gradient(135deg,#8FA898,#9AAAB8)','linear-gradient(135deg,#B89A88,#A8A49A)'];const col=cols[hi%cols.length];return`<div class="habit-row" onclick="toggleHabitT('${h.id}',event)" style="cursor:pointer"><div style="font-size:.9rem;width:26px;text-align:center;flex-shrink:0">${h.emoji}</div><div style="flex:1"><div style="font-size:.75rem;font-weight:500;${done?'text-decoration:line-through;color:var(--tx3)':''}">${h.name}</div></div><div style="width:26px;height:26px;border-radius:50%;border:1.5px solid ${done?'transparent':'rgba(197,184,232,.4)'};background:${done?col:'transparent'};display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .2s;flex-shrink:0">${done?'✓':''}</div></div>`;}).join('');}
 function toggleHabit(hid,dk,evt){if(!habitLogs[hid])habitLogs[hid]={};habitLogs[hid][dk]=!habitLogs[hid][dk];persist();if(habitLogs[hid][dk]&&evt)sparkle(evt.clientX,evt.clientY);renderHabits();renderTodayHabits();updateStats();}
 function toggleHabitT(hid,evt){toggleHabit(hid,todayKey(),evt);}
@@ -1322,9 +1322,9 @@ function renderStudyAlt(){
     const groups={};dated.forEach(x=>{(groups[x.c.date]=groups[x.c.date]||[]).push(x);});
     let html=Object.keys(groups).map(k=>{
       const d=new Date(k+'T00:00:00'),isT=k===tk,past=k<tk;
-      return`<div class="dl-block-hdr" style="background:${isT?'#FBE1E4':'rgba(140,140,168,.1)'};color:${isT?'#9B3F51':'var(--dusk-d)'};${past?'opacity:.75':''}"><span>${d.getMonth()+1}/${d.getDate()}（週${WDN[d.getDay()]}）${isT?' · 今天':''}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">${groups[k].length} 項</span></div>`+groups[k].map(x=>studyRowHtml(x.sj,x.c,tk)).join('');
+      return`<div class="dl-block-hdr" style="background:${isT?'#FBE1E4':'rgba(140,140,168,.1)'};color:${isT?'#9B3F51':'var(--dusk-d)'};${past?'opacity:.75':''}"><span>${d.getMonth()+1}/${d.getDate()}（週${WDN[d.getDay()]}）${isT?' · 今天':''}</span><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;font-weight:600">${groups[k].length} 項</span></div>`+groups[k].map(x=>studyRowHtml(x.sj,x.c,tk)).join('');
     }).join('');
-    if(undated.length)html+=`<div class="dl-block-hdr" style="background:rgba(160,148,132,.12);color:var(--tx3)"><span>未排定日期（依頁數進度）</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">${undated.length} 項</span></div>`+undated.map(x=>studyRowHtml(x.sj,x.c,tk)).join('');
+    if(undated.length)html+=`<div class="dl-block-hdr" style="background:rgba(160,148,132,.12);color:var(--tx3)"><span>未排定日期（依頁數進度）</span><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;font-weight:600">${undated.length} 項</span></div>`+undated.map(x=>studyRowHtml(x.sj,x.c,tk)).join('');
     alt.innerHTML=html||'<div class="empty" style="padding:1.5rem">沒有符合的項目</div>';
     return;
   }
@@ -1340,9 +1340,9 @@ function renderStudyAlt(){
   for(let d=1;d<=dim;d++){
     const k=`${y}-${pad(m+1)}-${pad(d)}`,its=(by[k]||[]).slice().sort((a,b)=>a.si-b.si);
     const isT=k===tk,sel=k===studyCalSel;
-    const chips=its.slice(0,3).map(x=>{const wk=(x.c.name.match(/^W(\d+)/)||[])[1];const fin=isChapDone(x.c);return`<div style="font-size:.5rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:${x.sj.color}55;color:var(--tx2);border-left:3px solid ${x.sj.color};${fin?'opacity:.45;text-decoration:line-through':''}">${courseAbbr(x.sj.name)}${wk?' W'+wk:''}</div>`;}).join('');
-    const more=its.length>3?`<div style="font-size:.46rem;color:var(--tx3);margin-top:1px">+${its.length-3}</div>`:'';
-    cells+=`<div onclick="studyCalSelect('${k}')" class="cal-cell" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
+    const chips=its.slice(0,3).map(x=>{const wk=(x.c.name.match(/^W(\d+)/)||[])[1];const fin=isChapDone(x.c);return`<div style="font-size:.55rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:normal;word-break:break-all;line-height:1.25;background:${x.sj.color}55;color:var(--tx2);border-left:3px solid ${x.sj.color};${fin?'opacity:.45;text-decoration:line-through':''}">${courseAbbr(x.sj.name)}${wk?'<span style="white-space:nowrap"> W'+wk+'</span>':''}</div>`;}).join('');
+    const more=its.length>3?`<div style="font-size:.55rem;color:var(--tx3);margin-top:1px">+${its.length-3}</div>`:'';
+    cells+=`<div onclick="studyCalSelect('${k}')" class="cal-cell" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
   }
   const sd=new Date(studyCalSel+'T00:00:00'),dayItems=(by[studyCalSel]||[]).slice().sort((a,b)=>a.si-b.si);
   alt.innerHTML=`<div class="card"><div class="card-body">
@@ -1359,7 +1359,7 @@ function renderStudyAlt(){
     <div style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.55rem;color:var(--tx3);margin-top:.5rem">${subjects.map(sj=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${sj.color}88;border-left:3px solid ${sj.color};vertical-align:-1px"></span> ${courseAbbr(sj.name)}</span>`).join('')}<span style="color:#C04040">● 今天</span>${noDate?`<span>· 另有 ${noDate} 項未排日期（見「依時間」）</span>`:''}</div>
   </div></div>
   <div style="margin-top:.65rem">
-    <div class="dl-block-hdr" style="background:rgba(140,140,168,.1);color:var(--dusk-d)"><span>${sd.getMonth()+1}/${sd.getDate()}（週${WDN[sd.getDay()]}）${studyCalSel===tk?' · 今天':''}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">${dayItems.length} 項</span></div>
+    <div class="dl-block-hdr" style="background:rgba(140,140,168,.1);color:var(--dusk-d)"><span>${sd.getMonth()+1}/${sd.getDate()}（週${WDN[sd.getDay()]}）${studyCalSel===tk?' · 今天':''}</span><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;font-weight:600">${dayItems.length} 項</span></div>
     ${dayItems.length?dayItems.map(x=>studyRowHtml(x.sj,x.c,tk)).join(''):'<div class="empty" style="padding:.7rem;font-size:.68rem">這天沒有讀書項目</div>'}
   </div>`;
 }
@@ -1395,7 +1395,7 @@ function renderStudy(){
         <div style="display:flex;flex-direction:column;gap:.3rem;flex-shrink:0;align-items:flex-end">
           <div class="subj-prog-wrap"><div class="subj-prog-bar"><div class="subj-prog-fill" style="width:${pct}%;background:${sj.color}"></div></div><div class="subj-prog-pct">${pct}%</div></div>
           <div style="display:flex;gap:.3rem;flex-wrap:wrap">
-            <button class="exam-badge none" onclick="openExamDate('${sj.id}')" style="font-size:.5rem">${sj.examDate?'🎯 '+sj.examDate:'🎯 設定考期'}</button>
+            <button class="exam-badge none" onclick="openExamDate('${sj.id}')" style="font-size:.55rem">${sj.examDate?'🎯 '+sj.examDate:'🎯 設定考期'}</button>
           </div>
           <div style="display:flex;gap:.3rem;align-items:center;flex-wrap:wrap">
             <select onclick="event.stopPropagation()" onchange="setSubjSpeed('${sj.id}',this.value)" style="font-size:.55rem;border:none;border-bottom:1px solid rgba(160,148,132,.3);background:transparent;color:var(--tx3);cursor:pointer;padding:0 2px;-webkit-appearance:none">
@@ -1580,9 +1580,9 @@ function renderDlCal(calEl,itemHtml){
   for(let d=1;d<=dim;d++){
     const k=`${y}-${pad(m+1)}-${pad(d)}`,items=(by[k]||[]).slice().sort((a,b)=>(a.done?1:0)-(b.done?1:0));
     const isT=k===tk,sel=k===dlCalSel;
-    const chips=items.slice(0,3).map(x=>{const[bg,fg]=dlIsQuiz(x)?['#FCE9EC','#B0606F']:(x.type==='report'&&!dlIsMine(x))?['#EBF7F1','#3E7A5C']:(COL[x.type]||COL.assignment);return`<div style="font-size:.5rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:${bg};color:${fg};${dlIsQuiz(x)?'border:1px solid #F5D3D8;':(x.type==='report'&&!dlIsMine(x))?'border:1px solid #CFEBDD;':''}${x.done?'opacity:.45;text-decoration:line-through':''}">${ICON[x.type]||'📝'}${abbr(x.name)}</div>`;}).join('');
-    const more=items.length>3?`<div style="font-size:.46rem;color:var(--tx3);margin-top:1px">+${items.length-3}</div>`:'';
-    cells+=`<div onclick="dlCalSelect('${k}')" class="cal-cell" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
+    const chips=items.slice(0,3).map(x=>{const[bg,fg]=dlIsQuiz(x)?['#FCE9EC','#B0606F']:(x.type==='report'&&!dlIsMine(x))?['#EBF7F1','#3E7A5C']:(COL[x.type]||COL.assignment);return`<div style="font-size:.55rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:normal;word-break:break-all;line-height:1.25;background:${bg};color:${fg};${dlIsQuiz(x)?'border:1px solid #F5D3D8;':(x.type==='report'&&!dlIsMine(x))?'border:1px solid #CFEBDD;':''}${x.done?'opacity:.45;text-decoration:line-through':''}"><span class="ci">${ICON[x.type]||'📝'}</span>${abbr(x.name)}</div>`;}).join('');
+    const more=items.length>3?`<div style="font-size:.55rem;color:var(--tx3);margin-top:1px">+${items.length-3}</div>`:'';
+    cells+=`<div onclick="dlCalSelect('${k}')" class="cal-cell" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
   }
   const sd=new Date(dlCalSel+'T00:00:00');
   const dayItems=(by[dlCalSel]||[]).slice().sort((a,b)=>(a.done?1:0)-(b.done?1:0));
@@ -1600,7 +1600,7 @@ function renderDlCal(calEl,itemHtml){
     <div style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.55rem;color:var(--tx3);margin-top:.5rem">${[['#F7C9CF','🎯期中／期末考'],['#FCE9EC','🎯小考'],['#CBD6F4','📝作業'],['#A9DEC3','📊我的報告'],['#EBF7F1','📊其他報告']].map(([c,l])=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${c};vertical-align:-1px;${c==='#EBF7F1'?'border:1px solid #B5DCC8':c==='#FCE9EC'?'border:1px solid #F5D3D8':''}"></span> ${l}</span>`).join('')}<span style="color:#C04040">● 今天</span></div>
   </div></div>
   <div style="margin-top:.65rem">
-    <div class="dl-block-hdr" style="background:rgba(140,140,168,.1);color:var(--dusk-d)"><span>${sd.getMonth()+1}/${sd.getDate()}（週${'日一二三四五六'[sd.getDay()]}）${dlCalSel===tk?' · 今天':''}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">${dayItems.length} 項</span></div>
+    <div class="dl-block-hdr" style="background:rgba(140,140,168,.1);color:var(--dusk-d)"><span>${sd.getMonth()+1}/${sd.getDate()}（週${'日一二三四五六'[sd.getDay()]}）${dlCalSel===tk?' · 今天':''}</span><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;font-weight:600">${dayItems.length} 項</span></div>
     ${dayItems.length?dayItems.map(itemHtml).join(''):'<div class="empty" style="padding:.7rem;font-size:.68rem">這天沒有考試、作業或報告</div>'}
   </div>`;
 }
@@ -1706,7 +1706,7 @@ function renderDeadlines(){
         <div class="dl-meta">${dl.dueDate}${dl.dueTime?' '+dl.dueTime:''}</div>${dl.notes?`<div class="dl-notes">${String(dl.notes).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`:''}
       </div>
       <div class="dl-days ${urgent?'urgent':'normal'}">${dayLabel}</div>
-      <button onclick="event.stopPropagation();openEditDeadline('${dl.id}')" style="width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(184,144,128,.3);background:rgba(255,255,255,.7);color:var(--clay-d);font-size:.5rem;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0" class="del-btn">✎</button>
+      <button onclick="event.stopPropagation();openEditDeadline('${dl.id}')" style="width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(184,144,128,.3);background:rgba(255,255,255,.7);color:var(--clay-d);font-size:.55rem;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0" class="del-btn">✎</button>
       <button class="del-btn" onclick="event.stopPropagation();delDeadline('${dl.id}')">✕</button>
     </div>`;
   };
@@ -1716,7 +1716,7 @@ function renderDeadlines(){
     el.innerHTML=BL.map(([t,label])=>{
       const items=list.filter(d=>d.type===t);
       const pend=items.filter(d=>!d.done).length;
-      return`<div class="dl-block-hdr ${t}"><span>${label}</span><span style="font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600">待完成 ${pend} / ${items.length}</span></div>`+(items.length?items.map(itemHtml).join(''):`<div class="empty" style="padding:.6rem;font-size:.68rem">尚無${label.slice(2)}，點右上「＋ 新增」</div>`);
+      return`<div class="dl-block-hdr ${t}"><span>${label}</span><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;font-weight:600">待完成 ${pend} / ${items.length}</span></div>`+(items.length?items.map(itemHtml).join(''):`<div class="empty" style="padding:.6rem;font-size:.68rem">尚無${label.slice(2)}，點右上「＋ 新增」</div>`);
     }).join('');
   }else el.innerHTML=list.map(itemHtml).join('');
   updateDlStats();
@@ -1757,19 +1757,18 @@ function renderHeatmap(){
   const numWeeks=Math.ceil(padded.length/7);
   const DN=['日','一','二','三','四','五','六'];
   const cols=['rgba(215,208,200,.22)','#C9B5B0','#A8B8A8','#96A8B8','#9090AC'];
-  const header=DN.map(d=>`<div style="text-align:center;font-size:.44rem;color:#9A9088;padding-bottom:3px">${d}</div>`).join('');
+  const header=DN.map(d=>`<div style="text-align:center;font-size:.55rem;color:#9A9088;padding-bottom:3px">${d}</div>`).join('');
   const rows=[];for(let w=0;w<numWeeks;w++){const rc=[];for(let d=0;d<7;d++){const cell=padded[w*7+d];if(!cell){rc.push(`<div></div>`);continue;}rc.push(`<div style="aspect-ratio:1;border-radius:35%;background:${cols[cell.level]}" title="${cell.dk}"></div>`);}rows.push(`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px">${rc.join('')}</div>`);}
   el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px">${header}</div>${rows.join('')}`;
 }
-function renderStreakBoard(){const el=$('streakBoard');if(!el)return;if(!habits.length){el.innerHTML=`<div class="empty">尚無習慣</div>`;return;}const sorted=habits.map(h=>({...h,streak:calcStreak(h.id)})).sort((a,b)=>b.streak-a.streak);el.innerHTML=sorted.map((h,i)=>`<div style="display:flex;align-items:center;gap:.55rem;padding:.5rem .35rem;border-bottom:1px solid rgba(197,184,232,.15)"><div style="font-size:.75rem;width:18px;text-align:center">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div><div style="font-size:.9rem">${h.emoji}</div><div style="flex:1;font-size:.75rem;font-weight:600">${h.name}</div><div style="font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--clay-d)">🔥 ${h.streak}</div></div>`).join('');}
-function renderWeeklyBar(){const el=$('weeklyBar');if(!el)return;const tk=todayKey(),dn=['日','一','二','三','四','五','六'];const days=getReviewDays().map(d=>{const dk=dayKey(d);return{total:habits.filter(h=>(habitLogs[h.id]||{})[dk]).length+todos.filter(t=>t.done&&t.created===dk).length,label:dn[d.getDay()],isT:dk===tk};});const mx=Math.max(...days.map(d=>d.total),1);el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:4px;height:80px;padding:0 0 .4rem">${days.map((d,i)=>{const bc=['#C0A89A','#B89A88','#A8A49A','#8FA898','#9AAAB8','#9898B0','#B0A8B8'][i%7];return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end"><div style="font-size:.44rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'}">${d.total||''}</div><div style="width:100%;border-radius:4px 4px 0 0;min-height:3px;background:${bc};opacity:${d.isT?1:.65};height:${Math.max(d.total/mx*62,d.total>0?4:2)}px"></div>${days.length<=21?`<div style="font-family:'JetBrains Mono',monospace;font-size:.45rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'};font-weight:${d.isT?700:400}">${d.label}</div>`:''}</div>`;}).join('')}</div>`;}
+function renderStreakBoard(){const el=$('streakBoard');if(!el)return;if(!habits.length){el.innerHTML=`<div class="empty">尚無習慣</div>`;return;}const sorted=habits.map(h=>({...h,streak:calcStreak(h.id)})).sort((a,b)=>b.streak-a.streak);el.innerHTML=sorted.map((h,i)=>`<div style="display:flex;align-items:center;gap:.55rem;padding:.5rem .35rem;border-bottom:1px solid rgba(197,184,232,.15)"><div style="font-size:.75rem;width:18px;text-align:center">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div><div style="font-size:.9rem">${h.emoji}</div><div style="flex:1;font-size:.75rem;font-weight:600">${h.name}</div><div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.85rem;color:var(--clay-d)">🔥 ${h.streak}</div></div>`).join('');}
+function renderWeeklyBar(){const el=$('weeklyBar');if(!el)return;const tk=todayKey(),dn=['日','一','二','三','四','五','六'];const days=getReviewDays().map(d=>{const dk=dayKey(d);return{total:habits.filter(h=>(habitLogs[h.id]||{})[dk]).length+todos.filter(t=>t.done&&t.created===dk).length,label:dn[d.getDay()],isT:dk===tk};});const mx=Math.max(...days.map(d=>d.total),1);el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:4px;height:80px;padding:0 0 .4rem">${days.map((d,i)=>{const bc=['#C0A89A','#B89A88','#A8A49A','#8FA898','#9AAAB8','#9898B0','#B0A8B8'][i%7];return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end"><div style="font-size:.55rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'}">${d.total||''}</div><div style="width:100%;border-radius:4px 4px 0 0;min-height:3px;background:${bc};opacity:${d.isT?1:.65};height:${Math.max(d.total/mx*62,d.total>0?4:2)}px"></div>${days.length<=21?`<div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'};font-weight:${d.isT?700:400}">${d.label}</div>`:''}</div>`;}).join('')}</div>`;}
 function renderRecentNotes(){const el=$('recentNotes');if(!el)return;const entries=Object.entries(notes).filter(([,v])=>v&&v.trim()).sort(([a],[b])=>b.localeCompare(a)).slice(0,5);if(!entries.length){el.innerHTML=`<div class="empty">尚無筆記</div>`;return;}el.innerHTML=entries.map(([dk,text])=>`<div style="padding:.65rem .7rem;border-radius:10px;border:1.5px solid rgba(197,184,232,.2);margin-bottom:.45rem"><div style="font-size:.55rem;color:var(--tx3);margin-bottom:.3rem">${dk}</div><div style="font-size:.75rem;color:var(--tx2);line-height:1.7;white-space:pre-wrap">${text.slice(0,180)}${text.length>180?'…':''}</div></div>`).join('');}
 
 /* ── POMODORO ── */
 let pS={type:'focus',running:false,elapsed:0,timer:null};
 function pomoTick(){if(!pS.running)return;pS.elapsed++;renderPomo();}
 function pomoSetType(t){if(pS.running)return;pS.type=t;renderPomo();}
-function pomoReset(){clearInterval(pS.timer);pS.running=false;pS.elapsed=0;renderPomo();}
 function pomoToggle(){if(pS.running){clearInterval(pS.timer);pS.running=false;}else{pS.running=true;pS.timer=setInterval(pomoTick,1000);}renderPomo();}
 /* pomoStop: see chapter-binding version below */
 function renderPomo(){
@@ -1865,7 +1864,7 @@ function renderExamAlert(){
         <div class="exam-alert-name">${sj.emoji} ${sj.name} 考試</div>
         <div class="exam-alert-sub">${sj.examDate} · ${suggest}</div>
       </div>
-      <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--tx3)">${rem} 頁剩餘</div>
+      <div style="flex-shrink:0;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.6rem;color:var(--tx3)">${rem} 頁剩餘</div>
     </div>`;
   }).join('');
 }
@@ -1904,7 +1903,7 @@ function renderTodayStudyCard(){
   list.innerHTML=tasks.map((t,i)=>{
     const colMap=['#B89A88','#9898B0','#8FA898','#9AAAB8','#C0A89A','#A8A49A'];
     const col=t.sj.color||colMap[i%colMap.length];
-    const urgentBadge=t.days<=7&&t.days>=0?`<span style="font-size:.5rem;padding:1px 5px;border-radius:6px;background:rgba(184,100,88,.15);color:#C04040;font-weight:700;flex-shrink:0">${t.days===0?'今天考':'剩'+t.days+'天'}</span>`:'';
+    const urgentBadge=t.days<=7&&t.days>=0?`<span style="font-size:.55rem;padding:1px 5px;border-radius:6px;background:rgba(184,100,88,.15);color:#C04040;font-weight:700;flex-shrink:0">${t.days===0?'今天考':'剩'+t.days+'天'}</span>`:'';
     return`<div class="study-task-card${t.doneToday?' done-card':''}" onclick="markStudyTaskDone('${t.sj.id}','${t.c.id}',${t.target},event)">
       <div class="stc-check">${t.doneToday?'✓':''}</div>
       <span class="stc-subj" style="background:${col}22;color:${col};border:1px solid ${col}44">${t.sj.emoji}</span>
@@ -1955,7 +1954,7 @@ function updatePomoChapSel(){
     pending.map(({sj,c})=>`<option value="${sj.id}::${c.id}">${sj.emoji} ${sj.name} — ${c.name}</option>`).join('');
 }
 
-// Override pomoStop to also log study pages when chapter bound
+// Stop the pomodoro; if a chapter is bound, also log the study pages
 function pomoStop(){
   const sel=$('pomoChapSel');
   const val=sel?sel.value:'';
@@ -2061,7 +2060,6 @@ function renderWeekPlan(){
       const dk=dayKey(d);
       const isToday=dk===tk;
       const evts=schedules.filter(sc=>sc.date===dk).sort((a,b)=>a.start.localeCompare(b.start));
-      const hDone=habits.filter(h=>(habitLogs[h.id]||{})[dk]).length;
 
       const evtHtml=evts.map(ev=>{
         const isStudy=/讀書|複習|閱讀/.test(ev.name);
@@ -2108,7 +2106,7 @@ function renderWeekPlan(){
       studyPlan.innerHTML=Object.entries(byDay).map(([dk,{d,sessions}])=>{
         const isToday=dk===tk;
         return`<div style="margin-bottom:.55rem">
-          <div style="font-size:.62rem;font-weight:700;color:${isToday?'var(--clay-d)':'var(--tx2)'};margin-bottom:.22rem;font-family:'JetBrains Mono',monospace">${isToday?'▶ 今日 ':''}${d.getMonth()+1}/${d.getDate()} （${['日','一','二','三','四','五','六'][d.getDay()]}）</div>
+          <div style="font-size:.62rem;font-weight:700;color:${isToday?'var(--clay-d)':'var(--tx2)'};margin-bottom:.22rem;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif">${isToday?'▶ 今日 ':''}${d.getMonth()+1}/${d.getDate()} （${['日','一','二','三','四','五','六'][d.getDay()]}）</div>
           ${sessions.map(sc=>`<div class="week-study-chip">${sc.start}${sc.end?'–'+sc.end:''} ${sc.name}</div>`).join('')}
         </div>`;
       }).join('');
@@ -2127,7 +2125,6 @@ function addWeekSched(dk){
   $('addSchedPanel').style.display='block';$('overlay').style.display='block';
 }
 
-// Override doAddSched to use weekSchedDate when in week tab
 
 
 /* ─────────────────────────────────────
@@ -2170,13 +2167,12 @@ function renderWeekHabitSummary() {
       const dk = dayKey(d);
       const done = !!logs[dk];
       const isT = dk === tk;
-      const isFut = new Date(dk + 'T00:00:00') > getTW() && dk !== tk;
       return `<div style="width:14px;height:14px;border-radius:50%;flex-shrink:0;
         background:${done ? col : 'rgba(200,190,180,.18)'};
         border:1.5px solid ${done ? 'transparent' : isT ? 'rgba(140,140,168,.4)' : 'rgba(200,190,180,.25)'};
         box-shadow:${done ? '0 1px 4px rgba(100,88,76,.18)' : 'none'};
         display:flex;align-items:center;justify-content:center;
-        font-size:.42rem;color:#fff;cursor:pointer;transition:all .15s"
+        font-size:.55rem;color:#fff;cursor:pointer;transition:all .15s"
         onclick="toggleHabit('${h.id}','${dk}',event)"
         title="${dk}">${done ? '✓' : ''}</div>`;
     }).join('');
@@ -2187,8 +2183,8 @@ function renderWeekHabitSummary() {
         <div style="display:flex;gap:3px">${dots}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:700;color:var(--clay-d)">${doneCount}/7</div>
-        <div style="font-size:.5rem;color:var(--tx3)">${pct}%</div>
+        <div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.7rem;font-weight:700;color:var(--clay-d)">${doneCount}/7</div>
+        <div style="font-size:.55rem;color:var(--tx3)">${pct}%</div>
       </div>
     </div>`;
   }).join('');
@@ -2440,13 +2436,13 @@ window.showToast=showToast;
 /* ── EXPOSE GLOBALS ── */
 window.switchTab=switchTab;window.switchStudyTab=switchStudyTab;
 window.openFocus=openFocus;window.closeFocus=closeFocus;
-window.pomoSetType=pomoSetType;window.pomoToggle=pomoToggle;window.pomoStop=pomoStop;window.pomoReset=pomoReset;window.renderPomo=renderPomo;window.pomoSetType=pomoSetType;
+window.pomoSetType=pomoSetType;window.pomoToggle=pomoToggle;window.pomoStop=pomoStop;
 window.showAddSched=showAddSched;window.doAddSched=doAddSched;window.delSched=delSched;
 window.toggleSchedRepeatUI=toggleSchedRepeatUI;
-window.exportScheduleICS=exportScheduleICS;window.exportTodayICS=exportTodayICS;
+
 window.triggerImportICS=triggerImportICS;window.handleICSImport=handleICSImport;
 window.openIcsSubscribe=openIcsSubscribe;window.saveIcsSubscribe=saveIcsSubscribe;
-window.clearIcsSubscribe=clearIcsSubscribe;window.syncIcsSubscription=syncIcsSubscription;
+window.clearIcsSubscribe=clearIcsSubscribe;
 window.closeOverlays=closeOverlays;
 window.showAddHabit=showAddHabit;window.doAddHabit=doAddHabit;window.delHabit=delHabit;
 window.toggleHabit=toggleHabit;window.toggleHabitT=toggleHabitT;
@@ -2466,10 +2462,10 @@ window.openEditSched=openEditSched;window.doEditSched=doEditSched;
 window.openExamDate=openExamDate;window.doSetExamDate=doSetExamDate;window.doClearExamDate=doClearExamDate;
 window.setSubjSpeed=setSubjSpeed;
 window.openAutoSchedule=openAutoSchedule;window.doAutoSchedule=doAutoSchedule;
-window.renderExamAlert=renderExamAlert;window.renderTodayStudyCard=renderTodayStudyCard;
-window.markStudyTaskDone=markStudyTaskDone;window.updatePomoChapSel=updatePomoChapSel;
-window.pomoStop=pomoStop;
-window.renderWeekPlan=renderWeekPlan;window.shiftWeek=shiftWeek;window.addWeekSched=addWeekSched;window.switchWRTab=switchWRTab;window.renderWeekHabitSummary=renderWeekHabitSummary;
+
+window.markStudyTaskDone=markStudyTaskDone;
+
+window.shiftWeek=shiftWeek;window.addWeekSched=addWeekSched;window.switchWRTab=switchWRTab;
 window.openAddDeadline=openAddDeadline;window.openEditDeadline=openEditDeadline;window.setDlType=setDlType;window.doSaveDeadline=doSaveDeadline;
 window.setDlView=setDlView;window.dlCalShift=dlCalShift;window.dlCalSelect=dlCalSelect;window.toggleDlDone=toggleDlDone;window.delDeadline=delDeadline;window.renderDeadlines=renderDeadlines;
 
@@ -2568,7 +2564,7 @@ setInterval(()=>{if(icsSubUrl)syncIcsSubscription(false);},30*60*1000);
 /* ════════════════════════════════
    Cloud Sync Bridge — core app communicates via window.__cloud
    ════════════════════════════════ */
-window.__cloud = {ready: false, save: null, load: null};
+window.__cloud = {ready: false, save: null};
 
 function googleSignIn(){
   if(window.__fbSignIn) window.__fbSignIn();
@@ -2585,7 +2581,7 @@ function renderUserBar(u){
     return;
   }
   if(u){
-    el.innerHTML=`<img src="${u.photoURL||''}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(160,148,132,.3);flex-shrink:0" onerror="this.style.display='none'"><span style="font-size:.62rem;color:var(--tx2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.displayName||u.email||''}</span><button onclick="googleSignOut()" style="font-size:.56rem;padding:.15rem .42rem;border-radius:9px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.8);color:var(--tx3);cursor:pointer;font-family:inherit;flex-shrink:0">登出</button>`;
+    el.innerHTML=`<img src="${u.photoURL||''}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(160,148,132,.3);flex-shrink:0" onerror="this.style.display='none'"><span class="ub-name" style="font-size:.62rem;color:var(--tx2);max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.displayName||u.email||''}</span><button onclick="googleSignOut()" style="font-size:.56rem;padding:.15rem .42rem;border-radius:9px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.8);color:var(--tx3);cursor:pointer;font-family:inherit;flex-shrink:0">登出</button>`;
   } else {
     el.innerHTML=`<button onclick="googleSignIn()" style="display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;padding:.28rem .7rem;border-radius:14px;border:1.5px solid rgba(140,140,168,.35);background:linear-gradient(135deg,rgba(192,168,154,.15),rgba(152,152,176,.15));color:var(--dusk-d);cursor:pointer;font-family:inherit;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Google 登入</button>`;
   }
@@ -2719,18 +2715,19 @@ window.renderUserBar = renderUserBar;
       el.style.cssText=`display:inline-flex;align-items:center;gap:.25rem;padding:.15rem .5rem;`+
         `border-radius:14px;font-size:.6rem;border:1.5px solid ${b};background:${bg};color:${c};`+
         `white-space:nowrap;flex-shrink:0;cursor:pointer`;
-      el.textContent=t;el.title='點擊立即同步';el.onclick=()=>syncNow();
+      const narrow=window.innerWidth<560;
+      const SH={ok:'☁ '+(_lastOk?hhmm(_lastOk):'✓'),syncing:'↻ 同步中',offline:'⚠ 離線',err:'⚠ 失敗'};
+      el.textContent=narrow?SH[s]:t;el.title='點擊立即同步';el.onclick=()=>syncNow();
     } else { el.style.display='none'; }
   }
 
   // ── Sync manager: pull → merge per collection (newer wins) → push with optimistic lock ──
-  const KEYS=['schedules','todos','habits','habitLogs','notes','subjects','studyLogs','pomoLogs','vidCourses','deadlines'];
   let _busy=false,_again=false,_retryT=null,_retryN=0,_pollT=null,_lastOk=0;
   function hhmm(t){try{return new Date(t).toLocaleTimeString('zh-TW',{hour12:false,hour:'2-digit',minute:'2-digit'});}catch(e){return'';}}
   function scheduleRetry(ms){clearTimeout(_retryT);_retryT=setTimeout(()=>syncNow(),ms);}
   function authLost(){
     pill('err');
-    const el=document.getElementById('syncPill');if(el)el.textContent='⚠ 登入失效・請重新登入';
+    const el=document.getElementById('syncPill');if(el)el.textContent=window.innerWidth<560?'⚠ 請重新登入':'⚠ 登入失效・請重新登入';
     if(typeof renderUserBar==='function')renderUserBar(null);
     window.showToast&&window.showToast('雲端登入已失效，請重新登入 Google');
   }
