@@ -329,8 +329,6 @@ main{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))!important}
 .card-hdr>div{flex-wrap:wrap}
 .todo-text,.dl-name,.dl-notes,.chap-title,.stc-name,.quote-text{word-break:break-word;overflow-wrap:anywhere}
 div[id$="Panel"]{max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-/* iOS zooms the page when a field under 16px is focused – that is what shoved the bars around */
-@media(hover:none) and (pointer:coarse){input,textarea{font-size:16px!important}}
 @media(max-width:560px){
   header{padding-left:.7rem;padding-right:.7rem}
   .hdr-inner{gap:.4rem}
@@ -355,6 +353,14 @@ select,option{font-weight:500}
 @media(max-width:560px){
   .ci{display:none}
   .cal-cell{padding:2px!important}
+}
+
+/* ── one consistent size for all fields (viewport max-scale=1 already stops iOS focus-zoom) ── */
+input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not(#hEmoji):not(#sjEmoji):not(#crsEmoji),textarea{font-size:.8rem!important;line-height:1.4}
+select:not(.subj-header select){font-size:.72rem!important}
+@media(min-width:1024px){
+  input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=file]):not(#hEmoji):not(#sjEmoji):not(#crsEmoji),textarea{font-size:.85rem!important}
+  select:not(.subj-header select){font-size:.76rem!important}
 }
 </style>
 </head>
@@ -496,21 +502,15 @@ select,option{font-weight:500}
   <!-- TODOS TAB -->
   <div id="tab-todos" style="display:none">
     <div class="grid">
-      <!-- Priority todos mirror -->
-      <div class="card" style="grid-column:1/-1">
-        <div class="card-hdr">
-          <div class="card-title">⚡ 優先待辦事項</div>
-          <button class="card-act" onclick="switchTab('today')">← 今日頁</button>
-        </div>
-        <div class="card-body" id="quickTodosCopy"></div>
-      </div>
       <!-- Full todo list -->
       <div class="card col-w">
         <div class="card-hdr">
           <div class="card-title">📋 全部待辦</div>
           <div style="display:flex;gap:.35rem;align-items:center">
+            <button id="tvList" onclick="setTodoView('list')" style="font-size:.6rem;padding:.2rem .5rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit">☰ 清單</button>
+            <button id="tvCal" onclick="setTodoView('cal')" style="font-size:.6rem;padding:.2rem .5rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit">📅 月曆</button>
             <select id="todoFilter" style="font-size:.65rem;padding:.22rem .45rem;border:1.5px solid rgba(197,184,232,.3);border-radius:14px;background:rgba(255,255,255,.65);color:var(--tx);cursor:pointer;font-family:inherit" onchange="renderTodos()">
-              <option value="all">全部</option><option value="active">未完成</option><option value="done">已完成</option><option value="high">高優先</option>
+              <option value="all">全部</option><option value="active">未完成</option><option value="done">已完成</option><option value="high">高優先</option><option value="today">今天到期／逾期</option><option value="dated">有完成日期</option>
             </select>
             <button class="card-act" onclick="clearDone()">清除已完成</button>
           </div>
@@ -523,12 +523,28 @@ select,option{font-weight:500}
             </select>
             <button class="add-btn-s" onclick="addTodo()">新增</button>
           </div>
+          <div style="display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;margin:-.25rem 0 .7rem;font-size:.66rem;color:var(--tx3)">
+            <span>📅 完成日期（選填）</span>
+            <input type="date" class="add-inp" id="todoDue" style="width:150px;flex:0 0 150px;border-radius:14px">
+            <button class="card-act" onclick="setTodoDue(0)">今天</button>
+            <button class="card-act" onclick="setTodoDue(1)">明天</button>
+            <button class="card-act" onclick="setTodoDue(null)">清除</button>
+          </div>
+          <div id="todoCal" style="display:none"></div>
           <div id="todoList"></div>
         </div>
       </div>
       <div class="card col-n">
         <div class="card-hdr"><div class="card-title">📊 進度概覽</div></div>
         <div class="card-body" id="todoStats"></div>
+      </div>
+      <!-- Thesis planner -->
+      <div class="card" style="grid-column:1/-1" id="thesisCard">
+        <div class="card-hdr">
+          <div class="card-title">🎓 論文規劃</div>
+          <div style="display:flex;gap:.3rem"><button class="card-act" onclick="openThesisPhase(null)">＋ 新增階段</button></div>
+        </div>
+        <div class="card-body" id="thesisBody"></div>
       </div>
     </div>
   </div>
@@ -831,6 +847,55 @@ select,option{font-weight:500}
   </div>
 </div>
 
+<!-- EDIT TODO PANEL -->
+<div id="editTodoPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.2rem;width:min(360px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div style="font-size:.88rem;font-weight:700;margin-bottom:.7rem;background:linear-gradient(120deg,#785048,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">✎ 編輯待辦</div>
+  <input type="hidden" id="editTodoId">
+  <div style="margin-bottom:.55rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">內容</label><input class="add-inp" id="editTodoText" style="width:100%;border-radius:8px" onkeydown="if(event.key==='Enter')doEditTodo()"></div>
+  <div class="modal-row">
+    <div class="modal-half"><label>優先順序</label><select id="editTodoPri" class="add-inp" style="border-radius:8px"><option value="high">高</option><option value="mid">中</option><option value="low">低</option></select></div>
+    <div class="modal-half"><label>完成日期（選填）</label><input type="date" class="add-inp" id="editTodoDue" style="border-radius:8px"></div>
+  </div>
+  <div style="display:flex;gap:.35rem;margin:-.15rem 0 .75rem">
+    <button class="card-act" onclick="setEditTodoDue(0)">今天</button><button class="card-act" onclick="setEditTodoDue(1)">明天</button><button class="card-act" onclick="setEditTodoDue(null)">清除日期</button>
+  </div>
+  <div style="display:flex;gap:.4rem">
+    <button onclick="doEditTodo()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#C0A89A,#9898B0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- THESIS PHASE PANEL -->
+<div id="thesisPhasePanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.2rem;width:min(360px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div id="thPhaseTitle" style="font-size:.88rem;font-weight:700;margin-bottom:.7rem;background:linear-gradient(120deg,#785048,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🎓 新增階段</div>
+  <input type="hidden" id="thPhaseId">
+  <div class="modal-row">
+    <div class="modal-half" style="flex:0 0 64px"><label>圖示</label><input class="add-inp" id="thPhaseEmoji" maxlength="4" style="border-radius:8px;text-align:center"></div>
+    <div class="modal-half"><label>階段名稱</label><input class="add-inp" id="thPhaseName" style="border-radius:8px" placeholder="e.g. 資料蒐集"></div>
+  </div>
+  <div class="modal-row">
+    <div class="modal-half"><label>開始日期</label><input type="date" class="add-inp" id="thPhaseStart" style="border-radius:8px"></div>
+    <div class="modal-half"><label>結束日期</label><input type="date" class="add-inp" id="thPhaseEnd" style="border-radius:8px"></div>
+  </div>
+  <div style="display:flex;gap:.4rem;margin-top:.3rem">
+    <button onclick="doSaveThesisPhase()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#C0A89A,#9898B0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
+<!-- THESIS TASK PANEL -->
+<div id="thesisTaskPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.2rem;width:min(360px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
+  <div id="thTaskTitle" style="font-size:.88rem;font-weight:700;margin-bottom:.7rem;background:linear-gradient(120deg,#785048,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">＋ 新增事項</div>
+  <input type="hidden" id="thTaskPhase"><input type="hidden" id="thTaskId">
+  <div style="margin-bottom:.55rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">事項</label><input class="add-inp" id="thTaskText" style="width:100%;border-radius:8px" placeholder="e.g. 完成第二章初稿"></div>
+  <div style="margin-bottom:.55rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">預計完成日期（選填）</label><input type="date" class="add-inp" id="thTaskDue" style="width:100%;border-radius:8px"></div>
+  <div style="margin-bottom:.7rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">備註（選填，可換行）</label><textarea class="add-inp" id="thTaskNotes" rows="3" style="width:100%;border-radius:8px;resize:vertical;line-height:1.6;font-family:inherit"></textarea></div>
+  <div style="display:flex;gap:.4rem">
+    <button onclick="doSaveThesisTask()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#C0A89A,#9898B0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存</button>
+    <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
+  </div>
+</div>
+
 <!-- EDIT EXAM DATE PANEL -->
 <div id="editExamPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.2rem;width:min(320px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
   <div style="font-size:.88rem;font-weight:700;margin-bottom:.4rem;background:linear-gradient(120deg,#785040,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🎯 設定考試日期</div>
@@ -911,6 +976,7 @@ let pomoLogs=load('pomoLogs',[]);
 let vidCourses=load('vidCourses',[]);
 // NEW: exam / assignment deadlines
 let deadlines=load('deadlines',[]);
+let thesis=load('thesis',[]);
 
 function initData(){
   const tk=todayKey();
@@ -951,7 +1017,7 @@ function persist(){
   save('scheds',schedules);save('todos',todos);save('habits',habits);
   save('hlogs',habitLogs);save('notes',notes);save('subjects',subjects);
   save('studyLogs',studyLogs);save('pomoLogs',pomoLogs);
-  save('vidCourses',vidCourses);save('deadlines',deadlines);
+  save('vidCourses',vidCourses);save('deadlines',deadlines);save('thesis',thesis);
   // Cloud sync: stamp collections that really changed, then ask the sync manager to push
   if(stampAll())save('emeta',emeta);
   if(window.__cloud&&window.__cloud.save){
@@ -987,7 +1053,7 @@ function updateClock(){
 
 /* ── SCHEDULES ── */
 function toMins(t){const[h,m]=t.split(':');return +h*60+ +m}
-function schedIcon(name){const n=name.toLowerCase();if(/讀書|閱讀|複習|自習/.test(n))return'📖';if(/會議|meeting/.test(n))return'💼';if(/午餐|lunch/.test(n))return'🍱';if(/咖啡|coffee/.test(n))return'☕';if(/運動|gym/.test(n))return'🏃';if(/深度工作|專注/.test(n))return'⚡';return'📌';}
+function schedIcon(name){const n=name.toLowerCase();if(/讀書|閱讀|複習|自習/.test(n))return'📖';if(/會議|meeting/.test(n))return'💼';if(/午餐|lunch/.test(n))return'🍱';if(/咖啡|coffee/.test(n))return'☕';if(/運動|gym/.test(n))return'🏃';if(/深度工作|專注/.test(n))return'⚡';if(/研究$/.test(n))return'🎓';return'📌';}
 function renderSchedules(){
   const tk=todayKey();
   const items=schedules.filter(s=>s.date===tk).sort((a,b)=>a.start.localeCompare(b.start));
@@ -1214,13 +1280,34 @@ async function syncIcsSubscription(manual){
 
 /* ── TODOS ── */
 const PCOL={high:{label:'高',style:'background:#F2EAE6;color:#7A5248'},mid:{label:'中',style:'background:#F0EEE8;color:#5A5448'},low:{label:'低',style:'background:#EAF0EA;color:#4A6449'}};
-function todoHTML(t,full=false){const pc=PCOL[t.priority]||PCOL.mid;return`<div class="todo-item${t.done?' done':''}" onclick="toggleTodo('${t.id}',event)"><div class="todo-check">${t.done?'✓':''}</div><div class="todo-text">${t.text}</div>${full?`<span style="font-size:.55rem;padding:2px 6px;border-radius:8px;${pc.style};flex-shrink:0">${pc.label}</span>`:''}<button class="del-btn" onclick="event.stopPropagation();delTodo('${t.id}')">✕</button></div>`;}
+function dueChip(t){
+  if(!t.due)return'';
+  const d=new Date(t.due+'T00:00:00'),diff=Math.round((d-new Date(todayKey()+'T00:00:00'))/864e5);
+  const label=diff===0?'今天':diff===1?'明天':diff===-1?'昨天':`${d.getMonth()+1}/${d.getDate()}`;
+  const late=!t.done&&diff<0,today=!t.done&&diff===0;
+  const st=late?'background:#FBE1E4;color:#9B3F51':today?'background:#FFF1CC;color:#8A6A12':'background:#E1E8F8;color:#44558F';
+  return`<span title="點一下修改日期" onclick="event.stopPropagation();openEditTodo('${t.id}')" style="font-size:.6rem;padding:1px 6px;border-radius:7px;${st};flex-shrink:0;white-space:nowrap;cursor:pointer">📅 ${label}${late?' 逾期':''}</span>`;
+}
+function todoSort(a,b){
+  if(a.done!==b.done)return a.done?1:-1;
+  const da=a.due||'9999',db=b.due||'9999';
+  if(da!==db)return da<db?-1:1;
+  const o={high:0,mid:1,low:2};return(o[a.priority]??1)-(o[b.priority]??1);
+}
+function setTodoDue(n){
+  const el=$('todoDue');if(!el)return;
+  if(n===null){el.value='';return;}
+  const d=getTW();d.setDate(d.getDate()+n);el.value=dayKey(d);
+}
+window.setTodoDue=setTodoDue;
+function todoHTML(t,full=false){const pc=PCOL[t.priority]||PCOL.mid;return`<div class="todo-item${t.done?' done':''}" onclick="toggleTodo('${t.id}',event)"><div class="todo-check">${t.done?'✓':''}</div><div class="todo-text">${t.text}</div>${dueChip(t)}${full?`<span style="font-size:.55rem;padding:2px 6px;border-radius:8px;${pc.style};flex-shrink:0">${pc.label}</span>`:''}<button class="del-btn" onclick="event.stopPropagation();openEditTodo('${t.id}')">✎</button><button class="del-btn" onclick="event.stopPropagation();delTodo('${t.id}')">✕</button></div>`;}
 function renderQuickTodos(){
   const el=$('quickTodos');if(!el)return;
   const undone=todos.filter(t=>!t.done);
   // Sort: high first, then mid, then low; within same priority keep original order
   const order={high:0,mid:1,low:2};
-  const sorted=[...undone].sort((a,b)=>(order[a.priority]||1)-(order[b.priority]||1));
+  const tkQ=todayKey(),rk=t=>(t.due&&t.due<=tkQ)?0:1;
+  const sorted=[...undone].sort((a,b)=>rk(a)-rk(b)||((a.due&&b.due)?(a.due<b.due?-1:a.due>b.due?1:0):0)||(order[a.priority]??1)-(order[b.priority]??1));
   const top=sorted.slice(0,7);
   if(!top.length){el.innerHTML=`<div class="empty" style="padding:.8rem">✅ 所有待辦已完成！</div>`;return;}
   // Show priority badge inline
@@ -1230,7 +1317,8 @@ function renderQuickTodos(){
     return`<div class="todo-item${t.done?' done':''}" onclick="toggleTodo('${t.id}',event)">
       <div class="todo-check">${t.done?'✓':''}</div>
       <div class="todo-text">${t.text}</div>
-      ${badge}
+      ${dueChip(t)}${badge}
+      <button class="del-btn" onclick="event.stopPropagation();openEditTodo('${t.id}')">✎</button>
       <button class="del-btn" onclick="event.stopPropagation();delTodo('${t.id}')">✕</button>
     </div>`;
   }).join('');
@@ -1238,13 +1326,83 @@ function renderQuickTodos(){
   if(undone.length>7){
     el.innerHTML+=`<div style="font-size:.6rem;color:var(--tx3);text-align:center;padding:.35rem 0;border-top:1px dashed rgba(197,184,232,.2);margin-top:.25rem">還有 ${undone.length-7} 項未完成 · <span style="color:var(--dusk-d);cursor:pointer" onclick="switchTab('todos')">查看全部</span></div>`;
   }
-  // Mirror to todos tab
-  const copy=document.getElementById('quickTodosCopy');
-  if(copy) copy.innerHTML=el.innerHTML;
 }
-function renderTodos(){const el=$('todoList');if(!el)return;const f=($('todoFilter')||{value:'all'}).value;let l=[...todos];if(f==='active')l=l.filter(t=>!t.done);if(f==='done')l=l.filter(t=>t.done);if(f==='high')l=l.filter(t=>t.priority==='high');l.sort((a,b)=>{if(a.done!==b.done)return a.done?1:-1;const o={high:0,mid:1,low:2};return(o[a.priority]||1)-(o[b.priority]||1);});el.innerHTML=l.length?l.map(t=>todoHTML(t,true)).join(''):`<div class="empty">沒有符合的待辦</div>`;}
+function openEditTodo(id){
+  const t=todos.find(x=>x.id===id);if(!t)return;
+  $('editTodoId').value=id;$('editTodoText').value=t.text;
+  $('editTodoPri').value=t.priority||'mid';$('editTodoDue').value=t.due||'';
+  $('editTodoPanel').style.display='block';$('overlay').style.display='block';
+}
+function setEditTodoDue(n){
+  const el=$('editTodoDue');if(!el)return;
+  if(n===null){el.value='';return;}
+  const d=getTW();d.setDate(d.getDate()+n);el.value=dayKey(d);
+}
+function doEditTodo(){
+  const t=todos.find(x=>x.id===$('editTodoId').value);if(!t)return;
+  const text=$('editTodoText').value.trim();if(!text){showToast('請填寫待辦內容');return;}
+  snapshot();
+  t.text=text;t.priority=$('editTodoPri').value||'mid';t.due=$('editTodoDue').value||'';
+  persist();closeOverlays();renderTodos();renderQuickTodos();renderTodoStats();updateStats();
+  if(curTab==='review')renderWeekPlan();
+  showToast('✦ 待辦已更新');
+}
+window.openEditTodo=openEditTodo;window.setEditTodoDue=setEditTodoDue;window.doEditTodo=doEditTodo;
+
+/* ── todo calendar ── */
+let todoView=load('todoView','list'),todoCalMonth=null,todoCalSel=null;
+const TP_COL={high:['#F7C9CF','#9B3F51'],mid:['#E1E8F8','#44558F'],low:['#D3EADD','#2F6B4D']};
+function todoSyncViewUI(){
+  const cal=todoView==='cal';
+  const l=$('todoList'),c=$('todoCal'),f=$('todoFilter');
+  if(l)l.style.display=cal?'none':'';
+  if(c)c.style.display=cal?'':'none';
+  if(f)f.style.display=cal?'none':'';
+  [['tvList',!cal],['tvCal',cal]].forEach(([id,on])=>{const b=$(id);if(!b)return;b.style.background=on?'linear-gradient(135deg,#C0A89A,#9898B0)':'rgba(255,255,255,.7)';b.style.color=on?'#fff':'var(--tx3)';b.style.fontWeight=on?'700':'600';});
+}
+function setTodoView(v){todoView=v;save('todoView',v);renderTodos();}
+function todoCalShift(n){
+  const t=getTW();
+  if(n===0){todoCalMonth=new Date(t.getFullYear(),t.getMonth(),1);todoCalSel=dayKey(t);}
+  else{const b=todoCalMonth||new Date(t.getFullYear(),t.getMonth(),1);todoCalMonth=new Date(b.getFullYear(),b.getMonth()+n,1);}
+  renderTodos();
+}
+function todoCalSelect(k){todoCalSel=k;if($('todoDue'))$('todoDue').value=k;renderTodos();}
+function renderTodoCal(el){
+  const today=getTW(),tk=dayKey(today);
+  if(!todoCalMonth)todoCalMonth=new Date(today.getFullYear(),today.getMonth(),1);
+  if(!todoCalSel)todoCalSel=tk;
+  const y=todoCalMonth.getFullYear(),m=todoCalMonth.getMonth();
+  const off=new Date(y,m,1).getDay(),dim=new Date(y,m+1,0).getDate();
+  const by={};todos.forEach(t=>{if(t.due)(by[t.due]=by[t.due]||[]).push(t);});
+  const undated=todos.filter(t=>!t.due&&!t.done).length;
+  let cells='';
+  for(let i=0;i<off;i++)cells+='<div></div>';
+  for(let d=1;d<=dim;d++){
+    const k=`${y}-${pad(m+1)}-${pad(d)}`,its=(by[k]||[]).slice().sort(todoSort);
+    const isT=k===tk,sel=k===todoCalSel;
+    const chips=its.slice(0,3).map(x=>{const[bg,fg]=TP_COL[x.priority]||TP_COL.mid;return`<div style="font-size:.55rem;font-weight:600;padding:1px 3px;border-radius:5px;margin-top:2px;white-space:normal;word-break:break-all;line-height:1.25;background:${bg};color:${fg};${x.done?'opacity:.45;text-decoration:line-through':''}">${x.text}</div>`;}).join('');
+    const more=its.length>3?`<div style="font-size:.55rem;color:var(--tx3);margin-top:1px">+${its.length-3}</div>`:'';
+    cells+=`<div class="cal-cell" onclick="todoCalSelect('${k}')" style="min-height:62px;padding:3px;border-radius:8px;cursor:pointer;overflow:hidden;border:1.5px solid ${sel?'rgba(140,140,168,.65)':'rgba(160,148,132,.14)'};background:${sel?'rgba(140,140,168,.1)':'rgba(255,255,255,.9)'}"><div style="font-family:'JetBrains Mono','Noto Sans TC',sans-serif;font-size:.62rem;font-weight:${isT?800:600};color:${isT?'#C04040':'var(--tx2)'}">${d}${isT?' ●':''}</div>${chips}${more}</div>`;
+  }
+  const sd=new Date(todoCalSel+'T00:00:00'),dayItems=(by[todoCalSel]||[]).slice().sort(todoSort);
+  el.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+      <div style="font-size:.78rem;font-weight:700;color:var(--tx)">${y} 年 ${m+1} 月</div>
+      <div style="display:flex;gap:.3rem;align-items:center">
+        <button onclick="todoCalShift(-1)" style="width:26px;height:26px;border-radius:50%;border:1.5px solid var(--brd);background:rgba(255,255,255,.6);color:var(--tx3);cursor:pointer">‹</button>
+        <button onclick="todoCalShift(0)" style="font-size:.58rem;padding:.15rem .5rem;border-radius:9px;border:1.5px solid rgba(140,140,168,.3);background:var(--dusk-l);color:var(--dusk-d);cursor:pointer;font-family:inherit">今天</button>
+        <button onclick="todoCalShift(1)" style="width:26px;height:26px;border-radius:50%;border:1.5px solid var(--brd);background:rgba(255,255,255,.6);color:var(--tx3);cursor:pointer">›</button>
+      </div></div>
+    <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;margin-bottom:3px">${['日','一','二','三','四','五','六'].map(w=>`<div style="text-align:center;font-size:.55rem;color:var(--tx3)">${w}</div>`).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px">${cells}</div>
+    <div style="display:flex;gap:.6rem;flex-wrap:wrap;font-size:.55rem;color:var(--tx3);margin:.5rem 0 .65rem">${[['high','高'],['mid','中'],['low','低']].map(([k,l])=>`<span><span style="display:inline-block;width:9px;height:9px;border-radius:3px;background:${TP_COL[k][0]};border:1px solid ${TP_COL[k][1]}55;vertical-align:-1px"></span> ${l}優先</span>`).join('')}<span style="color:#C04040">● 今天</span>${undated?`<span>· 另有 ${undated} 項未設日期（見「清單」）</span>`:''}<span>· 點某天後新增，會自動帶入該日期</span></div>
+    <div class="dl-block-hdr" style="background:rgba(140,140,168,.1);color:var(--dusk-d)"><span>${sd.getMonth()+1}/${sd.getDate()}（週${'日一二三四五六'[sd.getDay()]}）${todoCalSel===tk?' · 今天':''}</span><span style="font-family:'JetBrains Mono','Noto Sans TC',sans-serif;font-size:.58rem;font-weight:600">${dayItems.length} 項</span></div>
+    ${dayItems.length?dayItems.map(t=>todoHTML(t,true)).join(''):'<div class="empty" style="padding:.7rem;font-size:.68rem">這天沒有待辦</div>'}`;
+}
+window.setTodoView=setTodoView;window.todoCalShift=todoCalShift;window.todoCalSelect=todoCalSelect;
+function renderTodos(){const el=$('todoList');if(!el)return;todoSyncViewUI();if(todoView==='cal'){const ce=$('todoCal');if(ce)renderTodoCal(ce);return;}const f=($('todoFilter')||{value:'all'}).value;let l=[...todos];if(f==='active')l=l.filter(t=>!t.done);if(f==='done')l=l.filter(t=>t.done);if(f==='high')l=l.filter(t=>t.priority==='high');if(f==='today')l=l.filter(t=>!t.done&&t.due&&t.due<=todayKey());if(f==='dated')l=l.filter(t=>t.due);l.sort(todoSort);el.innerHTML=l.length?l.map(t=>todoHTML(t,true)).join(''):`<div class="empty">沒有符合的待辦</div>`;}
 function renderTodoStats(){const el=$('todoStats');if(!el)return;const tot=todos.length,dn=todos.filter(t=>t.done).length,pct=tot?Math.round(dn/tot*100):0;el.innerHTML=`<div style="text-align:center;margin-bottom:.65rem"><div style="font-size:2rem;font-weight:800;background:linear-gradient(120deg,#A07868,#686890);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${pct}%</div><div style="font-size:.62rem;color:var(--tx3)">完成率</div></div><div style="font-size:.7rem;color:var(--tx3);text-align:center">共 ${tot} 項 · 完成 ${dn} 項</div>`;}
-function addTodo(){const text=$('todoInp').value.trim();if(!text)return;snapshot();todos.unshift({id:genId(),text,priority:$('todoPri').value,done:false,created:todayKey()});persist();$('todoInp').value='';renderTodos();renderQuickTodos();renderTodoStats();updateStats();showToast('🌸 已新增待辦');}
+function addTodo(){const text=$('todoInp').value.trim();if(!text)return;snapshot();todos.unshift({id:genId(),text,priority:$('todoPri').value,done:false,created:todayKey(),due:($('todoDue')||{}).value||''});persist();$('todoInp').value='';if($('todoDue'))$('todoDue').value='';renderTodos();renderQuickTodos();renderTodoStats();updateStats();showToast('🌸 已新增待辦');}
 function quickAdd(){const text=$('quickInp').value.trim();if(!text)return;snapshot();const pri=($('quickPri')||{value:'mid'}).value||'mid';todos.unshift({id:genId(),text,priority:pri,done:false,created:todayKey()});persist();$('quickInp').value='';renderQuickTodos();updateStats();showToast('✅ 已加入待辦');}
 function toggleTodo(id,evt){const t=todos.find(x=>x.id===id);if(!t)return;snapshot();t.done=!t.done;persist();if(t.done&&evt){sparkle(evt.clientX,evt.clientY);showToast('🎉 完成！繼續加油！');}renderTodos();renderQuickTodos();renderTodoStats();updateStats();}
 function delTodo(id){snapshot();todos=todos.filter(t=>t.id!==id);persist();renderTodos();renderQuickTodos();renderTodoStats();updateStats();}
@@ -1795,26 +1953,22 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeFocus();closeO
 function closeOverlays(){
   ['addSchedPanel','addHabitPanel','addSubjectPanel','addChapterPanel',
    'addCoursePanel','addEpPanel',
-   'editSchedPanel','editExamPanel','autoSchedPanel','addDeadlinePanel','icsSubscribePanel'].forEach(id=>{const el=$(id);if(el)el.style.display='none';});
+   'editSchedPanel','editExamPanel','editTodoPanel','thesisPhasePanel','thesisTaskPanel','autoSchedPanel','addDeadlinePanel','icsSubscribePanel'].forEach(id=>{const el=$(id);if(el)el.style.display='none';});
   $('overlay').style.display='none';
 }
 
 /* ── UNDO ── */
 const HISTORY=[];
-function snapshot(){HISTORY.push(JSON.stringify({schedules,todos,habits,habitLogs,notes,subjects,studyLogs,vidCourses,deadlines}));if(HISTORY.length>30)HISTORY.shift();updateUndoBtn();}
-function undoAction(){if(!HISTORY.length)return;const prev=JSON.parse(HISTORY.pop());schedules=prev.schedules||schedules;todos=prev.todos||todos;habits=prev.habits||habits;habitLogs=prev.habitLogs||habitLogs;notes=prev.notes||notes;subjects=prev.subjects||subjects;studyLogs=prev.studyLogs||studyLogs;vidCourses=prev.vidCourses||vidCourses;deadlines=prev.deadlines||deadlines;persist(true);renderAll();updateStats();updateUndoBtn();showToast('↩ 已復原');}
+function snapshot(){HISTORY.push(JSON.stringify({schedules,todos,habits,habitLogs,notes,subjects,studyLogs,vidCourses,deadlines,thesis}));if(HISTORY.length>30)HISTORY.shift();updateUndoBtn();}
+function undoAction(){if(!HISTORY.length)return;const prev=JSON.parse(HISTORY.pop());schedules=prev.schedules||schedules;todos=prev.todos||todos;habits=prev.habits||habits;habitLogs=prev.habitLogs||habitLogs;notes=prev.notes||notes;subjects=prev.subjects||subjects;studyLogs=prev.studyLogs||studyLogs;vidCourses=prev.vidCourses||vidCourses;deadlines=prev.deadlines||deadlines;thesis=prev.thesis||thesis;persist(true);renderAll();updateStats();updateUndoBtn();showToast('↩ 已復原');}
 function updateUndoBtn(){const b=$('undoBtn');if(!b)return;b.classList.toggle('active',HISTORY.length>0);}
 
 /* ── RENDER ALL ── */
 function renderAll(){
-  if(curTab==='today'){renderSchedules();loadNote();updateStats();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();}
+  if(curTab==='today'){renderSchedules();renderQuickTodos();loadNote();updateStats();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();}
   if(curTab==='habits'){renderHabits();renderTodayHabits();}
   if(curTab==='todos'){
-    renderTodos();renderTodoStats();renderQuickTodos();
-    // Mirror quickTodos into todos tab copy
-    const orig=document.getElementById('quickTodos');
-    const copy=document.getElementById('quickTodosCopy');
-    if(orig&&copy) copy.innerHTML=orig.innerHTML;
+    renderTodos();renderTodoStats();renderThesis();
   }
   if(curTab==='study'){renderStudy();updateStudyStats();updateDlStats();if(curStudyTab==='vid')renderVidCourses();if(curStudyTab==='dl')renderDeadlines();}
   if(curTab==='review'){
@@ -1886,9 +2040,14 @@ function getTodayStudyTasks(){
     const rem=c.pageEnd-c.currentPage;
     const perDay=sj.examDate&&days>0?Math.ceil((sj.chapters||[]).reduce((s,ch)=>s+Math.max(ch.pageEnd-ch.currentPage,0),0)/days):Math.min(20,rem);
     const target=c.single?1:Math.max(Math.min(perDay,rem),5);
-    tasks.push({sj,c,target,rem,days,doneToday:!!(studyLogs[todayKey()]||{})[c.id]});
+    tasks.push({sj,c,target,rem,days,date:c.date||'',doneToday:!!(studyLogs[todayKey()]||{})[c.id]});
   });
-  return tasks.sort((a,b)=>a.days-b.days);
+  // by date (soonest first); items without a date go last, ordered by exam urgency
+  return tasks.sort((a,b)=>{
+    if(a.date&&b.date)return a.date<b.date?-1:a.date>b.date?1:a.days-b.days;
+    if(a.date)return -1;if(b.date)return 1;
+    return a.days-b.days;
+  });
 }
 
 function renderTodayStudyCard(){
@@ -2069,6 +2228,8 @@ function renderWeekPlan(){
         return`<div class="week-evt ${cls}" title="${ev.name} ${ev.start}${ev.end?'–'+ev.end:''}">${ev.start} ${ev.name}${ev.recurId?' 🔁':''}</div>`;
       }).join('');
 
+      const todosDueHtml=todos.filter(t=>t.due===dk).map(t=>`<div class="week-evt" style="border-left-color:#CBD6F4;${t.done?'opacity:.45;text-decoration:line-through':''}" title="待辦：${String(t.text).replace(/"/g,'&quot;')}">${t.done?'☑':'☐'} ${t.text}</div>`).join('');
+
       const habitDots=habits.length?`<div style="display:flex;gap:2px;flex-wrap:wrap;margin-top:3px">${habits.map(h=>{const done=!!(habitLogs[h.id]||{})[dk];return`<div style="width:8px;height:8px;border-radius:50%;background:${done?'var(--sage-d)':'rgba(160,148,132,.2)'}" title="${h.name}"></div>`;}).join('')}</div>`:'';
 
       return`<div class="week-col">
@@ -2078,7 +2239,7 @@ function renderWeekPlan(){
           ${habitDots}
         </div>
         <div style="min-height:60px">
-          ${evtHtml||`<div style="font-size:.55rem;color:rgba(160,148,132,.4);text-align:center;margin-top:.4rem">空</div>`}
+          ${(evtHtml+todosDueHtml)||`<div style="font-size:.55rem;color:rgba(160,148,132,.4);text-align:center;margin-top:.4rem">空</div>`}
         </div>
         <button class="week-add-btn" onclick="addWeekSched('${dk}')">＋</button>
       </div>`;
@@ -2315,14 +2476,14 @@ function doAutoSchedule(){
 /* ── CLOUD SYNC BRIDGE (runs inside the app scope so it can really read/replace the data) ──
    Merge is per ENTRY (todo / schedule / chapter / episode / habit-day / note-day …), newest edit wins,
    deletions are remembered as tombstones — so phone and PC edits no longer overwrite each other. */
-const SYNC_KEYS=['schedules','todos','habits','habitLogs','notes','subjects','studyLogs','pomoLogs','vidCourses','deadlines'];
-const SYNC_T={schedules:'a',todos:'a',habits:'a',subjects:'a',vidCourses:'a',deadlines:'a',pomoLogs:'a',notes:1,habitLogs:2,studyLogs:2};
-const CHILD={subjects:'chapters',vidCourses:'episodes'};
-function getAll(){return{schedules,todos,habits,habitLogs,notes,subjects,studyLogs,pomoLogs,vidCourses,deadlines};}
+const SYNC_KEYS=['schedules','todos','habits','habitLogs','notes','subjects','studyLogs','pomoLogs','vidCourses','deadlines','thesis'];
+const SYNC_T={schedules:'a',todos:'a',habits:'a',subjects:'a',vidCourses:'a',deadlines:'a',pomoLogs:'a',thesis:'a',notes:1,habitLogs:2,studyLogs:2};
+const CHILD={subjects:'chapters',vidCourses:'episodes',thesis:'tasks'};
+function getAll(){return{schedules,todos,habits,habitLogs,notes,subjects,studyLogs,pomoLogs,vidCourses,deadlines,thesis};}
 function setAll(k,v){switch(k){
   case'schedules':schedules=v;break;case'todos':todos=v;break;case'habits':habits=v;break;case'habitLogs':habitLogs=v;break;
   case'notes':notes=v;break;case'subjects':subjects=v;break;case'studyLogs':studyLogs=v;break;case'pomoLogs':pomoLogs=v;break;
-  case'vidCourses':vidCourses=v;break;case'deadlines':deadlines=v;break;}}
+  case'vidCourses':vidCourses=v;break;case'deadlines':deadlines=v;break;case'thesis':thesis=v;break;}}
 let emeta=load('emeta',{});
 let seedMode=false;
 let clockOff=load('clockOff',0);
@@ -2418,7 +2579,7 @@ function saveLocalAll(){
   save('scheds',schedules);save('todos',todos);save('habits',habits);
   save('hlogs',habitLogs);save('notes',notes);save('subjects',subjects);
   save('studyLogs',studyLogs);save('pomoLogs',pomoLogs);
-  save('vidCourses',vidCourses);save('deadlines',deadlines);
+  save('vidCourses',vidCourses);save('deadlines',deadlines);save('thesis',thesis);
 }
 window.__getCurrentData=()=>getAll();
 window.__mergeRemote=mergeRemote;
@@ -2518,9 +2679,9 @@ const WEEK_SEED=[
  {id:'sj115_res',name:'教育與心理研究法',emoji:'🔬',color:'#9AAAB8',base:8,weeks:['Introduction（CH1）','Research Resource（圖書館）','Research Problem & Planning（CH2）','Foundation（CH3,4）','學生報告：TOPIC','Measurement（CH5,6）','學生報告：計畫書 CH1','學生報告：計畫書 CH1','Experiment Design I,II（CH9+10）','Causal-Comparative／Ex Post Facto（CH11）','Correlation Design（CH12）','學生報告：計畫書 CH2','學生報告：計畫書 CH2','Mixed Method（CH21）（調整提前）','Qualitative Design I（CH14+15）（順延）','Qualitative Design II（CH16+17）★我的報告（順延）','計畫書 CH3 撰寫＋文獻閱讀（彈性週）','計畫書完稿＋文獻完成（彈性週）']},
 ];
 function seedCourseDeadlines(manual){
-  const flagKey='seed_c115_v8';
+  const flagKey='seed_c115_v9';
   if(!manual&&load(flagKey,false))return;
-  let added=0,fixed=0,addedWk=0,renamed=0;
+  let added=0,fixed=0,addedWk=0,renamed=0,addedSch=0;
   COURSE_SEED.forEach(x=>{
     const ex=deadlines.find(d=>d.id===x.id);
     if(ex){
@@ -2544,14 +2705,209 @@ function seedCourseDeadlines(manual){
       addedWk++;
     });
   });
+  // weekly class timetable (115-1) → daily schedule, 2026-10-13 … 2027-01-08
+  const TT={2:[['res','教育與心理研究法研究','10:10','12:00'],['com','社區心理學研究','13:20','16:10']],3:[['thy','諮商理論研究','13:20','16:10'],['stat','統計套裝程式應用研究','20:10','21:45']],4:[['eth','諮商專業倫理研究','13:20','16:10']]};
+  for(let d=new Date(2026,9,13);d<=new Date(2027,0,8);d.setDate(d.getDate()+1)){
+    (TT[d.getDay()]||[]).forEach(([k,name,st,en])=>{
+      const id=`c115_sch_${k}_${dayKey(d)}`;
+      if(schedules.some(x=>x.id===id))return;
+      schedules.push({id,name,start:st,end:en,date:dayKey(d),priority:'normal',recurId:'c115_sch_'+k});addedSch++;
+    });
+  }
   save(flagKey,true);
-  if(added||fixed||addedWk||renamed)persist();
-  if(manual){renderDeadlines();renderStudy();showToast((added||fixed||addedWk||renamed)?`📥 已匯入：考試/作業 ${added} 筆${fixed?`（更新 ${fixed} 筆）`:''}、每週進度 ${addedWk} 週`:'課程時程已全部在清單中');}
+  if(added||fixed||addedWk||renamed||addedSch)persist();
+  if(manual){renderDeadlines();renderStudy();showToast((added||fixed||addedWk||renamed||addedSch)?`📥 已匯入：考試/作業 ${added} 筆${fixed?`（更新 ${fixed} 筆）`:''}、每週進度 ${addedWk} 週、課表 ${addedSch} 堂`:'課程時程已全部在清單中');}
 }
 window.seedCourseDeadlines=seedCourseDeadlines;
 
+/* ─────────────────────────────────────
+   THESIS PLANNER (draft schedule – edit freely)
+───────────────────────────────────── */
+const THESIS_SEED=[
+ {id:'th_p1',emoji:'🔎',name:'題目與文獻探討（115-1）',start:'2026-10-13',end:'2026-11-30',tasks:[
+  ['確認指導教授，約定討論頻率','2026-10-31',''],
+  ['初步確定研究主題與研究問題','2026-10-20','對應研究法「計畫書 CH1」'],
+  ['建立文獻管理（Zotero 等）與關鍵字檢索清單','2026-10-27',''],
+  ['計畫書 CH1 緒論初稿＋口頭報告','2026-10-27','研究法第8週'],
+  ['與指導教授討論題目與研究方向','2026-11-10',''],
+  ['蒐集並精讀核心文獻 20 篇，做文獻摘要表','2026-11-17',''],
+  ['擬定文獻探討架構與大綱','2026-11-24','']]},
+ {id:'th_p2',emoji:'📝',name:'計畫書初稿（115-1）',start:'2026-12-01',end:'2027-01-08',tasks:[
+  ['計畫書 CH2 文獻探討初稿','2026-12-01','研究法 CH2 報告（11/24、12/1）'],
+  ['計畫書 CH3 研究方法初稿（對象、工具、程序、分析）','2026-12-29','研究法第17週'],
+  ['補齊文獻並統一引用格式（APA 7）','2027-01-05',''],
+  ['完成計畫書完整初稿（研究法期末繳交）','2027-01-05','研究法第18週'],
+  ['將初稿送指導教授取得回饋','2027-01-08','']]},
+ {id:'th_p3',emoji:'🔧',name:'計畫書修訂與口試（115-2）',start:'2027-02-01',end:'2027-06-30',tasks:[
+  ['依研究法與指導教授回饋修訂計畫書','2027-02-26',''],
+  ['確定研究設計：對象、抽樣、工具、分析方法','2027-03-15',''],
+  ['研究工具初稿（問卷／訪談大綱）並請專家審閱','2027-04-09',''],
+  ['確認論文計畫口試委員與口試日期','2027-04-23','請依系上公告與規定調整'],
+  ['計畫書定稿並送交口試委員','2027-05-14',''],
+  ['論文計畫口試','2027-06-04','日期請依系上安排調整'],
+  ['依口試意見修正，完成計畫書審查／繳交','2027-06-30','']]},
+ {id:'th_p4',emoji:'🧪',name:'IRB 與預試（暑假）',start:'2027-07-01',end:'2027-08-31',tasks:[
+  ['準備並送出研究倫理（IRB）審查','2027-07-15','審查常需數週，建議提早送件'],
+  ['取得 IRB 核可','2027-08-15',''],
+  ['預試／試訪，檢視工具與流程','2027-08-25',''],
+  ['依預試結果修訂研究工具','2027-08-31','']]},
+ {id:'th_p5',emoji:'📥',name:'資料蒐集（116-1）',start:'2027-09-01',end:'2027-11-30',tasks:[
+  ['招募研究參與者','2027-09-30',''],
+  ['正式施測／訪談（持續進行）','2027-11-15',''],
+  ['完成資料蒐集並備份原始資料','2027-11-30','']]},
+ {id:'th_p6',emoji:'📊',name:'資料分析與結果撰寫',start:'2027-12-01',end:'2028-02-29',tasks:[
+  ['資料整理（量化清理／訪談逐字稿與編碼）','2027-12-15',''],
+  ['完成資料分析','2028-01-20',''],
+  ['撰寫第四章 研究結果初稿','2028-02-15',''],
+  ['與指導教授討論結果並調整','2028-02-29','']]},
+ {id:'th_p7',emoji:'✍️',name:'論文完成與學位考試（116-2）',start:'2028-03-01',end:'2028-06-30',tasks:[
+  ['撰寫第五章 討論與結論','2028-03-10',''],
+  ['完成全文初稿並交指導教授','2028-03-24',''],
+  ['依回饋修改至口試版本','2028-04-21',''],
+  ['送交口試委員審閱','2028-05-05',''],
+  ['學位考試（論文口試）','2028-05-19','日期請依系上安排調整'],
+  ['口試後修訂並經指導教授確認','2028-06-09',''],
+  ['繳交論文電子檔、完成離校手續','2028-06-30','']]},
+];
+function seedThesisPlan(){
+  if(load('seed_thesis_v1',false))return;
+  THESIS_SEED.forEach(ph=>{
+    let p=thesis.find(x=>x.id===ph.id);
+    if(!p){p={id:ph.id,emoji:ph.emoji,name:ph.name,start:ph.start,end:ph.end,tasks:[]};thesis.push(p);}
+    ph.tasks.forEach((t,i)=>{
+      const id=ph.id+'_t'+(i+1);
+      if(!p.tasks.some(x=>x.id===id))p.tasks.push({id,text:t[0],due:t[1],notes:t[2],done:false});
+    });
+  });
+  save('seed_thesis_v1',true);persist();
+}
+let thesisOpen={};
+const TH_COL=['#F7C9CF','#FFE3B8','#FFF1CC','#CFE9D8','#CBD6F4','#E3D4F5','#F9D5E5'];
+function thStatus(p){const tk=todayKey();return tk<p.start?'upcoming':tk>p.end?'past':'active';}
+function thFmt(d){return d?d.replace(/-/g,'/'):'';}
+function thChip(t){
+  if(!t.due)return'';
+  const d=new Date(t.due+'T00:00:00'),diff=Math.round((d-new Date(todayKey()+'T00:00:00'))/864e5);
+  const late=!t.done&&diff<0,soon=!t.done&&diff>=0&&diff<=7;
+  const st=late?'background:#FBE1E4;color:#9B3F51':soon?'background:#FFF1CC;color:#8A6A12':'background:#E1E8F8;color:#44558F';
+  return`<span style="font-size:.6rem;padding:1px 6px;border-radius:7px;${st};flex-shrink:0;white-space:nowrap">📅 ${d.getMonth()+1}/${d.getDate()}${late?' 逾期':soon&&diff===0?' 今天':''}</span>`;
+}
+function renderThesis(){
+  const el=$('thesisBody');if(!el)return;
+  if(!thesis.length){el.innerHTML='<div class="empty" style="padding:1rem">尚未建立論文規劃<br><span style="font-size:.65rem">點右上「＋ 新增階段」開始</span></div>';return;}
+  const tk=todayKey();
+  const phases=[...thesis].sort((a,b)=>a.start.localeCompare(b.start));
+  const all=phases.flatMap(p=>(p.tasks||[]).map(t=>({p,t})));
+  const total=all.length,done=all.filter(x=>x.t.done).length,pct=total?Math.round(done/total*100):0;
+  const late=all.filter(x=>!x.t.done&&x.t.due&&x.t.due<tk).length;
+  const next=all.filter(x=>!x.t.done&&x.t.due&&x.t.due>=tk).sort((a,b)=>a.t.due.localeCompare(b.t.due))[0];
+  const cur=phases.find(p=>thStatus(p)==='active')||phases.find(p=>(p.tasks||[]).some(t=>!t.done));
+  // overview bar
+  const t0=new Date(phases[0].start+'T00:00:00').getTime();
+  const t1=Math.max(...phases.map(p=>new Date(p.end+'T00:00:00').getTime()));
+  const span=Math.max(t1-t0,1),pos=ms=>Math.min(100,Math.max(0,(ms-t0)/span*100));
+  const segs=phases.map((p,i)=>{const l=pos(new Date(p.start+'T00:00:00').getTime()),w=Math.max(pos(new Date(p.end+'T00:00:00').getTime())-l,3);
+    return`<div title="${p.name}｜${thFmt(p.start)}–${thFmt(p.end)}" onclick="toggleThesisOpen('${p.id}',true)" style="position:absolute;left:${l}%;width:${w}%;top:0;bottom:0;background:${TH_COL[i%TH_COL.length]};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.75rem;overflow:hidden;cursor:pointer;opacity:${p.id===(cur&&cur.id)?1:.8};outline:${p.id===(cur&&cur.id)?'2px solid rgba(120,80,100,.35)':'none'}">${p.emoji}</div>`;}).join('');
+  const nowL=pos(getTW().getTime());
+  const summary=`<div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:.8rem">
+    <div style="flex:1 1 130px;padding:.55rem .75rem;border-radius:12px;background:#E1E8F8"><div style="font-size:.58rem;color:#44558F">整體進度</div><div style="font-size:1.2rem;font-weight:800;color:#44558F">${pct}%</div><div style="font-size:.58rem;color:#44558F">${done}/${total} 項完成</div></div>
+    <div style="flex:1 1 130px;padding:.55rem .75rem;border-radius:12px;background:#CFE9D8"><div style="font-size:.58rem;color:#2F6B4D">目前階段</div><div style="font-size:.8rem;font-weight:700;color:#2F6B4D">${cur?cur.emoji+' '+cur.name:'—'}</div></div>
+    <div style="flex:1 1 170px;padding:.55rem .75rem;border-radius:12px;background:${late?'#FBE1E4':'#FFF1CC'}"><div style="font-size:.58rem;color:${late?'#9B3F51':'#8A6A12'}">${late?`⚠ 逾期 ${late} 項`:'下一個里程碑'}</div><div style="font-size:.78rem;font-weight:700;color:${late?'#9B3F51':'#8A6A12'}">${next?next.t.text:'—'}</div><div style="font-size:.58rem;color:${late?'#9B3F51':'#8A6A12'}">${next?'📅 '+thFmt(next.t.due):''}</div></div>
+  </div>
+  <div style="position:relative;height:28px;margin-bottom:.15rem">${segs}<div style="position:absolute;left:${nowL}%;top:-3px;bottom:-3px;width:2px;background:#C04040;border-radius:2px"></div></div>
+  <div style="display:flex;justify-content:space-between;font-size:.55rem;color:var(--tx3);margin-bottom:.8rem"><span>${thFmt(phases[0].start)}</span><span style="color:#C04040">● 今天</span><span>${thFmt(dayKey(new Date(t1)))}</span></div>`;
+  const cards=phases.map((p,i)=>{
+    const ts=(p.tasks||[]).slice().sort((a,b)=>(a.done===b.done?0:a.done?1:-1)||(a.due||'9999').localeCompare(b.due||'9999'));
+    const dn=ts.filter(t=>t.done).length,pp=ts.length?Math.round(dn/ts.length*100):0;
+    const st=thStatus(p),stLabel=st==='active'?'進行中':st==='past'?'已過':'未開始';
+    const open=thesisOpen[p.id]!==undefined?thesisOpen[p.id]:(cur&&p.id===cur.id);
+    const col=TH_COL[i%TH_COL.length];
+    const rows=ts.map(t=>`<div class="todo-item${t.done?' done':''}" onclick="toggleThesisTask('${p.id}','${t.id}',event)">
+      <div class="todo-check">${t.done?'✓':''}</div>
+      <div style="flex:1;min-width:0"><div class="todo-text">${t.text}</div>${t.notes?`<div class="dl-notes">${String(t.notes).replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`:''}</div>
+      ${thChip(t)}
+      <button class="del-btn" onclick="event.stopPropagation();openThesisTask('${p.id}','${t.id}')">✎</button>
+      <button class="del-btn" onclick="event.stopPropagation();delThesisTask('${p.id}','${t.id}')">✕</button></div>`).join('')||'<div class="empty" style="padding:.6rem;font-size:.68rem">尚無事項</div>';
+    return`<div style="border:1.5px solid rgba(160,148,132,.16);border-radius:12px;margin-bottom:.55rem;overflow:hidden;background:rgba(255,255,255,.9)">
+      <div onclick="toggleThesisOpen('${p.id}')" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;padding:.55rem .75rem;background:${col}66;cursor:pointer;border-left:4px solid ${col}">
+        <span style="font-size:1.05rem">${p.emoji}</span>
+        <div style="flex:1;min-width:140px"><div style="font-size:.82rem;font-weight:700">${p.name}</div><div style="font-size:.6rem;color:var(--tx3)">${thFmt(p.start)} – ${thFmt(p.end)} · <b>${stLabel}</b></div></div>
+        <div style="display:flex;align-items:center;gap:.35rem;min-width:110px"><div style="flex:1;height:6px;border-radius:6px;background:rgba(160,148,132,.18);overflow:hidden"><div style="height:100%;width:${pp}%;background:${col};filter:saturate(1.6) brightness(.9)"></div></div><span style="font-size:.6rem;color:var(--tx3);font-family:'JetBrains Mono','Noto Sans TC',sans-serif">${dn}/${ts.length}</span></div>
+        <button class="card-act" onclick="event.stopPropagation();openThesisTask('${p.id}',null)">＋ 事項</button>
+        <button class="card-act" onclick="event.stopPropagation();openThesisPhase('${p.id}')">✎</button>
+        <button class="card-act" onclick="event.stopPropagation();delThesisPhase('${p.id}')">✕</button>
+        <span style="font-size:.7rem;color:var(--tx3)">${open?'▾':'▸'}</span>
+      </div>
+      ${open?`<div style="padding:.4rem .6rem .5rem">${rows}</div>`:''}
+    </div>`;
+  }).join('');
+  el.innerHTML=summary+cards;
+}
+function toggleThesisOpen(id,forceOpen){
+  const phases=[...thesis].sort((a,b)=>a.start.localeCompare(b.start));
+  const cur=phases.find(p=>thStatus(p)==='active')||phases.find(p=>(p.tasks||[]).some(t=>!t.done));
+  const now=thesisOpen[id]!==undefined?thesisOpen[id]:(cur&&cur.id===id);
+  thesisOpen[id]=forceOpen?true:!now;renderThesis();
+}
+function openThesisPhase(id){
+  const p=id?thesis.find(x=>x.id===id):null;
+  $('thPhaseId').value=id||'';
+  $('thPhaseTitle').textContent=p?'✎ 編輯階段':'🎓 新增階段';
+  $('thPhaseEmoji').value=p?p.emoji:'📌';$('thPhaseName').value=p?p.name:'';
+  $('thPhaseStart').value=p?p.start:todayKey();$('thPhaseEnd').value=p?p.end:'';
+  $('thesisPhasePanel').style.display='block';$('overlay').style.display='block';
+}
+function doSaveThesisPhase(){
+  const name=$('thPhaseName').value.trim(),st=$('thPhaseStart').value,en=$('thPhaseEnd').value;
+  if(!name){showToast('請填寫階段名稱');return;}
+  if(!st||!en){showToast('請選擇開始與結束日期');return;}
+  if(en<st){showToast('結束日期不能早於開始日期');return;}
+  snapshot();
+  const id=$('thPhaseId').value;
+  if(id){const p=thesis.find(x=>x.id===id);if(p){p.name=name;p.emoji=$('thPhaseEmoji').value.trim()||'📌';p.start=st;p.end=en;}}
+  else thesis.push({id:genId(),emoji:$('thPhaseEmoji').value.trim()||'📌',name,start:st,end:en,tasks:[]});
+  persist();closeOverlays();renderThesis();showToast('✦ 階段已儲存');
+}
+function delThesisPhase(id){
+  const p=thesis.find(x=>x.id===id);if(!p)return;
+  if(!confirm(`確定刪除「${p.name}」與其中 ${(p.tasks||[]).length} 個事項？`))return;
+  snapshot();thesis=thesis.filter(x=>x.id!==id);persist();renderThesis();showToast('🗑 已刪除階段');
+}
+function openThesisTask(pid,tid){
+  const p=thesis.find(x=>x.id===pid);if(!p)return;
+  const t=tid?(p.tasks||[]).find(x=>x.id===tid):null;
+  $('thTaskPhase').value=pid;$('thTaskId').value=tid||'';
+  $('thTaskTitle').textContent=t?'✎ 編輯事項':'＋ 新增事項';
+  $('thTaskText').value=t?t.text:'';$('thTaskDue').value=t?(t.due||''):'';$('thTaskNotes').value=t?(t.notes||''):'';
+  $('thesisTaskPanel').style.display='block';$('overlay').style.display='block';
+}
+function doSaveThesisTask(){
+  const p=thesis.find(x=>x.id===$('thTaskPhase').value);if(!p)return;
+  const text=$('thTaskText').value.trim();if(!text){showToast('請填寫事項內容');return;}
+  snapshot();
+  const tid=$('thTaskId').value,due=$('thTaskDue').value||'',notes=$('thTaskNotes').value.trim();
+  if(!p.tasks)p.tasks=[];
+  if(tid){const t=p.tasks.find(x=>x.id===tid);if(t){t.text=text;t.due=due;t.notes=notes;}}
+  else p.tasks.push({id:genId(),text,due,notes,done:false});
+  thesisOpen[p.id]=true;
+  persist();closeOverlays();renderThesis();showToast('✦ 事項已儲存');
+}
+function toggleThesisTask(pid,tid,evt){
+  const p=thesis.find(x=>x.id===pid);if(!p)return;
+  const t=(p.tasks||[]).find(x=>x.id===tid);if(!t)return;
+  snapshot();t.done=!t.done;persist();
+  if(t.done&&evt){sparkle(evt.clientX,evt.clientY);showToast('🎓 又完成一步！');}
+  renderThesis();
+}
+function delThesisTask(pid,tid){
+  const p=thesis.find(x=>x.id===pid);if(!p)return;
+  snapshot();p.tasks=(p.tasks||[]).filter(x=>x.id!==tid);persist();renderThesis();
+}
+window.toggleThesisOpen=toggleThesisOpen;window.openThesisPhase=openThesisPhase;window.doSaveThesisPhase=doSaveThesisPhase;window.delThesisPhase=delThesisPhase;
+window.openThesisTask=openThesisTask;window.doSaveThesisTask=doSaveThesisTask;window.toggleThesisTask=toggleThesisTask;window.delThesisTask=delThesisTask;
+
 /* ── BOOT ── */
-initData();initSyncBaseline();seedMode=true;seedCourseDeadlines(false);seedMode=false;buildNavTabs();updateClock();setInterval(updateClock,15000);
+initData();initSyncBaseline();seedMode=true;seedCourseDeadlines(false);seedThesisPlan();seedMode=false;buildNavTabs();updateClock();setInterval(updateClock,15000);
 renderAll();renderPomo();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();updateDlStats();switchWRTab('week');
 // Auto-sync the subscribed public calendar (if set) on load, then every 30 minutes
 if(icsSubUrl){syncIcsSubscription(false);}
