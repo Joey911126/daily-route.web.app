@@ -13,19 +13,19 @@ input,select,textarea{max-width:100%;box-sizing:border-box;}
 input[type="date"],input[type="time"],input[type="number"]{-webkit-appearance:none;appearance:none;width:100%;min-width:0;}
 select{text-align-last:center;}
 :root{
-  --sage:#8FA898;--sage-l:#EBF0EB;--sage-d:#4A6050;
-  --clay:#B89A88;--clay-l:#F2EDE8;--clay-d:#785040;
+  --sage-l:#EBF0EB;--sage-d:#4A6050;
+  --clay-l:#F2EDE8;--clay-d:#785040;
   --dusk:#9898B0;--dusk-l:#EBEBF2;--dusk-d:#484868;
   
-  --stone:#A8A49A;--stone-d:#585248;
-  --mist:#9AAAB8;--mist-d:#485870;
+  
+  --mist-d:#485870;
   
   --brd:rgba(168,158,145,.22);
   --tx:#2C2820;--tx2:#4C4238;--tx3:#7A7068;
   
   --sh:0 2px 18px rgba(100,88,76,.09);
   /* Video section colors */
-  --vid:#7B65C4;--vid-l:#F0EEFF;--vid-d:#4A3888;
+  --vid-l:#F0EEFF;--vid-d:#4A3888;
 }
 body{font-family:'Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',system-ui,sans-serif;background:#F7F3EA;color:var(--tx);font-size:14px;min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:
@@ -75,16 +75,6 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .prog-bar{height:6px;border-radius:6px;background:rgba(200,185,230,.2);overflow:hidden;margin-bottom:.14rem}
 .prog-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#C0A89A,#9898B0,#8FA898);transition:width .6s ease}
 .prog-pct{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;color:var(--tx3)}
-.pomo-wrap{display:flex;align-items:center;gap:.65rem;padding:.55rem .8rem;border-radius:16px;border:1.5px solid rgba(168,152,192,.22);background:rgba(252,250,255,.95);backdrop-filter:blur(12px);margin-bottom:.85rem}
-.pomo-ring{position:relative;width:48px;height:48px;flex-shrink:0}
-.pomo-ring svg{transform:rotate(-90deg)}
-.pomo-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.pomo-time{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.75rem;font-weight:700;background:linear-gradient(135deg,#D4909A,#7868A0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
-.pomo-phase{font-size:.55rem;color:var(--tx3);letter-spacing:.05em;margin-top:1px}
-.pomo-btns{display:flex;gap:.35rem;flex:1;align-items:center;flex-wrap:wrap}
-.pomo-btn{padding:.26rem .62rem;border-radius:18px;font-size:.65rem;border:1.5px solid var(--brd);background:rgba(255,255,255,.6);color:var(--tx2);transition:all .18s;cursor:pointer;font-family:inherit}
-.pomo-btn.primary{background:linear-gradient(135deg,#D4A0A8,#A890C0,#7878A8);border-color:transparent;color:#fff;font-weight:600}
-.pomo-count{font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.6rem;color:#A898B4;margin-left:auto}
 .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem}
 .col-w{grid-column:span 2}.col-n{grid-column:span 1}
 .card{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);border:1.5px solid rgba(160,148,132,.14);border-radius:14px;box-shadow:var(--sh);overflow:hidden}
@@ -145,12 +135,9 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .color-chip.selected{border-color:var(--tx);transform:scale(1.18)}
 .study-stat-card{background:rgba(255,255,255,.95);border:1.5px solid rgba(160,148,132,.14);border-radius:12px;padding:.65rem .75rem;text-align:center;box-shadow:var(--sh)}
 .exam-badge{display:inline-flex;align-items:center;gap:3px;font-size:.55rem;padding:2px 7px;border-radius:9px;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;flex-shrink:0;cursor:pointer;transition:all .15s;white-space:nowrap}
-.exam-badge.urgent{background:var(--clay-l);color:var(--clay-d);border:1.5px solid rgba(122,82,72,.3)}
-.exam-badge.normal{background:var(--dusk-l);color:var(--dusk-d);border:1.5px solid rgba(74,74,106,.25)}
 .exam-badge.none{background:rgba(160,148,132,.1);color:var(--tx3);border:1.5px dashed rgba(160,148,132,.3)}
 .review-card{display:flex;align-items:center;gap:.5rem;padding:.42rem .55rem;border-radius:9px;margin-bottom:4px;transition:all .16s}
 .review-card.due{background:rgba(184,144,128,.12);border:1.5px solid rgba(122,82,72,.28)}
-.review-card.upcoming{background:rgba(160,148,132,.07);border:1.5px solid rgba(160,148,132,.18)}
 .review-chip{font-size:.55rem;padding:1px 6px;border-radius:7px;font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;flex-shrink:0;font-weight:700}
 .review-chip.r1{background:#F2EAE6;color:#7A5248}
 .review-chip.r3{background:#F0EEE8;color:#5A5448}
@@ -238,9 +225,6 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
 .stc-pages{font-size:.56rem;color:var(--tx3);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;margin-top:1px}
 .stc-pct{font-size:.58rem;color:var(--sage-d);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-weight:700;flex-shrink:0}
 
-/* ═══ POMO CHAPTER BIND ═══ */
-.pomo-chap-sel{font-size:.62rem;padding:.22rem .5rem;border-radius:10px;border:1.5px solid rgba(197,184,232,.35);background:rgba(255,255,255,.7);color:var(--tx2);cursor:pointer;font-family:inherit;flex:1;min-width:0;transition:all .15s}
-.pomo-chap-sel:focus{outline:none;border-color:rgba(140,140,168,.5)}
 
 /* ═══ WEEKLY PLAN TAB ═══ */
 .week-col{min-width:120px;flex:1;border-right:1px solid rgba(160,148,132,.12);padding:.4rem .3rem}
@@ -285,8 +269,6 @@ main{flex:1;max-width:980px;margin:0 auto;width:100%;padding:1rem;padding-bottom
   .grid{gap:1.1rem}
   .banner{padding:1.1rem 1.6rem;gap:1.6rem;margin-bottom:1.1rem}
   .dt-day{font-size:2.8rem}
-  .pomo-wrap{padding:.7rem 1.1rem;gap:1rem;margin-bottom:1.1rem}
-  .pomo-ring{width:60px;height:60px}.pomo-ring svg{width:60px;height:60px}
   .card-hdr{padding:.8rem 1.1rem .65rem}
   .card-body{padding:1rem 1.1rem}
   .card-title{font-size:.7rem}
@@ -409,30 +391,6 @@ select:not(.subj-header select){font-size:.72rem!important}
         <div class="prog-pct" id="progPct">0%</div>
       </div>
     </div>
-    <div class="pomo-wrap">
-      <div class="pomo-ring">
-        <svg width="48" height="48" viewBox="0 0 48 48">
-          <defs><linearGradient id="pg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D4A0A8"/><stop offset="55%" stop-color="#A89AB8"/><stop offset="100%" stop-color="#8878A8"/></linearGradient></defs>
-          <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(180,160,210,.2)" stroke-width="4"/>
-          <circle cx="24" cy="24" r="20" fill="none" stroke="url(#pg)" stroke-width="4" stroke-dasharray="125.7" id="pomoCircle" stroke-dashoffset="125.7" stroke-linecap="round"/>
-        </svg>
-        <div class="pomo-center"><div class="pomo-time" id="pomoDisp">00:00</div><div class="pomo-phase" id="pomoPhase">READY</div></div>
-      </div>
-      <div class="pomo-btns">
-        <div style="display:flex;gap:.3rem;flex-wrap:wrap;flex:1">
-          <button class="pomo-btn" id="pomoFocusBtn" onclick="pomoSetType('focus')" style="flex:1">🍅 專注</button>
-          <button class="pomo-btn" id="pomoBreakBtn" onclick="pomoSetType('break')" style="flex:1">☕ 休息</button>
-        </div>
-        <button class="pomo-btn primary" id="pomoStartBtn" onclick="pomoToggle()">開始</button>
-        <button class="pomo-btn" id="pomoStopBtn" onclick="pomoStop()" style="display:none">結束記錄</button>
-        <div style="display:flex;gap:.3rem;align-items:center;width:100%;margin-top:.25rem">
-          <select id="pomoChapSel" class="pomo-chap-sel" title="綁定章節（番茄鐘結束後自動記錄讀書時數）">
-            <option value="">📌 綁定讀書章節（選填）</option>
-          </select>
-        </div>
-        <div class="pomo-count" id="pomoCount" style="width:100%;margin-top:.1rem">今日未開始</div>
-      </div>
-    </div>
     <!-- Exam Alert Bar -->
     <div id="examAlertBar" style="display:none"></div>
 
@@ -468,7 +426,7 @@ select:not(.subj-header select){font-size:.72rem!important}
 
     <div class="grid">
       <div class="card col-w">
-        <div class="card-hdr"><div class="card-title">🗓 今日行程</div><div style="display:flex;gap:.3rem"><input type="file" id="icsImportInput" accept=".ics,text/calendar" multiple style="display:none" onchange="handleICSImport(this)"><button class="card-act" onclick="openIcsSubscribe()">🔗 訂閱同步</button><button class="card-act" onclick="triggerImportICS()">📥 匯入行事曆</button><button class="card-act" onclick="showAddSched()">＋ 新增</button></div></div>
+        <div class="card-hdr"><div class="card-title">🗓 今日行程</div><div style="display:flex;gap:.3rem"><button class="card-act" onclick="showAddSched()">＋ 新增</button></div></div>
         <div class="card-body" id="schedList"><div class="empty">尚無行程</div></div>
       </div>
       <div class="card col-n">
@@ -503,7 +461,7 @@ select:not(.subj-header select){font-size:.72rem!important}
   <div id="tab-todos" style="display:none">
     <div class="grid">
       <!-- Full todo list -->
-      <div class="card col-w">
+      <div class="card" style="grid-column:1/-1">
         <div class="card-hdr">
           <div class="card-title">📋 全部待辦</div>
           <div style="display:flex;gap:.35rem;align-items:center">
@@ -534,12 +492,9 @@ select:not(.subj-header select){font-size:.72rem!important}
           <div id="todoList"></div>
         </div>
       </div>
-      <div class="card col-n">
-        <div class="card-hdr"><div class="card-title">📊 進度概覽</div></div>
-        <div class="card-body" id="todoStats"></div>
-      </div>
+      
       <!-- Thesis planner -->
-      <div class="card" style="grid-column:1/-1" id="thesisCard">
+      <div class="card" style="grid-column:1/-1">
         <div class="card-hdr">
           <div class="card-title">🎓 論文規劃</div>
           <div style="display:flex;gap:.3rem"><button class="card-act" onclick="openThesisPhase(null)">＋ 新增階段</button></div>
@@ -584,7 +539,7 @@ select:not(.subj-header select){font-size:.72rem!important}
             <button id="svSubj" onclick="setStudyView('subj')" style="font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit">☰ 依科目</button>
             <button id="svTime" onclick="setStudyView('time')" style="font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit">🕒 依時間</button>
             <button id="svCal" onclick="setStudyView('cal')" style="font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit">📅 月曆</button>
-            <button id="svHide" onclick="toggleStudyHideDone()" style="display:none;font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit;margin-left:auto"></button>
+            <button id="svFold" onclick="toggleAllSubj()" style="margin-left:auto;font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);background:rgba(255,255,255,.7);color:var(--tx3);cursor:pointer;font-family:inherit">⇕ 全部收合／展開</button><button id="svHide" onclick="toggleStudyHideDone()" style="display:none;font-size:.6rem;padding:.2rem .55rem;border-radius:12px;border:1.5px solid rgba(160,148,132,.28);cursor:pointer;font-family:inherit;margin-left:auto"></button>
           </div>
           <div id="studyAlt" style="display:none"></div>
           <div id="studySubjectList" style="display:flex;flex-direction:column;gap:.65rem"></div>
@@ -836,13 +791,14 @@ select:not(.subj-header select){font-size:.72rem!important}
 <div id="editSchedPanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(160,148,132,.25);border-radius:16px;padding:1.2rem;width:min(340px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18)">
   <div style="font-size:.88rem;font-weight:700;margin-bottom:.7rem;background:linear-gradient(120deg,#785048,#484868);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">編輯行程</div>
   <input type="hidden" id="editSchedId">
+  <div style="margin-bottom:.5rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">日期</label><input type="date" class="add-inp" id="editSchedDate" style="width:100%;border-radius:8px"></div>
   <div style="margin-bottom:.5rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">活動名稱</label><input class="add-inp" id="editSchedName" style="width:100%;border-radius:8px" onkeydown="if(event.key==='Enter')doEditSched()"></div>
   <div style="display:flex;gap:.4rem;margin-bottom:.65rem">
     <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">開始</label><input type="time" class="add-inp" id="editSchedStart" style="width:100%;border-radius:8px"></div>
     <div style="flex:1"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.22rem">結束</label><input type="time" class="add-inp" id="editSchedEnd" style="width:100%;border-radius:8px"></div>
   </div>
   <div style="display:flex;gap:.4rem">
-    <button onclick="doEditSched()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#C0A89A,#9898B0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存</button>
+    <button onclick="doEditSched()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#C0A89A,#9898B0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存</button><button onclick="doDeleteEditSched()" style="padding:.42rem .65rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--clay-d);font-size:.72rem;cursor:pointer;font-family:inherit">刪除</button>
     <button onclick="closeOverlays()" style="padding:.42rem .75rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.75rem;cursor:pointer;font-family:inherit">取消</button>
   </div>
 </div>
@@ -926,23 +882,6 @@ select:not(.subj-header select){font-size:.72rem!important}
   </div>
 </div>
 
-<!-- ICS SUBSCRIBE PANEL -->
-<div id="icsSubscribePanel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(248,244,240,.97);backdrop-filter:blur(24px);border:1.5px solid rgba(140,140,168,.28);border-radius:16px;padding:1.25rem;width:min(380px,94vw);z-index:400;box-shadow:0 16px 48px rgba(123,101,196,.18);max-height:90vh;overflow-y:auto">
-  <div style="font-size:.88rem;font-weight:700;margin-bottom:.3rem;background:linear-gradient(120deg,#484868,#785048);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🔗 訂閱公開行事曆</div>
-  <div style="font-size:.6rem;color:var(--tx3);margin-bottom:.7rem;line-height:1.7;background:rgba(140,140,168,.06);border:1.5px solid rgba(140,140,168,.15);border-radius:8px;padding:.5rem .65rem">
-    在 iPhone「行事曆」App：選要分享的行事曆 →「共享行事曆」→ 開啟「<b>公開行事曆</b>」→ 複製連結，貼到下面。<br><br>
-    ⚠ 若直接讀取被瀏覽器安全限制（CORS）擋下，會自動改用第三方代理服務重試——代表行事曆內容會經過該代理伺服器中轉，並非只在你和 Apple 之間。如果全部都失敗，請改用「📥 匯入行事曆」手動匯出 .ics。
-  </div>
-  <div style="margin-bottom:.6rem"><label style="font-size:.6rem;color:var(--tx2);display:block;margin-bottom:.25rem">訂閱連結（webcal:// 或 https://...ics）</label><input class="add-inp" id="icsSubUrl" placeholder="webcal://p00-caldav.icloud.com/published/..." style="width:100%;border-radius:8px"></div>
-  <div style="font-size:.6rem;color:var(--tx3);margin-bottom:.7rem" id="icsSubStatus">尚未設定訂閱連結</div>
-  <div style="display:flex;gap:.4rem">
-    <button onclick="saveIcsSubscribe()" style="flex:1;padding:.42rem;border-radius:10px;background:linear-gradient(135deg,#9898B0,#7868A0);color:#fff;font-size:.76rem;font-weight:700;font-family:inherit;border:none;cursor:pointer">✦ 儲存並同步</button>
-    <button onclick="clearIcsSubscribe()" style="padding:.42rem .65rem;border-radius:10px;border:1.5px solid rgba(184,144,128,.3);background:rgba(255,255,255,.7);color:var(--clay-d);font-size:.72rem;cursor:pointer;font-family:inherit">取消訂閱</button>
-    <button onclick="closeOverlays()" style="padding:.42rem .65rem;border-radius:10px;border:1.5px solid rgba(160,148,132,.28);background:rgba(248,244,240,.7);color:var(--tx3);font-size:.72rem;cursor:pointer;font-family:inherit">關閉</button>
-  </div>
-</div>
-
-
 <!-- OVERLAY -->
 <div id="overlay" onclick="closeOverlays()" style="display:none;position:fixed;inset:0;z-index:390;background:rgba(40,25,65,.38);backdrop-filter:blur(6px)"></div>
 <div class="toast" id="toast"></div>
@@ -971,7 +910,6 @@ let habitLogs=load('hlogs',{});
 let notes=load('notes',{});
 let subjects=load('subjects',[]);
 let studyLogs=load('studyLogs',{});
-let pomoLogs=load('pomoLogs',[]);
 // NEW: video courses
 let vidCourses=load('vidCourses',[]);
 // NEW: exam / assignment deadlines
@@ -1016,7 +954,7 @@ function initData(){
 function persist(){
   save('scheds',schedules);save('todos',todos);save('habits',habits);
   save('hlogs',habitLogs);save('notes',notes);save('subjects',subjects);
-  save('studyLogs',studyLogs);save('pomoLogs',pomoLogs);
+  save('studyLogs',studyLogs);
   save('vidCourses',vidCourses);save('deadlines',deadlines);save('thesis',thesis);
   // Cloud sync: stamp collections that really changed, then ask the sync manager to push
   if(stampAll())save('emeta',emeta);
@@ -1061,8 +999,10 @@ function renderSchedules(){
   ($('sSch')||{}).textContent=items.length;
   if(!items.length){el.innerHTML=`<div class="empty">尚無行程</div>`;return;}
   const now=getTW(),nm=now.getHours()*60+now.getMinutes();
-  const SH=6,EH=23,PPM=1.1;
-  let html=`<div style="position:relative;padding-left:42px">`;
+  const PPM=0.9;
+  let SH=23,EH=0;items.forEach(s=>{const a=toMins(s.start),b=s.end?toMins(s.end):a+60;SH=Math.min(SH,Math.floor(a/60));EH=Math.max(EH,Math.ceil(b/60));});
+  if(EH>24)EH=24;if(EH-SH<3)EH=Math.min(24,SH+3);
+  let html=`<div style="max-height:340px;overflow-y:auto;-webkit-overflow-scrolling:touch"><div style="position:relative;padding-left:42px">`;
   for(let h=SH;h<EH;h++){const yp=(h-SH)*60*PPM,ic=h===now.getHours();html+=`<div style="position:absolute;left:0;top:${yp}px;width:38px;text-align:right;padding-right:6px"><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:${ic?'var(--clay-d)':'var(--tx3)'};font-weight:${ic?700:400}">${pad(h)}:00</span></div><div style="position:absolute;left:42px;right:0;top:${yp}px;height:1px;background:rgba(160,148,132,${ic?'.28':'.12'})"></div>`;}
   html+=`<div style="height:${(EH-SH)*60*PPM}px"></div>`;
   const nh=now.getHours(),nm2=now.getMinutes();
@@ -1075,7 +1015,7 @@ function renderSchedules(){
     const bl=isNow?'var(--clay-d)':s.priority==='high'?'var(--clay-d)':'var(--dusk)';
     html+=`<div style="position:absolute;left:42px;right:4px;top:${top}px;height:${height}px;background:rgba(255,255,255,.92);border:1.5px solid rgba(160,148,132,.22);border-left:3px solid ${bl};border-radius:6px;padding:2px 22px 2px 6px;overflow:hidden;${past?'opacity:.4':''}"><div style="display:flex;align-items:center;gap:4px"><span style="font-size:.7rem">${schedIcon(s.name)}</span><span style="font-size:.72rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}${s.recurId?` <span style="font-size:.55rem;color:var(--dusk-d);vertical-align:middle">🔁</span>`:''}${isNow?` <span style="font-size:.55rem;padding:1px 5px;border-radius:6px;background:linear-gradient(90deg,var(--clay-d),var(--dusk-d));color:#fff;font-weight:700;vertical-align:middle">NOW</span>`:''}</span></div>${height>28&&s.end?`<div style="font-size:.55rem;color:var(--tx3);font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;margin-left:18px">${s.start}–${s.end}</div>`:''}${isNow?`<div style="position:absolute;bottom:0;left:0;height:2px;width:${pct}%;background:linear-gradient(90deg,var(--clay-d),var(--dusk))"></div>`:''}<button class="del-btn" onclick="event.stopPropagation();delSched('${s.id}')" style="position:absolute;top:3px;right:3px">✕</button><button onclick="event.stopPropagation();openEditSched('${s.id}')" style="position:absolute;top:3px;right:22px;width:18px;height:18px;border-radius:50%;border:1.5px solid rgba(160,148,132,.25);background:rgba(255,255,255,.7);color:var(--tx3);font-size:.55rem;cursor:pointer;display:none;align-items:center;justify-content:center" class="del-btn">✎</button></div>`;
   });
-  html+=`</div>`;el.innerHTML=html;
+  html+=`</div></div>`;el.innerHTML=html;
 }
 function showAddSched(){$('sName').value='';if($('sRepeat')){$('sRepeat').checked=false;}if($('sRepeatOpts'))$('sRepeatOpts').style.display='none';if($('sRepeatWeeks'))$('sRepeatWeeks').value='8';$('addSchedPanel').style.display='block';$('overlay').style.display='block';}
 function toggleSchedRepeatUI(){const on=$('sRepeat')&&$('sRepeat').checked;if($('sRepeatOpts'))$('sRepeatOpts').style.display=on?'':'none';}
@@ -1111,171 +1051,6 @@ function delSched(id){
   }
   persist();renderSchedules();updateStats();
   if(curTab==='review')renderWeekPlan();
-}
-
-function icsAddHour(t){const [h,m]=(t||'09:00').split(':').map(Number);return `${pad((h+1)%24)}:${pad(m||0)}`;}
-
-/* ── IMPORT FROM iOS CALENDAR (.ics) ── */
-function icsUnescape(s){return String(s||'').replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\\\/g,'\\');}
-function unfoldICS(text){return String(text||'').replace(/\r\n[ \t]/g,'').replace(/\n[ \t]/g,'');}
-function parseICSDateTime(raw){
-  const hasZ=raw.endsWith('Z');
-  const clean=raw.replace('Z','');
-  const y=clean.slice(0,4),mo=clean.slice(4,6),d=clean.slice(6,8);
-  let hh='09',mm='00';
-  if(clean.length>8){hh=clean.slice(9,11);mm=clean.slice(11,13);}
-  if(hasZ){
-    const utcMs=Date.UTC(+y,+mo-1,+d,+hh,+mm);
-    const tp=new Date(new Date(utcMs).toLocaleString('en-US',{timeZone:'Asia/Taipei'}));
-    return{date:dayKey(tp),time:`${pad(tp.getHours())}:${pad(tp.getMinutes())}`};
-  }
-  return{date:`${y}-${mo}-${d}`,time:`${hh}:${mm}`};
-}
-// Parse raw .ics text into a plain list of events (does not touch app state)
-function parseICSEvents(text){
-  const unfolded=unfoldICS(text);
-  const blocks=[...unfolded.matchAll(/BEGIN:VEVENT([\s\S]*?)END:VEVENT/g)].map(m=>m[1]);
-  const events=[];
-  blocks.forEach(b=>{
-    const lines=b.split(/\r?\n/).filter(Boolean);
-    const props={};
-    lines.forEach(line=>{
-      const m=line.match(/^([A-Za-z-]+)(;[^:]*)?:(.*)$/);
-      if(m)props[m[1]]={params:m[2]||'',value:m[3]};
-    });
-    if(!props.DTSTART)return;
-    const s=parseICSDateTime(props.DTSTART.value);
-    const e2=props.DTEND?parseICSDateTime(props.DTEND.value):null;
-    const name=props.SUMMARY?icsUnescape(props.SUMMARY.value):'（未命名行程）';
-    events.push({
-      uid:props.UID?props.UID.value:null,
-      name,
-      start:s.time,
-      end:(e2&&e2.date===s.date)?e2.time:icsAddHour(s.time),
-      date:s.date
-    });
-  });
-  return events;
-}
-// Merge parsed events into schedules: matches existing items by icsUid so re-syncing
-// updates changed times/names instead of creating duplicates every pull.
-function mergeICSEvents(events){
-  let added=0,updated=0;
-  events.forEach(ev=>{
-    const existing=ev.uid?schedules.find(s=>s.icsUid===ev.uid):null;
-    if(existing){
-      if(existing.name!==ev.name||existing.date!==ev.date||existing.start!==ev.start||existing.end!==ev.end){
-        existing.name=ev.name;existing.date=ev.date;existing.start=ev.start;existing.end=ev.end;
-        updated++;
-      }
-    }else{
-      schedules.push({id:genId(),name:ev.name,start:ev.start,end:ev.end,date:ev.date,priority:'normal',icsUid:ev.uid||undefined});
-      added++;
-    }
-  });
-  return{added,updated};
-}
-function triggerImportICS(){const el=$('icsImportInput');if(el)el.click();}
-function handleICSImport(input){
-  const files=[...(input.files||[])];if(!files.length)return;
-  let allEvents=[],badFiles=0,filesLeft=files.length;
-  function finishUp(){
-    snapshot();
-    const{added,updated}=mergeICSEvents(allEvents);
-    persist();
-    renderSchedules();updateStats();
-    if(curTab==='review')renderWeekPlan();
-    let msg=added||updated?`📥 已匯入 ${added} 筆新行程${updated?`，更新 ${updated} 筆`:''}（共 ${files.length} 個檔案）`:'沒有解析到有效的活動';
-    if(badFiles)msg+=`，${badFiles} 個檔案讀取失敗`;
-    showToast(msg);
-    input.value='';
-  }
-  files.forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=e=>{
-      try{allEvents=allEvents.concat(parseICSEvents(e.target.result));}
-      catch(err){console.warn('ICS parse error',err);badFiles++;}
-      filesLeft--;
-      if(filesLeft===0)finishUp();
-    };
-    reader.onerror=()=>{badFiles++;filesLeft--;if(filesLeft===0)finishUp();};
-    reader.readAsText(file);
-  });
-}
-
-/* ── SUBSCRIBE TO A PUBLIC iCLOUD CALENDAR LINK ── */
-let icsSubUrl=load('icsSubUrl','');
-let icsSubLastSync=load('icsSubLastSync',null);
-function normalizeIcsUrl(u){return u.trim().replace(/^webcal:\/\//i,'https://');}
-function openIcsSubscribe(){
-  $('icsSubUrl').value=icsSubUrl||'';
-  updateIcsSubStatus();
-  $('icsSubscribePanel').style.display='block';$('overlay').style.display='block';
-}
-function updateIcsSubStatus(){
-  const el=$('icsSubStatus');if(!el)return;
-  el.textContent=icsSubUrl?(icsSubLastSync?`上次同步：${icsSubLastSync}`:'已設定，尚未同步過'):'尚未設定訂閱連結';
-}
-function saveIcsSubscribe(){
-  const raw=$('icsSubUrl').value.trim();
-  if(!raw){showToast('請貼上訂閱連結');return;}
-  icsSubUrl=raw;save('icsSubUrl',icsSubUrl);
-  closeOverlays();
-  syncIcsSubscription(true);
-}
-function clearIcsSubscribe(){
-  icsSubUrl='';icsSubLastSync=null;
-  save('icsSubUrl','');save('icsSubLastSync',null);
-  closeOverlays();showToast('已取消訂閱');
-}
-async function fetchICSWithFallback(url){
-  try{
-    const resp=await fetch(url,{cache:'no-store'});
-    if(!resp.ok)throw new Error('HTTP '+resp.status);
-    const text=await resp.text();
-    if(/BEGIN:VCALENDAR/i.test(text))return{text,viaProxy:false};
-    throw new Error('直接讀取回傳的內容不是有效的行事曆');
-  }catch(directErr){
-    console.warn('direct ics fetch failed, trying CORS proxies',directErr);
-  }
-  // 依序嘗試多個公用 CORS 代理，任一個成功即可（allorigins.win 經常不穩定/被限流，
-  // 所以放在最後當作最後手段，優先試更穩定的 corsproxy.io / codetabs）
-  const proxies=[
-    u=>'https://corsproxy.io/?url='+encodeURIComponent(u),
-    u=>'https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(u),
-    u=>'https://api.allorigins.win/raw?url='+encodeURIComponent(u),
-  ];
-  let lastErr=null;
-  for(const build of proxies){
-    try{
-      const resp=await fetch(build(url),{cache:'no-store'});
-      if(!resp.ok){lastErr=new Error('Proxy HTTP '+resp.status);continue;}
-      const text=await resp.text();
-      if(!text||!/BEGIN:VCALENDAR/i.test(text)){lastErr=new Error('代理回傳的內容不是有效的行事曆');continue;}
-      return{text,viaProxy:true};
-    }catch(e){lastErr=e;}
-  }
-  throw lastErr||new Error('所有代理皆失敗');
-}
-async function syncIcsSubscription(manual){
-  if(!icsSubUrl)return;
-  const url=normalizeIcsUrl(icsSubUrl);
-  try{
-    const{text,viaProxy}=await fetchICSWithFallback(url);
-    const events=parseICSEvents(text);
-    if(manual)snapshot();
-    const{added,updated}=mergeICSEvents(events);
-    persist();
-    renderSchedules();updateStats();
-    if(curTab==='review')renderWeekPlan();
-    icsSubLastSync=new Date().toLocaleString('zh-TW',{hour12:false});
-    save('icsSubLastSync',icsSubLastSync);
-    updateIcsSubStatus();
-    if(manual)showToast(added||updated?`🔗 ${viaProxy?'（經代理）':''}已同步：新增 ${added} 筆、更新 ${updated} 筆`:`🔗 ${viaProxy?'（經代理）':''}已同步，沒有新變更`);
-  }catch(err){
-    console.warn('ics subscribe sync failed',err);
-    if(manual)showToast('⚠ 同步失敗：直接讀取和代理備援都被擋下了，這個連結可能無法被網頁存取，建議改用手動匯入 .ics');
-  }
 }
 
 /* ── TODOS ── */
@@ -1343,7 +1118,7 @@ function doEditTodo(){
   const text=$('editTodoText').value.trim();if(!text){showToast('請填寫待辦內容');return;}
   snapshot();
   t.text=text;t.priority=$('editTodoPri').value||'mid';t.due=$('editTodoDue').value||'';
-  persist();closeOverlays();renderTodos();renderQuickTodos();renderTodoStats();updateStats();
+  persist();closeOverlays();renderTodos();renderQuickTodos();updateStats();
   if(curTab==='review')renderWeekPlan();
   showToast('✦ 待辦已更新');
 }
@@ -1401,12 +1176,11 @@ function renderTodoCal(el){
 }
 window.setTodoView=setTodoView;window.todoCalShift=todoCalShift;window.todoCalSelect=todoCalSelect;
 function renderTodos(){const el=$('todoList');if(!el)return;todoSyncViewUI();if(todoView==='cal'){const ce=$('todoCal');if(ce)renderTodoCal(ce);return;}const f=($('todoFilter')||{value:'all'}).value;let l=[...todos];if(f==='active')l=l.filter(t=>!t.done);if(f==='done')l=l.filter(t=>t.done);if(f==='high')l=l.filter(t=>t.priority==='high');if(f==='today')l=l.filter(t=>!t.done&&t.due&&t.due<=todayKey());if(f==='dated')l=l.filter(t=>t.due);l.sort(todoSort);el.innerHTML=l.length?l.map(t=>todoHTML(t,true)).join(''):`<div class="empty">沒有符合的待辦</div>`;}
-function renderTodoStats(){const el=$('todoStats');if(!el)return;const tot=todos.length,dn=todos.filter(t=>t.done).length,pct=tot?Math.round(dn/tot*100):0;el.innerHTML=`<div style="text-align:center;margin-bottom:.65rem"><div style="font-size:2rem;font-weight:800;background:linear-gradient(120deg,#A07868,#686890);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${pct}%</div><div style="font-size:.62rem;color:var(--tx3)">完成率</div></div><div style="font-size:.7rem;color:var(--tx3);text-align:center">共 ${tot} 項 · 完成 ${dn} 項</div>`;}
-function addTodo(){const text=$('todoInp').value.trim();if(!text)return;snapshot();todos.unshift({id:genId(),text,priority:$('todoPri').value,done:false,created:todayKey(),due:($('todoDue')||{}).value||''});persist();$('todoInp').value='';if($('todoDue'))$('todoDue').value='';renderTodos();renderQuickTodos();renderTodoStats();updateStats();showToast('🌸 已新增待辦');}
+function addTodo(){const text=$('todoInp').value.trim();if(!text)return;snapshot();todos.unshift({id:genId(),text,priority:$('todoPri').value,done:false,created:todayKey(),due:($('todoDue')||{}).value||''});persist();$('todoInp').value='';if($('todoDue'))$('todoDue').value='';renderTodos();renderQuickTodos();updateStats();showToast('🌸 已新增待辦');}
 function quickAdd(){const text=$('quickInp').value.trim();if(!text)return;snapshot();const pri=($('quickPri')||{value:'mid'}).value||'mid';todos.unshift({id:genId(),text,priority:pri,done:false,created:todayKey()});persist();$('quickInp').value='';renderQuickTodos();updateStats();showToast('✅ 已加入待辦');}
-function toggleTodo(id,evt){const t=todos.find(x=>x.id===id);if(!t)return;snapshot();t.done=!t.done;persist();if(t.done&&evt){sparkle(evt.clientX,evt.clientY);showToast('🎉 完成！繼續加油！');}renderTodos();renderQuickTodos();renderTodoStats();updateStats();}
-function delTodo(id){snapshot();todos=todos.filter(t=>t.id!==id);persist();renderTodos();renderQuickTodos();renderTodoStats();updateStats();}
-function clearDone(){snapshot();todos=todos.filter(t=>!t.done);persist();renderTodos();renderQuickTodos();renderTodoStats();updateStats();showToast('🧹 已清除完成項目');}
+function toggleTodo(id,evt){const t=todos.find(x=>x.id===id);if(!t)return;snapshot();t.done=!t.done;persist();if(t.done&&evt){sparkle(evt.clientX,evt.clientY);showToast('🎉 完成！繼續加油！');}renderTodos();renderQuickTodos();updateStats();}
+function delTodo(id){snapshot();todos=todos.filter(t=>t.id!==id);persist();renderTodos();renderQuickTodos();updateStats();}
+function clearDone(){snapshot();todos=todos.filter(t=>!t.done);persist();renderTodos();renderQuickTodos();updateStats();showToast('🧹 已清除完成項目');}
 
 /* ── HABITS ── */
 function calcStreak(hid){const logs=habitLogs[hid]||{},today=getTW();let s=0,d=new Date(today);if(!logs[dayKey(d)])d.setDate(d.getDate()-1);while(logs[dayKey(d)]&&s<=365){s++;d.setDate(d.getDate()-1);}return s;}
@@ -1443,16 +1217,19 @@ function chapTotal(c){return c.single?1:Math.max(c.pageEnd-c.pageStart+1,1);}
 function chapRead(c){return c.single?(isChapDone(c)?1:0):Math.max(c.currentPage-c.pageStart,0);}
 function chapPct(c){return Math.min(100,Math.round(chapRead(c)/chapTotal(c)*100));}
 
+let studyCollapsed=load('studyCollapsed',{});
 let studyView=load('studyView','subj'),studyHideDone=load('studyHideDone',false),studyCalMonth=null,studyCalSel=null;
 function courseAbbr(n){return n.startsWith('社區')?'社區':n.startsWith('諮商理論')?'理論':(n.startsWith('諮商專業倫理')||n.startsWith('諮商倫理'))?'倫理':n.startsWith('教育與心理研究')||n.startsWith('研究')?'研究':n.slice(0,2);}
 function studySyncViewUI(){
-  const v=studyView,el=$('studySubjectList'),alt=$('studyAlt'),hb=$('svHide');
+  const v=studyView,el=$('studySubjectList'),alt=$('studyAlt'),hb=$('svHide');const fb=$('svFold');if(fb)fb.style.display=v==='subj'?'':'none';
   if(el)el.style.display=v==='subj'?'flex':'none';
   if(alt)alt.style.display=v==='subj'?'none':'';
   [['svSubj','subj'],['svTime','time'],['svCal','cal']].forEach(([id,k])=>{const b=$(id);if(!b)return;const on=v===k;b.style.background=on?'linear-gradient(135deg,#C0A89A,#9898B0)':'rgba(255,255,255,.7)';b.style.color=on?'#fff':'var(--tx3)';b.style.fontWeight=on?'700':'600';});
   if(hb){hb.style.display=v==='time'?'':'none';hb.textContent=studyHideDone?'☑ 隱藏已完成':'☐ 隱藏已完成';hb.style.background=studyHideDone?'var(--sage-l)':'rgba(255,255,255,.7)';hb.style.color=studyHideDone?'var(--sage-d)':'var(--tx3)';}
 }
 function setStudyView(v){studyView=v;save('studyView',v);renderStudy();}
+function toggleSubj(id){studyCollapsed[id]=!studyCollapsed[id];save('studyCollapsed',studyCollapsed);renderStudy();}
+function toggleAllSubj(){const anyOpen=subjects.some(sj=>!studyCollapsed[sj.id]);subjects.forEach(sj=>{studyCollapsed[sj.id]=anyOpen;});save('studyCollapsed',studyCollapsed);renderStudy();}
 function toggleStudyHideDone(){studyHideDone=!studyHideDone;save('studyHideDone',studyHideDone);renderStudy();}
 function studyCalShift(n){
   const t=getTW();
@@ -1546,8 +1323,8 @@ function renderStudy(){
       <div class="subj-header">
         <div class="subj-color-bar" style="background:${sj.color}"></div>
         <div style="width:10px;flex-shrink:0;background:${sj.color};border-radius:2px;align-self:stretch;margin:0 2px"></div>
-        <div style="flex:1;min-width:0">
-          <div class="subj-name">${sj.emoji} ${sj.name}</div>
+        <div style="flex:1;min-width:0;cursor:pointer" onclick="toggleSubj('${sj.id}')">
+          <div class="subj-name">${studyCollapsed[sj.id]?'▸':'▾'} ${sj.emoji} ${sj.name}</div>
           <div class="subj-meta">${chaps.length&&chaps.every(c=>c.single)?done+'/'+chaps.length+' 週':done+'/'+chaps.length+'章 · '+rp+'/'+tp+'頁'}${(()=>{if(!sj.examDate)return'';const today=getTW();const todayMs=new Date(today.getFullYear(),today.getMonth(),today.getDate()).getTime();const examMs=new Date(sj.examDate+'T00:00:00').getTime();const days=Math.ceil((examMs-todayMs)/86400000);const rem=chaps.reduce((s,c)=>s+Math.max(c.pageEnd-c.currentPage,0),0);return` · <span style="color:${days<=3?'#C04040':'var(--clay-d)'};font-weight:700">🎯${days<=0?'已過期':days===0?'今天!':'倒數'+days+'天'}</span>${rem>0?' · 剩'+rem+'頁':''}`;})()}</div>
         </div>
         <div style="display:flex;flex-direction:column;gap:.3rem;flex-shrink:0;align-items:flex-end">
@@ -1564,7 +1341,7 @@ function renderStudy(){
           </div>
         </div>
       </div>
-      <div class="subj-chapters">${chapHtml||`<div style="font-size:.7rem;color:var(--tx3);padding:.3rem 0">尚無章節</div>`}</div>
+      ${studyCollapsed[sj.id]?'':`<div class="subj-chapters">${chapHtml||`<div style="font-size:.7rem;color:var(--tx3);padding:.3rem 0">尚無章節</div>`}</div>`}
     </div>`;
   }).join('');
   updateStudyStats();renderStudyProgressAll();renderReviewReminders();
@@ -1703,6 +1480,7 @@ function doAddEpisode(){
 /* ─────────────────────────────────────
    EXAM / ASSIGNMENT DEADLINES
 ───────────────────────────────────── */
+let dlCollapsed=load('dlCollapsed',{});
 let dlView=load('dlView','list'),dlCalMonth=null,dlCalSel=null;
 function dlSyncViewUI(){
   const cal=dlView==='cal';
@@ -1715,6 +1493,7 @@ function dlSyncViewUI(){
 function dlIsQuiz(d){return d.type==='exam'&&/小考/.test(d.name||'');}
 function dlIsMine(d){return d.type==='report'&&((d.id||'').startsWith('c115_my_')||(d.name||'').includes('我的報告'));}
 function setDlView(v){dlView=v;save('dlView',v);renderDeadlines();}
+function toggleDlBlock(t){dlCollapsed[t]=!dlCollapsed[t];save('dlCollapsed',dlCollapsed);renderDeadlines();}
 function dlCalShift(n){
   const t=getTW();
   if(n===0){dlCalMonth=new Date(t.getFullYear(),t.getMonth(),1);dlCalSel=dayKey(t);}
@@ -1874,7 +1653,7 @@ function renderDeadlines(){
     el.innerHTML=BL.map(([t,label])=>{
       const items=list.filter(d=>d.type===t);
       const pend=items.filter(d=>!d.done).length;
-      return`<div class="dl-block-hdr ${t}"><span>${label}</span><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;font-weight:600">待完成 ${pend} / ${items.length}</span></div>`+(items.length?items.map(itemHtml).join(''):`<div class="empty" style="padding:.6rem;font-size:.68rem">尚無${label.slice(2)}，點右上「＋ 新增」</div>`);
+      return`<div class="dl-block-hdr ${t}" onclick="toggleDlBlock('${t}')" style="cursor:pointer"><span>${dlCollapsed[t]?'▸':'▾'} ${label}</span><span style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.58rem;font-weight:600">待完成 ${pend} / ${items.length}</span></div>`+(dlCollapsed[t]?'':items.length?items.map(itemHtml).join(''):`<div class="empty" style="padding:.6rem;font-size:.68rem">尚無${label.slice(2)}，點右上「＋ 新增」</div>`);
     }).join('');
   }else el.innerHTML=list.map(itemHtml).join('');
   updateDlStats();
@@ -1923,27 +1702,6 @@ function renderStreakBoard(){const el=$('streakBoard');if(!el)return;if(!habits.
 function renderWeeklyBar(){const el=$('weeklyBar');if(!el)return;const tk=todayKey(),dn=['日','一','二','三','四','五','六'];const days=getReviewDays().map(d=>{const dk=dayKey(d);return{total:habits.filter(h=>(habitLogs[h.id]||{})[dk]).length+todos.filter(t=>t.done&&t.created===dk).length,label:dn[d.getDay()],isT:dk===tk};});const mx=Math.max(...days.map(d=>d.total),1);el.innerHTML=`<div style="display:flex;align-items:flex-end;gap:4px;height:80px;padding:0 0 .4rem">${days.map((d,i)=>{const bc=['#C0A89A','#B89A88','#A8A49A','#8FA898','#9AAAB8','#9898B0','#B0A8B8'][i%7];return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end"><div style="font-size:.55rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'}">${d.total||''}</div><div style="width:100%;border-radius:4px 4px 0 0;min-height:3px;background:${bc};opacity:${d.isT?1:.65};height:${Math.max(d.total/mx*62,d.total>0?4:2)}px"></div>${days.length<=21?`<div style="font-family:'JetBrains Mono','Noto Sans TC','PingFang TC','Microsoft JhengHei','Heiti TC',sans-serif;font-size:.55rem;color:${d.isT?'var(--clay-d)':'var(--tx3)'};font-weight:${d.isT?700:400}">${d.label}</div>`:''}</div>`;}).join('')}</div>`;}
 function renderRecentNotes(){const el=$('recentNotes');if(!el)return;const entries=Object.entries(notes).filter(([,v])=>v&&v.trim()).sort(([a],[b])=>b.localeCompare(a)).slice(0,5);if(!entries.length){el.innerHTML=`<div class="empty">尚無筆記</div>`;return;}el.innerHTML=entries.map(([dk,text])=>`<div style="padding:.65rem .7rem;border-radius:10px;border:1.5px solid rgba(197,184,232,.2);margin-bottom:.45rem"><div style="font-size:.55rem;color:var(--tx3);margin-bottom:.3rem">${dk}</div><div style="font-size:.75rem;color:var(--tx2);line-height:1.7;white-space:pre-wrap">${text.slice(0,180)}${text.length>180?'…':''}</div></div>`).join('');}
 
-/* ── POMODORO ── */
-let pS={type:'focus',running:false,elapsed:0,timer:null};
-function pomoTick(){if(!pS.running)return;pS.elapsed++;renderPomo();}
-function pomoSetType(t){if(pS.running)return;pS.type=t;renderPomo();}
-function pomoToggle(){if(pS.running){clearInterval(pS.timer);pS.running=false;}else{pS.running=true;pS.timer=setInterval(pomoTick,1000);}renderPomo();}
-/* pomoStop: see chapter-binding version below */
-function renderPomo(){
-  const m=Math.floor(pS.elapsed/60),s=pS.elapsed%60;
-  [['pomoDisp',`${pad(m)}:${pad(s)}`],['pomoPhase',pS.running?(pS.type==='focus'?'FOCUS':'BREAK'):'READY']].forEach(([id,v])=>{const e=$(id);if(e)e.textContent=v});
-  const c=$('pomoCircle');if(c)c.setAttribute('stroke-dashoffset',125.7*(1-(pS.elapsed%1800)/1800));
-  const fb=$('pomoFocusBtn'),bb=$('pomoBreakBtn');
-  if(fb)fb.classList.toggle('primary',pS.type==='focus'&&!pS.running);
-  if(bb)bb.classList.toggle('primary',pS.type==='break'&&!pS.running);
-  const sb=$('pomoStartBtn'),stb=$('pomoStopBtn');
-  if(sb)sb.textContent=pS.running?'暫停':'開始';
-  if(stb)stb.style.display=pS.elapsed>0&&!pS.running?'':'none';
-  const tf=pomoLogs.filter(l=>l.date===todayKey()&&l.type==='focus').reduce((a,l)=>a+l.duration,0);
-  const fh=Math.floor(tf/3600),fm=Math.floor((tf%3600)/60);
-  ($('pomoCount')||{}).textContent=tf>=60?(fh?`🍅 ${fh}h${fm}m`:`🍅 ${fm}m 專注`):'今日未開始';
-}
-
 /* ── FOCUS MODE ── */
 function openFocus(){$('focusOverlay').style.display='flex';updateClock();}
 function closeFocus(){$('focusOverlay').style.display='none';}
@@ -1953,7 +1711,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeFocus();closeO
 function closeOverlays(){
   ['addSchedPanel','addHabitPanel','addSubjectPanel','addChapterPanel',
    'addCoursePanel','addEpPanel',
-   'editSchedPanel','editExamPanel','editTodoPanel','thesisPhasePanel','thesisTaskPanel','autoSchedPanel','addDeadlinePanel','icsSubscribePanel'].forEach(id=>{const el=$(id);if(el)el.style.display='none';});
+   'editSchedPanel','editExamPanel','editTodoPanel','thesisPhasePanel','thesisTaskPanel','autoSchedPanel','addDeadlinePanel'].forEach(id=>{const el=$(id);if(el)el.style.display='none';});
   $('overlay').style.display='none';
 }
 
@@ -1965,10 +1723,10 @@ function updateUndoBtn(){const b=$('undoBtn');if(!b)return;b.classList.toggle('a
 
 /* ── RENDER ALL ── */
 function renderAll(){
-  if(curTab==='today'){renderSchedules();renderQuickTodos();loadNote();updateStats();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();}
+  if(curTab==='today'){renderSchedules();renderQuickTodos();loadNote();updateStats();renderExamAlert();renderTodayStudyCard();}
   if(curTab==='habits'){renderHabits();renderTodayHabits();}
   if(curTab==='todos'){
-    renderTodos();renderTodoStats();renderThesis();
+    renderTodos();renderThesis();
   }
   if(curTab==='study'){renderStudy();updateStudyStats();updateDlStats();if(curStudyTab==='vid')renderVidCourses();if(curStudyTab==='dl')renderDeadlines();}
   if(curTab==='review'){
@@ -2101,64 +1859,6 @@ function markStudyTaskDone(sjId,chapId,pages,evt){
 }
 
 /* ─────────────────────────────────────
-   3. POMO CHAPTER BINDING
-───────────────────────────────────── */
-function updatePomoChapSel(){
-  const sel=$('pomoChapSel'); if(!sel)return;
-  const pending=[];
-  subjects.forEach(sj=>(sj.chapters||[]).filter(c=>!isChapDone(c)&&!c.single).forEach(c=>{
-    pending.push({sj,c});
-  }));
-  sel.innerHTML='<option value="">📌 綁定讀書章節（選填）</option>'+
-    pending.map(({sj,c})=>`<option value="${sj.id}::${c.id}">${sj.emoji} ${sj.name} — ${c.name}</option>`).join('');
-}
-
-// Stop the pomodoro; if a chapter is bound, also log the study pages
-function pomoStop(){
-  const sel=$('pomoChapSel');
-  const val=sel?sel.value:'';
-  const elapsed=pS.elapsed;
-  const type=pS.type;
-
-  // Original stop logic (inline to avoid closure issues)
-  clearInterval(pS.timer);pS.running=false;
-  if(elapsed>=10){
-    pomoLogs.push({id:genId(),type,duration:elapsed,date:todayKey(),ts:Date.now()});
-    persist();
-    showToast(type==='focus'?`🍅 記錄 ${Math.round(elapsed/60)} 分鐘`:`☕ 記錄 ${Math.round(elapsed/60)} 分鐘休息`);
-  }
-  pS.elapsed=0;renderPomo();
-
-  // If bound to chapter and was focus session, log study pages
-  if(val&&type==='focus'&&elapsed>=60){
-    const [sjId,chapId]=val.split('::');
-    const sj=subjects.find(s=>s.id===sjId);
-    const c=sj&&(sj.chapters||[]).find(x=>x.id===chapId);
-    if(sj&&c&&!isChapDone(c)){
-      const mpp=sj.minsPerPage||6;
-      const estimatedPages=Math.max(1,Math.floor(elapsed/60/mpp));
-      const newPage=Math.min(c.currentPage+estimatedPages,c.pageEnd);
-      const delta=newPage-c.currentPage;
-      if(delta>0){
-        const dk=todayKey();
-        if(!studyLogs[dk])studyLogs[dk]={};
-        studyLogs[dk][chapId]=(studyLogs[dk][chapId]||0)+delta;
-        c.currentPage=newPage;
-        if(isChapDone(c)){
-          c.reviews=[1,3,7].map(d=>{const dt=new Date(getTW());dt.setDate(dt.getDate()+d);return{date:dayKey(dt),interval:d,done:false};});
-          showToast(`🎉 番茄鐘完成章節！+${delta} 頁`);
-        } else {
-          showToast(`📖 自動記錄 ${delta} 頁（${sj.name}）`);
-        }
-        persist();
-        renderTodayStudyCard();
-        updateStats();
-      }
-    }
-  }
-}
-
-/* ─────────────────────────────────────
    4. WEEKLY PLAN
 ───────────────────────────────────── */
 let weekOffset=0; // 0=this week, -1=last week, +1=next week
@@ -2225,7 +1925,7 @@ function renderWeekPlan(){
         const isVid=/影片|video/i.test(ev.name);
         const isHigh=ev.priority==='high';
         const cls=isStudy?'evt-study':isVid?'evt-vid':isHigh?'evt-high':'';
-        return`<div class="week-evt ${cls}" title="${ev.name} ${ev.start}${ev.end?'–'+ev.end:''}">${ev.start} ${ev.name}${ev.recurId?' 🔁':''}</div>`;
+        return`<div class="week-evt ${cls}" onclick="openEditSched('${ev.id}')" title="${ev.name} ${ev.start}${ev.end?'–'+ev.end:''}">${ev.start} ${ev.name}${ev.recurId?' 🔁':''}</div>`;
       }).join('');
 
       const todosDueHtml=todos.filter(t=>t.due===dk).map(t=>`<div class="week-evt" style="border-left-color:#CBD6F4;${t.done?'opacity:.45;text-decoration:line-through':''}" title="待辦：${String(t.text).replace(/"/g,'&quot;')}">${t.done?'☑':'☐'} ${t.text}</div>`).join('');
@@ -2361,6 +2061,7 @@ function openEditSched(id){
   const s=schedules.find(x=>x.id===id);if(!s)return;
   $('editSchedId').value=id;
   $('editSchedName').value=s.name;
+  $('editSchedDate').value=s.date||'';
   $('editSchedStart').value=s.start||'';
   $('editSchedEnd').value=s.end||'';
   $('editSchedPanel').style.display='block';$('overlay').style.display='block';
@@ -2369,9 +2070,11 @@ function doEditSched(){
   const id=$('editSchedId').value;
   const s=schedules.find(x=>x.id===id);if(!s)return;
   const name=$('editSchedName').value.trim();if(!name){showToast('請填寫名稱');return;}
-  snapshot();s.name=name;s.start=$('editSchedStart').value;s.end=$('editSchedEnd').value;
-  persist();closeOverlays();renderSchedules();updateStats();showToast('✦ 行程已更新');
+  snapshot();s.name=name;s.start=$('editSchedStart').value;s.end=$('editSchedEnd').value;const nd=$('editSchedDate').value;if(nd)s.date=nd;
+  persist();closeOverlays();renderSchedules();updateStats();if(curTab==='review')renderWeekPlan();showToast('✦ 行程已更新');
 }
+
+function doDeleteEditSched(){const id=$('editSchedId').value;closeOverlays();if(id)delSched(id);}
 
 /* ② Set exam date on existing subject */
 function openExamDate(sjId){
@@ -2476,13 +2179,13 @@ function doAutoSchedule(){
 /* ── CLOUD SYNC BRIDGE (runs inside the app scope so it can really read/replace the data) ──
    Merge is per ENTRY (todo / schedule / chapter / episode / habit-day / note-day …), newest edit wins,
    deletions are remembered as tombstones — so phone and PC edits no longer overwrite each other. */
-const SYNC_KEYS=['schedules','todos','habits','habitLogs','notes','subjects','studyLogs','pomoLogs','vidCourses','deadlines','thesis'];
-const SYNC_T={schedules:'a',todos:'a',habits:'a',subjects:'a',vidCourses:'a',deadlines:'a',pomoLogs:'a',thesis:'a',notes:1,habitLogs:2,studyLogs:2};
+const SYNC_KEYS=['schedules','todos','habits','habitLogs','notes','subjects','studyLogs','vidCourses','deadlines','thesis'];
+const SYNC_T={schedules:'a',todos:'a',habits:'a',subjects:'a',vidCourses:'a',deadlines:'a',thesis:'a',notes:1,habitLogs:2,studyLogs:2};
 const CHILD={subjects:'chapters',vidCourses:'episodes',thesis:'tasks'};
-function getAll(){return{schedules,todos,habits,habitLogs,notes,subjects,studyLogs,pomoLogs,vidCourses,deadlines,thesis};}
+function getAll(){return{schedules,todos,habits,habitLogs,notes,subjects,studyLogs,vidCourses,deadlines,thesis};}
 function setAll(k,v){switch(k){
   case'schedules':schedules=v;break;case'todos':todos=v;break;case'habits':habits=v;break;case'habitLogs':habitLogs=v;break;
-  case'notes':notes=v;break;case'subjects':subjects=v;break;case'studyLogs':studyLogs=v;break;case'pomoLogs':pomoLogs=v;break;
+  case'notes':notes=v;break;case'subjects':subjects=v;break;case'studyLogs':studyLogs=v;break;
   case'vidCourses':vidCourses=v;break;case'deadlines':deadlines=v;break;case'thesis':thesis=v;break;}}
 let emeta=load('emeta',{});
 let seedMode=false;
@@ -2578,7 +2281,7 @@ function mergeRemote(rdata,rmeta){
 function saveLocalAll(){
   save('scheds',schedules);save('todos',todos);save('habits',habits);
   save('hlogs',habitLogs);save('notes',notes);save('subjects',subjects);
-  save('studyLogs',studyLogs);save('pomoLogs',pomoLogs);
+  save('studyLogs',studyLogs);
   save('vidCourses',vidCourses);save('deadlines',deadlines);save('thesis',thesis);
 }
 window.__getCurrentData=()=>getAll();
@@ -2590,20 +2293,16 @@ window.__applyMerged=function(data,meta){
   SYNC_KEYS.forEach(k=>{if(data[k]!==undefined)setAll(k,data[k]);});
   Object.keys(meta).forEach(k=>{emeta[k]=meta[k];});
   save('emeta',emeta);saveLocalAll();rebase();
-  try{renderAll();updateStats();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();updateDlStats();}catch(e){console.warn('re-render after sync failed',e);}
+  try{renderAll();updateStats();renderExamAlert();renderTodayStudyCard();updateDlStats();}catch(e){console.warn('re-render after sync failed',e);}
 };
 window.showToast=showToast;
 
 /* ── EXPOSE GLOBALS ── */
 window.switchTab=switchTab;window.switchStudyTab=switchStudyTab;
 window.openFocus=openFocus;window.closeFocus=closeFocus;
-window.pomoSetType=pomoSetType;window.pomoToggle=pomoToggle;window.pomoStop=pomoStop;
 window.showAddSched=showAddSched;window.doAddSched=doAddSched;window.delSched=delSched;
 window.toggleSchedRepeatUI=toggleSchedRepeatUI;
 
-window.triggerImportICS=triggerImportICS;window.handleICSImport=handleICSImport;
-window.openIcsSubscribe=openIcsSubscribe;window.saveIcsSubscribe=saveIcsSubscribe;
-window.clearIcsSubscribe=clearIcsSubscribe;
 window.closeOverlays=closeOverlays;
 window.showAddHabit=showAddHabit;window.doAddHabit=doAddHabit;window.delHabit=delHabit;
 window.toggleHabit=toggleHabit;window.toggleHabitT=toggleHabitT;
@@ -2906,13 +2605,11 @@ function delThesisTask(pid,tid){
 window.toggleThesisOpen=toggleThesisOpen;window.openThesisPhase=openThesisPhase;window.doSaveThesisPhase=doSaveThesisPhase;window.delThesisPhase=delThesisPhase;
 window.openThesisTask=openThesisTask;window.doSaveThesisTask=doSaveThesisTask;window.toggleThesisTask=toggleThesisTask;window.delThesisTask=delThesisTask;
 
+window.toggleSubj=toggleSubj;window.toggleAllSubj=toggleAllSubj;window.toggleDlBlock=toggleDlBlock;window.doDeleteEditSched=doDeleteEditSched;
+
 /* ── BOOT ── */
 initData();initSyncBaseline();seedMode=true;seedCourseDeadlines(false);seedThesisPlan();seedMode=false;buildNavTabs();updateClock();setInterval(updateClock,15000);
-renderAll();renderPomo();renderExamAlert();renderTodayStudyCard();updatePomoChapSel();updateDlStats();switchWRTab('week');
-// Auto-sync the subscribed public calendar (if set) on load, then every 30 minutes
-if(icsSubUrl){syncIcsSubscription(false);}
-setInterval(()=>{if(icsSubUrl)syncIcsSubscription(false);},30*60*1000);
-
+renderAll();renderExamAlert();renderTodayStudyCard();updateDlStats();switchWRTab('week');
 })();
 </script>
 
